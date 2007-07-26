@@ -1,0 +1,10 @@
+<Cluster>
+	<Layer>
+		<Line>
+			<SymbolBox title="Home" cmd="W3dMenu.Open W3dMenu.XML" img="iconhome.bmp" />
+			<SymbolBox title="VNC Holmes" cmd="AosVNC.Open holmes.ethz.ch:5912" img="iconvnc.bmp" />
+		</Line>
+		<Line>
+		</Line>
+	</Layer>
+</Cluster>

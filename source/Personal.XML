@@ -1,0 +1,14 @@
+<Panel left="0" top="0" width="160" height="200" color="008888FFH">
+	<AutoLayout width="140" height="700">
+		<Button width="140" height="20" caption="Reload" 
+			AosCommand="XMLBrowser.Open Personal.XML" color="00FF00FFH"></Button> 
+		<Button width="140" height="20" caption="VNC (Holmes)" 
+			AosCommand="AosVNC.Open holmes.ethz.ch:5906" color="EECC77FFH"></Button> 
+		<Button width="140" height="20" caption="Edit-Test" 
+			AosCommand="XMLBrowser.Open EditTest.XML" color="EECC77FFH"></Button> 
+		<Button width="140" height="20" caption="Fractal Demo" 
+			AosCommand="XMLBrowser.Open FractalDemo.XML" color="EECC77FFH"></Button> 
+		<Button width="140" height="20" caption="Oberon (1024x960)" 
+			AosCommand="AosDisplayWM.Install Oberon 1024x960;System.Init Oberon" color="EECC77FFH"></Button> 
+	</AutoLayout>
+</Panel>

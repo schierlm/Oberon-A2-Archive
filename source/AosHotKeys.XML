@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes'?>
+
+<!--
+
+	AosHotKeys.Open AosHotKeys.XML ~ to load this file
+	AosHotKeys.Show ~ to see a list of currently bound hotkeys
+	
+	WMKeyCode.Open ~	S.Free WMKeyCode ~
+	
+	Valid modifier keys:
+	
+	META, LMETA, RMETA
+	CTRL, LCTRL, RCTRL
+	ALT, LALT, RALT
+	SHIFT, LSHIFT, RSHIFT
+	RELEASE
+	
+	WARNING: 
+	THIS TOOL ALLOWS HOTKEY DEFINITIONS THAT CAN RENDER BLUEBOTTLE UNUSABLE!!!
+	ALWAYS KEEP THE F12 HOT KEY FOR UNLOADING THIS MODULE!!!
+	
+-->
+
+	<!DOCTYPE HotKeys [
+		<!ELEMENT HotKey ANY>
+		<!ATTLIST HotKey
+			keys NMTOKEN #REQUIRED
+			command CDATA #REQUIRED
+		>
+	]>
+
+<HotKeys>
+
+	<!-- Standard hot keys (don't change) -->
+	<HotKey keys="F1" command="Notepad.OpenAuto Tutorial.Text"/>
+	<HotKey keys="F11" command="AosHotKeys.Show"/>
+	<HotKey keys="F12" command="S.Free AosHotKeys"/>
+	
+	<!-- Example hot keys -->
+	
+	<!-- Example: Switch keyboard layout -->
+	<HotKey keys="F5" command="WMOSD.Open 'US Keyboard Layout';AosKeyboard.SetLayout KeyUS.Bin"/>
+	<HotKey keys="F6" command="WMOSD.Open 'CH Keyboard Layout';AosKeyboard.SetLayout KeyCH.Bin"/>	
+	
+	<!-- Example: Open applications -->
+	<HotKey keys="META+P" command="PET.Open"/>
+	<HotKey keys="META+N" command="Notepad.OpenEmpty"/>
+	<HotKey keys="META+L" command="LogWindow.Open"/>
+
+	<!-- Example: Virtual desktop -->
+	<HotKey keys="META+1" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 1 1 d;WMOSD.Open 'Desktop 1'"/>
+	<HotKey keys="META+2" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 -1 1 1 d;WMOSD.Open 'Desktop 2'"/>
+	<HotKey keys="META+3" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 0 1 1 d;WMOSD.Open 'Desktop 3'"/>
+	<HotKey keys="META+4" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 0 1 1 d;WMOSD.Open 'Desktop 4'"/>
+	<HotKey keys="META+5" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 2 2 d"/>
+	
+	<!-- Example: Open window to enter and execute a command -->
+	<HotKey keys="CTRL+R" command="AosHotKeysCommands.EnterCommand"/>
+
+	<!-- Example: Apply text style to currently selected text -->
+	<HotKey keys="META+C" command="WMTextStyleTool.SetStyleByName Comment"/>
+	
+	<!-- Example: Misc -->
+	<HotKey keys="META+O" command="AosHotKeysCommands.ClearLog"/>
+	
+	<!-- Example: Control window that has keyboard focus -->
+	<HotKey keys="META+M" command="AosHotKeysCommands.ToggleFullscreen"/>
+	<HotKey keys="F4" command="AosHotKeysCommands.CloseWindow"/>
+	
+	<!-- Example: Simulate mouse wheel by keys -->
+	<HotKey keys="CTRL+UP" command="AosHotKeysCommands.SimulateMouse MouseWheel -3"/>
+	<HotKey keys="CTRL+DOWN" command="AosHotKeysCommands.SimulateMouse MouseWheel 3"/>
+
+	<!-- Example: Key remappings -->
+	
+	<HotKey keys="CTRL+I" command="REMAP UP"/>
+	<HotKey keys="CTRL+J" command="REMAP LEFT"/>
+	<HotKey keys="CTRL+K" command="REMAP DOWN"/>
+	<HotKey keys="CTRL+L" command="REMAP RIGHT"/>
+	<HotKey keys="CTRL+;" command="REMAP END"/>
+	<HotKey keys="CTRL+H" command="REMAP HOME"/>
+	
+</HotKeys>
