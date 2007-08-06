@@ -1,12 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes'?>
+
+	<!DOCTYPE Macros [
+		<!ELEMENT Macro ANY>
+		<!ATTLIST Macro
+			key NMTOKEN #REQUIRED
+		>
+	]>
+
 <Macros> <!-- WMMacros.ReadMacros Macros.XML ~ -->
+
+	<!-- Keysym of key that invokes macros (in hex). Use WMKeyCode.Open ~ to find out the keysym value of keys
+		The specified key cannot be used for other purposes! 
+		Tips: Paragraph key (60)
+		-->
+	<MacroKey keysym="FF63"/>
+
 	<!-- Mail -->
-	<Macro key="tf"><String>frey@inf.ethz.ch</String></Macro>
-	<Macro key="pk"><String>kramer@inf.ethz.ch</String></Macro>
 	<Macro key="dk"><String>daniel.keller@inf.ethz.ch</String></Macro>
-	<Macro key="rg"><String>guentensperger@inf.ethz.ch</String></Macro>
 	<Macro key="jg"><String>gutknecht@inf.ethz.ch</String></Macro>
-	<Macro key="prk"><String>reali@inf.ethz.ch</String></Macro>
-	<Macro key="pjm"><String>muller@inf.ethz.ch</String></Macro>
+	<Macro key="sst"><String>sven.stauber@inf.ethz.ch</String></Macro>
 	<!-- XML -->
 	<Macro key="t">
 		<LT/><Arg nr="0"/><GT/><Cursor/>
@@ -24,19 +36,40 @@
 		<Indent/><Cursor/><CR/>
 		<String>END </String><Arg nr="0"/><String>;</String><CR/>
 	</Macro>
+	<Macro key="p">
+		<String>(** *)</String><CR/>
+		<String>PROCEDURE </String><Arg nr="0"/><String>*;</String><CR/>
+		<String>VAR</String><CR/>
+		<String>BEGIN</String><CR/>
+		<Indent/><Cursor/><CR/>
+		<String>END </String><Arg nr="0"/><String>;</String><CR/>
+	</Macro>
 	<Macro key="C">
-		<String>PROCEDURE </String><Arg nr="0"/><String>(par : ANY) : ANY;</String><CR/>
+		<String>PROCEDURE </String><Arg nr="0"/><String>*(par : ANY) : ANY;</String><CR/>
 		<String>BEGIN</String><CR/>
 		<Indent/><Cursor/><CR/>
 		<Indent/><String>RETURN NIL</String><CR/>
 		<String>END </String><Arg nr="0"/><String>;</String><CR/>
 	</Macro>
 	<Macro key="M">
-		<String>MODULE </String><Arg nr="0"/><String>;</String><CR/>
+		<String>MODULE </String><Arg nr="0"/><String>; (** AUTHOR ""; PURPOSE ""; *)</String><CR/>
 		<CR/>
 		<String>IMPORT</String><CR/>
 		<Indent/><Cursor/><CR/>
 		<CR/>
+		<String>END </String><Arg nr="0"/><String>.</String><CR/>
+	</Macro>
+	<Macro key="mc">
+		<String>MODULE </String><Arg nr="0"/><String>; (** AUTHOR ""; PURPOSE ""; *)</String><CR/>
+		<CR/>
+		<String>IMPORT</String><CR/>
+		<Indent/><String>AosModules;</String><Cursor/><CR/>
+		<CR/>
+		<String>PROCEDURE Cleanup;</String><CR/>
+		<String>BEGIN</String><CR/>
+		<String>END Cleanup;</String><CR/><CR/>
+		<String>BEGIN</String><CR/>
+		<Indent/><String>AosModules.InstallTermHandler(Cleanup)</String><CR/>
 		<String>END </String><Arg nr="0"/><String>.</String><CR/>
 	</Macro>
 	<Macro key="doc">
@@ -48,6 +81,14 @@
 		<Indent/><String>VAR </String><Cursor/><CR/>
 		<Indent/><Indent/><CR/>
 		<Indent/><String>END </String><Arg nr="0"/><String>;</String><CR/>
+	</Macro>
+	<Macro key="oa">
+		<Arg nr="0"/><String> = OBJECT</String><CR/>
+		<String>VAR </String><Cursor/><CR/>
+		<Indent/><Indent/><CR/>
+		<String>BEGIN {ACTIVE}</String><CR/>
+		<Indent/><CR/>
+		<String>END </String><Arg nr="0"/><String>;</String><CR/>
 	</Macro>
 	<Macro key="o">
 		<String>TYPE </String><Arg nr="0"/><String> = OBJECT(</String><Arg nr="1"/><String>)</String><CR/>
