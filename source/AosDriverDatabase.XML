@@ -21,7 +21,11 @@
 		<vendor id="1022" name="AMD">
 			<device id="2000"	name="79C970 Ethernet Controller"	revision="all"	flags=""> AosAM79C970.Install;AosInitNet.Init </device>
 		</vendor>
-		<vendor id="1073" name="Yahama">
+		<vendor id="1073" name="Yamaha">
+			<device id="0004"	name="YMF724"		revision="all"	flags=""> AosYMF754.Install </device>
+			<device id="000A"	name="YMF740"		revision="all"	flags=""> AosYMF754.Install </device>
+			<device id="000C"	name="YMF740C"		revision="all"	flags=""> AosYMF754.Install </device>
+			<device id="000D"	name="YMF724F"		revision="all"	flags=""> AosYMF754.Install </device>
 			<device id="0010"	name="YMF744"		revision="all"	flags=""> AosYMF754.Install </device>
 			<device id="0012"	name="YMF754"		revision="all"	flags=""> AosYMF754.Install </device>
 		</vendor>
