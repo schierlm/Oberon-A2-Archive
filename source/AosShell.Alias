@@ -1,0 +1,15 @@
+reboot=S.Reboot
+free=S.Free
+freeall=S.FreeDownTo
+whoimports=S.WhoImports
+pc=PC0.Compile
+gc=S.CollectGarbage
+kill=S.Kill
+isloaded=S.IsLoaded
+modules=AosInfo.Modules
+plugins=AosInfo.Plugins
+extract=AosTar.Extract
+create=AosTar.Create
+ls=AosFSTools.Directory
+cp=AosFSTools.CopyFiles
+rn=AosFSTools.RenameFiles
