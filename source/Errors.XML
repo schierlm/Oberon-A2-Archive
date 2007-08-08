@@ -337,5 +337,6 @@
 	<Error code="910">for loop variable set</Error>
 	<Error code="911">implied type guard in record assignment</Error>
 	<Error code="912">call might depend on evaluation sequence of params</Error>
-	<Error code="913">parameter never used</Error>	
+	<Error code="913">parameter never used</Error>
+	<Error code="914">has same name as inherited field</Error>
 </Errors>
