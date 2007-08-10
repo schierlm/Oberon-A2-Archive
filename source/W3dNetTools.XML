@@ -1,9 +1,9 @@
 <Cluster>
 	<Layer>
 		<Line>
-			<SymbolBox title="Home" cmd="W3dMenu.Open W3dMenu.XML" img="iconhome.bmp" />
-			<ImgBox cmd="NetTracker.Open 100" img="networktracker.bmp" />
-			<SymbolBox title="VNC" cmd="AosVNC.Open" img="iconvnc.bmp" />
+			<SymbolBox title="Home" cmd="W3dMenu.Open W3dMenu.XML" img="W3dMenuIcons.tar://iconhome.bmp" />
+			<ImgBox cmd="NetTracker.Open 100" img="W3dMenuIcons.tar://networktracker.bmp" />
+			<SymbolBox title="VNC" cmd="AosVNC.Open" img="W3dMenuIcons.tar://iconvnc.bmp" />
 		</Line>
 		<Line>
 			<SymbolBox title="Start Testserver" cmd="AosTestServer.Open" img="" />
