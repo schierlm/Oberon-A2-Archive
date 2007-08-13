@@ -310,7 +310,7 @@
 	<Error code="503">number to large</Error>
 	<Error code="504">max one segment override allowed</Error>
 	<Error code="505">register expected</Error>
-	<Error code="506">32-Bit register expecte</Error>
+	<Error code="506">32-Bit register expected</Error>
 	<Error code="507">"[" expected</Error>
 	<Error code="508">scale factor expected (2, 4, 8)</Error>
 	<Error code="509">index already defined</Error>
@@ -323,6 +323,21 @@
 	<Error code="516">no target specified</Error>
 	<Error code="517">access to non-local variables not allowed in exported inlined procedure</Error>
 	<Error code="518">inlined procedure: procedure activation frame does not exist</Error>
+
+<!-- incorrect use of AMD64 Assembly Language -->	
+	<Error code="550">target specifier exptected</Error>
+	<Error code="551">identifier expected</Error>
+	<Error code="552">unsupported target specifier</Error>
+	<Error code="553">invalid segment size</Error>
+	<Error code="554">undefined symbol</Error>
+	<Error code="555">parse error in expression</Error>
+	<Error code="556">invalid effective address</Error>
+	<Error code="557">invalid combination of opcode and operands</Error>
+	<Error code="558">invalid instruction for current target</Error>
+	<Error code="559">value exceeds bounds</Error>
+	<Error code="560">invalid use of symbol</Error>
+	<Error code="561">negative TIMES value</Error>
+	<Error code="562">invalid register size specification</Error>
 	
 <!-- Analyzer Warnings -->
 	<Error code="900">never used</Error>
