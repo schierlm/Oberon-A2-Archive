@@ -301,6 +301,7 @@
 	<Error code="311">dynamic array deep copy</Error>
 	<Error code="312">implicit reference to heap object via VAR</Error>
 	<Error code="313">no RETURN in function</Error>
+	<Error code="314">AWAIT statement not in EXCLUSIVE block</Error>
 
 <!-- incorrect use of i80386 Assembly Language -->	
 	<Error code="500">undeclared identifier</Error>
@@ -339,4 +340,5 @@
 	<Error code="912">call might depend on evaluation sequence of params</Error>
 	<Error code="913">parameter never used</Error>
 	<Error code="914">has same name as inherited field</Error>
+	<Error code="915">exported but not visible outside module</Error>
 </Errors>
