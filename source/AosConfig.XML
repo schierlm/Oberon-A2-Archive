@@ -47,6 +47,7 @@ To update: AosConfig.Init ~
 				<Setting name="FatFS" value="AosFATVolumes.New;AosFATFiles.NewFS"/>
 				<Setting name="IsoFS" value="AosISO9660Volumes.New;AosISO9660Files.NewFS"/>
 				<Setting name="ZipFS" value="NIL;AosZipFS.NewFS"/>
+				<Setting name="WinRelFS" value="NIL;Win32RelFS.NewFS" />
 			</Section>
 		</Section>
 		

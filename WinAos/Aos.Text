@@ -4,7 +4,7 @@ Paths.Search="Work;ObjE;Src;Src/vyants;Aos;../source;Doc.vy.ants"
 Paths.Work="Work"
 Defaults.Extension=".Obw"
 oberon="OberonExternal.Text"
-cmd="SEQ Oberon.DoStart"
+cmd="SEQ Oberon.DoStart;AosFSTools.Mount WORK WinRelFS ./"
 ~
 ; external, starting with Bluebottle
 AlternateConfig = "myAos.config"
@@ -12,7 +12,7 @@ Paths.Search="Work;ObjE;Src;Src/vyants;Aos;../source;Doc.vy.ants"
 Paths.Work="Work"
 Defaults.Extension=".Obw"
 oberon="OberonExternal.Text"
-cmd="SEQ Win32AosDisplay.Install Fullscreen;WindowManager.Install;Autostart.Run"
+cmd="SEQ Win32AosDisplay.Install Fullscreen;WindowManager.Install;Autostart.Run;AosFSTools.Mount WORK WinRelFS ./"
 ~
 ; internal
 AlternateConfig = "myAos.config"
@@ -20,7 +20,7 @@ Paths.Search="Work;ObjI;Src;Src/vyants;Aos;../source;Doc.vy.ants"
 Paths.Work="Work"
 Defaults.Extension=".Obw"
 oberon="Oberon.Text"
-cmd="SEQ Win32AosDisplay.Install Fullscreen;WindowManager.Install;Autostart.Run"
+cmd="SEQ Win32AosDisplay.Install Fullscreen;WindowManager.Install;Autostart.Run;AosFSTools.Mount WORK WinRelFS ./"
 ~
 
 
