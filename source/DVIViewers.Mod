@@ -646,7 +646,7 @@ VAR
    END AddMaskRect;
    
    PROCEDURE DoRestore(F: Frame);
-   VAR col: SHORTINT; f: DVIFiles.File; inch: LONGREAL;
+   VAR f: DVIFiles.File; inch: LONGREAL;
       PROCEDURE PrinterToDVIUnits(x:LONGREAL): LONGREAL;
       BEGIN
          RETURN 1.0D7/f.num/f.mag*f.den*x*Printer.Unit/36000.0;

@@ -10,8 +10,7 @@ CONST
 
    PROCEDURE Load(D: Documents.Document);
    VAR
-      view: Objects.Object; tag: INTEGER;
-      name: ARRAY 128 OF CHAR; F: Files.File; R: Files.Rider;
+      view: Objects.Object;
    BEGIN
       view:= Gadgets.CreateViewModel("DVIViewers.New","DVIFiles.New");
       Attributes.SetString(view,"Name","DVIViewer");
