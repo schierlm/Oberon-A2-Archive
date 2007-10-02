@@ -3,7 +3,7 @@ MODULE DVIDocs;
     by the typesetting-system TeX.
     Usage: Desktops.OpenDoc test.dvi(DVIDocs.NewDoc)~
     to open file "test.dvi". **)
-IMPORT Attributes, Desktops, Documents, Files,
+IMPORT Attributes, Desktops, Documents,
    Gadgets, Links, Objects, Out, DVIFiles, DVIViewers, Oberon;
 CONST
    Version* = 100; (** version 1.00 **)
