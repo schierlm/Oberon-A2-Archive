@@ -357,4 +357,5 @@
 	<Error code="914">has same name as inherited field</Error>
 	<Error code="915">exported but not visible outside module</Error>
 	<Error code="916">empty formal parameter list</Error>
+	<Error code="917">parameter not modified: prefer CONST parameter</Error>
 </Errors>
