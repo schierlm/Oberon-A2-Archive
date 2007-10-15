@@ -25,6 +25,9 @@ cmd="SEQ Win32AosDisplay.Install Fullscreen;WindowManager.Install;Autostart.Run;
 
 
 
+
+
+
 note: spaces in cmd indicate parameters, do not use spaces between commands
 "SEQ Oberon.DoStart; WinConsole.Open" does not work.
 Also do not use spaces at the command prompt.
