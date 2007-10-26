@@ -3,7 +3,7 @@ MODULE DVIFiles;
     typesetting-system TeX.  The module exports a model gadget
     of type File which loads a dvi-file and provides viewer-gadgets
     with pages. **)
-IMPORT Files, Objects, Gadgets, Out, Strings;
+IMPORT Files, Objects := ObjectBase, Gadgets, Out, Strings;
 CONST
    Version* = 100; (** version 1.00 **)
 TYPE
