@@ -212,8 +212,8 @@ To update: AosConfig.Init ~
 			<Setting name="text" value="Notepad.OpenAuto"/>
 			<Setting name="txt" value="Notepad.OpenAuto"/>
 			<Setting name="tool" value="PET.Open"/>
-			<Setting name="xml" value="PET.Open"/>
 			<Setting name="wav" value="WMPlayer.Open"/>			
+			<Setting name="xml" value="PET.Open"/>
 		</Section>
 		
 	<!-- Net Configuration Example -->
