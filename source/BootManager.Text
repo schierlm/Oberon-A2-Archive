@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?bluebottle format version="0.1" ?>
+<?xml-stylesheet type="text/xsl" href="http://bluebottle.ethz.ch/bluebottle.xsl" ?>
+<Text>
+<Span style="Assertion"><![CDATA[The Bluebottle Boot Manager - Oct. 31, 2007
+------------------------]]></Span><Span style="Normal"><![CDATA[
+
+]]></Span><Span style="Bold"><![CDATA[
+Brief introduction to the theory of the boot mechanism
+]]></Span><Span style="Normal"><![CDATA[
+]]></Span><Paragraph style="AdHoc 0 0 0 0 0 0"><Span style="Normal"><![CDATA[Starting an operating system can be seen as a sequence of three different processess.
+
+A machine-centered process: BIOS locates a bootable volume
+
+	When a computer is turned on, the computer's BIOS finds the primary bootable device (usually the computer's hard disk)
+	and transfers control to the Master Boot Record (MBR), the first sector (512 bytes) of the boot volume.
+	Note that the somewhat more general term "volume" is preferred to "hard disk" or "device".
+	Knowingly, AMI, Asus, Award, Gigabyte, Intel, Phoenix and other BIOSes, etc. behave differently and exist in many versions,
+	thus adding some difficulty to the construction of this boot manager, mostly due to the different USB support levels.
+
+A boot manager-centered process: the user selects a partition to boot into
+
+	The MBR contains the Bluebottle Stage 1. Given the small size of the MBR, Stage 1 does little more than load the Stage 2
+	located in the first volume track, immediately following the MBR (see section 1 below).
+
+	When Stage 2 receives control, it presents a textual menu to the user in order to select an operating system to boot.
+	It can also be set to automatically load a particular operating system after a timeout period.
+
+	The conventional way to start an operating system is by loading and executing the corresponding partition boot record (PBR).
+	The alternative offered by this boot manager is to load and execute the MBR of a volume just as if it was the boot volume.
+
+An OS-centered process: the OS-specific bootloader locates the kernel and loads it.
+More specifically, Bluebottle installs a kernel matching the characteristics of the boot volume, that is:
+    - AosIDE.Bin on a ATA mass storage device
+    - AosUSB.Bin on a USB flash drive 
+]]></Span></Paragraph><Span style="Normal"><![CDATA[
+]]></Span><Span style="Bold"><![CDATA[Summary
+]]></Span><Span style="Normal"><![CDATA[
+Non-invasive multiple multi-boot manager designed to control up to 12 partitions on each of a possible 8 volumes attached.
+Combines ease of use in daily routine work and very technical inspection of machine equipment and volume control in connexion
+with ubiquitous external USB storage devices.
+
+]]></Span><Span style="Bold"><![CDATA[Detail of features]]></Span><Span style="Normal"><![CDATA[
+
+The Bluebottle boot manager is designed to operate with a legacy MBR and not with the proposed Intel EFI standard.
+
+]]></Span><Span style="Bold"><![CDATA[1. Physical location on a given volume]]></Span><Span style="Normal"><![CDATA[
+	It comprises a legacy MBR at LBA=0 and a small number of sectors located in the remaining space of "track 0".
+	The sectors in that range are usually left unused and filled with 0s, unless a third party boot manager is already installed.
+	"Track" is related to the physical organization of a volume as it used to exist earlier. Today the number of sectors per track
+	is a logical value.
+	
+	The first partition is normally created and formatted during the installation of an operating system which fixes the first LBA used.
+	In many cases, the OS is preinstalled. The first LBA used varies with the volume geometry, more precisely the number of sectors per track.
+	The following values can be observed as first used LBA:
+		LBA = 2048 on large capacity HD, with Windows Vista installed for example
+		LBA = 63 is standard for USB and HD volumes < 100 GB
+		LBA = 32 on a CD-ROM FDD emulation (see next section)
+		LBA = 16 on a 32MB Disk on module
+		
+	At present, 13 sectors are occupied by code and data.
+
+]]></Span><Span style="Bold"><![CDATA[2. Volumes on which it can be installed]]></Span><Span style="Normal"><![CDATA[
+	It can be installed and exploited on any of the volumes, internal or external, fixed or removable, of a PC.
+	This has been tested with a wide range of media: 3.5" floppy diskette (USB-FDD only), 2.5" anf 3.5" HDD (P-ATA and S-ATA),
+	CD-ROM emulating a FDD (burned with Bluebottle or Nero) , USB flash memory (SD, CF), Disk on module IDE and
+	USB-ZIP (tested with Iomega ZIP 100MB only).
+	The boot manager can be installed on its own, without any partitioning or operating system installed on a volume, as can be understood
+	from the listed floppy diskette with an extremely small 1.4MB capacity.
+	It is very generic and since it can be installed on multiple volumes of the same machine it qualifies as multi multiboot manager.
+
+	Each of volume on which it is installed, provided it is accessible/bootable by the BIOS, can take control of the machine
+	for the purpose of starting a particular operating system. Evidently, the device priority sequence in BIOS setup
+	will have defined which volume to boot first and 	the order in which they will be accessed.
+	
+	Volume hosting a Bluebottle partition
+	------------------------------
+	Bluebottle has a very small footprint which means that one will
+		either find several Bluebottle partitions, possibly co-existing with other OSes, on a sizeable volume
+		or a single partition on a modest size volume - from a minimum of 62MB and up.
+	In the latter case, a USB-HDD flash memory (USB stick) is the ideal storage medium to host the entire operating system
+	with its applications. No need to drag an unwieldy personal computer to the office or on business trip.
+	Just plug the stick to a personal computer and start Bluebottle.
+	Given the fast data transfer, high capacity and other technological gains, USB flash drives (UFD) enjouy an increasing popularity.
+	As long as the BIOS supports booting from USB, one can take over the machine without ever accessing (writing!) the
+	internal storage. If booting from USB is not possible (e.g. an old BIOS would prohibit it), boot from a CD-ROM or a USB-FDD
+	to bootstrap on the USB device.
+
+	BIOS volume detection and enumeration
+	---------------------------------
+	While under control of the Boot manager, USB devices are conditioned by the BIOS which detects and enumerates them.
+	See "Compaq, Intel, Phoenix BIOS Boot Specification 1.1". In this respect, BIOS demonstrate an unfriendly behavior,
+	since the volume enumeration depends on the boot volume.
+
+	The volumes are listed left to right and two groups are discernable:
+		HDDs identified as 80h, 81h, 82h, ... - traditional "fixed" disks and now including removable media devices
+			that support change-line
+		FDD identified as 00h - traditional "removable" disk (CD-ROM, USB-FDD, USB-ZIP). Only one is taken into account.
+	The boot volume appears always first and its type (HDD or FDD) determines which of the two groups is listed first.
+	A maximum of 8 volumes can be controlled simultaneously. This is an important design consideration in a time where
+	a large number of external USB storage devices, inexpensive and ubiquitous, can be attached to a PC (see section 3).
+
+	Booting from CD-ROM (FDD emulated)
+		BIOS identifies the boot volume as 00h, futher FDDs are ignored, followed by ATA HDDs and USB-HDDs
+		come last.
+
+	Booting from USB-FDD
+		A floppy diskette can only be used when loaded into a USB-FDD. Considering that PCs are nowadays rarely equipped
+		with a legacy FDD, these devices are no longer supported and simply ignored.
+		It is not even necessary to disable them in the BIOS setup.
+		Enabling an FDD might be needed only temporarily to install the boot manager on a floppy diskette (see section 4.3)
+		for use on a USB-FDD.
+
+	Booting from internal P-ATA HDD
+		BIOS identifies the boot volume as 80h, then come the remaining ATA HDDs, followed by USB-HDDs.
+
+	Booting from external USB-HDD or USB-ZIP
+		BIOS identifies the boot volume as 80h, then come the ATA HDDs and USB-HDDs come last. The latter are marked n.a.
+		as non-accessible (no explanation for this situation, where BIOS returns a correct count but cannot access them).
+
+	When a high speed USB 2.0 device is attached to an USB 2.0 hub, this device is supported in USB 1.1 speed - 12MB/s.
+	Only later, when the operating system installs the driver, the high-speed data transfer will be established.
+	The speed difference can be observed on a Disk2go device which signals a 12MB/s speed with a green LED, lit
+	in red at high speed.
+
+	BIOS boot volume order controlled by setup
+	-----------------------------------
+	Depending on the BIOS, the setup is invoked by pressing DEL, PF2 or PF1. The boot volume order can be changed.
+	While modifying the setup, remember to disable the FDDs and if "Plug and play OS" is offered for choice, use "No".
+	Alternatively, the BIOS setup can be circumvented by invoking the BIOS boot menu
+	(usually by pressing ESC or PF8 at system start, depending on the BIOS).
+
+	Support for large volume size
+	-----------------------
+	The LBA addressing scheme is used with 32 bits reserved in each partition table entry. Given a sector size of 512 bytes,
+	a volume of up to 2'048GB can be addressed. The boot manager can also operate using the CHS addressing scheme by mapping
+	LBAs to their CHS equivalent. Testing for the presence of the extended INT 13h support indicates whether mapping
+	is required or not. The volume size is limited to 8GB when the CHS addressing scheme is used (with a 24-bit address).
+]]></Span><Span style="Bold"><![CDATA[
+3. Independent from the host operating system]]></Span><Span style="Normal"><![CDATA[
+	When an external volume is attached to a USB port for example, and provided the host machine is capable of booting
+	from it, then neither the host operating system nor a possible local boot manager play a role. The boot manager on the volume
+	can take full control of the resident partitions and in addition it can to some extent perform just as the host boot manager.
+	When that is not possible, it allows to transfer control to the local boot manager without otherwise interfering and without
+	a need to reboot. The Bluebottle boot manager is ]]></Span><Span style="Highlight"><![CDATA[cooperative and non-invasive]]></Span><Span style="Normal"><![CDATA[ ]]></Span><Span style="Lock"><![CDATA[(see section 5).
+]]></Span><Span style="Normal"><![CDATA[	
+	On the other hand, one may quite well include a Bluebottle in the boot menu of some third party OS such as Windows Vista.
+	This might reveal itself as tedious task (bcdedit.exe) without resorting to add-on applications (such EasyBCD)),
+	and not necessarily desired when Bluebottle resides on an external volume.
+
+]]></Span><Span style="Bold"><![CDATA[4. User guidance
+]]></Span><Span style="Normal"><![CDATA[	It guides a user
+		- daily to start the preferred operating system
+		- daily to select and start an operating system among several, may be different ones, installed
+		- at times to recover an operating system rendered inaccessible by a volume master boot record damage
+		- at times to inspect the machine equipment and decide if it is apt to run Bluebottle (when considering a purchase for example).
+		   When purchasing a new machine, verify that it allows booting from USB, a very useful and recommendable capability indeed.
+		   See also section 5.
+
+	Whenever it is started, the boot manager reports the CPU characteristics:
+		- CPU type: Intel, AMD, Via (formally IDT/Centaur) or other
+			Note: it was tested will a small sample of CPUs only.
+		- speed
+		- width (32 or 64-bit)
+		- hyperthreading or not
+		- number or cores, logical processors, threads
+	
+	On request it also displays
+		- a list of the installed PCI devices (enter "i" in response to the prompt)
+		- a list of VBE VESA modes supported by the graphic controller (enter "v" in response to the prompt).
+		   Bluebottle requires the availability of a VESA mode using a linear frame buffer. A list of suitable modes is produced
+		   where the modes appear as 3-digit green values. Such a value is an important parameter of the configuration data.
+
+	On a follow up line, a list of all the volumes detected by the BIOS appears. The boot volume always comes first (section 2).
+	In addition, the partition table, if any, of that volume is inspected and a list of all the residing partitions is displayed.
+	From there, a suitable partition can be selected to start an operating system, provided it is correctly installed.
+	Else, another volume, if any, can be selected and the same process of partition table inspection is repeated for it.
+	The volumes are selected by entering "n" for "next" or "p" for "previous". The volume currently selected is underscored
+	by a string of special characters on the next line.
+	 
+	For each volume accessed, the type of Master Boot Record (MBR) (Bluebottle or Foreign MBR) is displayed,
+	thus telling where it can otherwise be invoked by responding with 's' to the prompt text.
+	Therefore, it is not necessary to install the Bluebottle boot manager on all volumes. Other existing MBRs and
+	boot managers can still be invoked and are fully operational.
+
+]]></Span><Span style="Bold"><![CDATA[5. OS it can start]]></Span><Span style="Normal"><![CDATA[
+	It can start an operating system located
+		- on the volume where it is located and
+		- on another volume.
+	The GUI allows to choose a volume and to choose which PBR to activate, irrespective of a boot sequence as is usually defined
+	in other similar systems. The PBR is accessed in the same fashion as the BIOS in cooperation with the MBR would otherwise.
+	
+	A ]]></Span><Span style="Bold"><![CDATA[maximum of 12 partitions]]></Span><Span style="Normal"><![CDATA[ can be listed per volume selected. Keep in mind that an extended partition cannot be accessed
+	but will appear in the list.
+	
+	Let us assume that a USB-HDD with an installed bootable Bluebottle is plugged into a machine which cannot boot from
+	USB, then it is still possible to boot from a CD-ROM and so to start the Bluebottle on USB. No alteration of the nachine
+	in use is required except the boot sequence.
+
+	Compatible with all Windows versions.
+	Compatible with x64 (AMD62/EM64T) and Windows 64-bit (non-GPT).
+
+	Last but not least, the boot manager on any volume can be used to start an operating system residing on another volume
+	which cannot be booted anymore in case of a corrupted MBR.
+	
+]]></Span><Span style="Bold"><![CDATA[6. No special partition required]]></Span><Span style="Normal"><![CDATA[
+	It does neither occupy a partition nor is it placed within a partition (see section 1)
+
+]]></Span><Span style="Bold"><![CDATA[7. User friendliness]]></Span><Span style="Normal"><![CDATA[
+	It gracefully memorizes, in one of its sectors, the volume and partition finally selected to start the desired OS.
+	However, in the case of a CD-ROM or FD no such memorization will take place, either for an obvious reason
+	or for a FD because it can only be used to fire an OS on a any machine and no more.
+	
+	The next time the machine is started, the corresponding OS is automatically started without user intervention.
+	If by chance, the user wishes to start another OS, setting ScrollLock at the beginning of the IPL sequence halts
+	the process and a new prompt text is presented for selecting other options.
+
+	When a boot manager is freshly installed, the default volume and partition are unknown and the boot manager
+	will necessarily halt for interaction with the user.
+
+]]></Span><Span style="Bold"><![CDATA[8. No "active" partition concept]]></Span><Span style="Normal"><![CDATA[
+	It allows starting an OS, by a boot chaining mechanism, without relying on the detection of an "active" partition
+	(not even a Windows partition).
+
+]]></Span><Span style="Bold"><![CDATA[How to create, install and start the boot manager
+----------------------------------------
+]]></Span><Span style="Normal"><![CDATA[
+]]></Span><Span style="Bold"><![CDATA[1. Write the assembler code]]></Span><Span style="Normal"><![CDATA[
+	Written in tasm code, to operate in real-mode. Receives control from a legacy BIOS with the following interface:
+	- the MBR is loaded at address 7c00h
+	- the register dl contains the boot volume identifier. It will be either 0 when booting from a CD-ROM or FD
+		or 80h for a partitioned volume.
+
+	A dual interface is used between the boot manager and the code it calls:
+		- either it transfers control to a PBR (the first sector) of a bootable partition
+		- or it transfers control to an MBR in another volume (so general that it can transfer to itself).
+	
+]]></Span><Span style="Bold"><![CDATA[2. Assemble the code]]></Span><Span style="Normal"><![CDATA[
+
+2.1 In Oberon, transform the Oberon text to pure ASCII, in preparation of a DOS processing, with
+		Miscellaneous.MakeDOSText TCGBootMan.Asm => TCGBootMan.ASC ~
+2.2 In DOS:
+	a - compile the source text *.ASC with Turbo Assembler tasm
+	b - link the output module with tlink /Tde filename.obj
+	c - transform the output to a .COM file using
+       	EXECOM TCGBOOTM.EXE TCGBOOTM.COM
+2.3 In Oberon, read the .COM file Backup.ReadFiles TCGBOOTM.COM ~
+
+]]></Span><Span style="Bold"><![CDATA[3. Produce the installation data]]></Span><Span style="Normal"><![CDATA[
+
+3.1 For a partitioned volume, in Oberon, execute Aos.Call TCGSplit.Split 12 ~
+	to split the .COM file into one record which will become BM.Bin to place in the MBR
+	and 12 records which will become Rec1.Bin to place in the sectors with LBA 1 to 12.
+
+3.2 For a FD, the .COM file obtained in step 2 can be used as is without further ado (go to 4.3).
+
+3.3 ISO image file for burning a bootable CD-ROM
+
+	The same process as is found in Aos.Tool (in Oberon) for creating a new release is used. In Oberon, execute these commands
+	
+	Configuration.DoCommands
+	OFSTools.Mount SYS RamFS 200000 4096 ~ 
+	System.DeleteFiles AOS:AosCD.iso ~
+	FileDisks.Open SYS:AosCD.Dsk 600 80 2 18 ~ 
+	Partitions.Format SYS:AosCD.Dsk#0 AosFS 0 NullRec.Bin ~ (boot file reserve size must be multiple of 4)
+	Partitions.FileToPartition SYS:AosCD.Dsk#0 TCGBOOTM.COM 0 13
+	FileDisks.Close SYS:AosCD.Dsk ~
+	Aos.Call \w IsoImages.Make AOS:AosCD.iso SYS:AosCD.Dsk ~
+	OFSTools.Unmount SYS
+	~ 
+	NullRec.Bin takes the place of AosIDE.Bin or some other kernel.
+
+]]></Span><Span style="Bold"><![CDATA[4. Install the boot manager]]></Span><Span style="Normal"><![CDATA[
+
+4.1 Planning the installation
+	If a volume is in use already with a number of operating systems, one should plan first
+	- to gather information on the current volume organization: volume size, number of partitions,
+	   operating system types, presence of boot manager.
+	   All this is easily done with the Bluebottle Partitions tool: follow Main menu > Files > Partitions
+	   or with the Oberon Partitions.Tool: execute Partitions.Show detail ~
+	- to backup the current volume MBR
+	   Done with the Bluebottle Partitions tool as above, then selecting "ToFile"
+	   or with the Oberon Partitions.Tool: execute Partitions.PartitionToFile dev#0 MBRBackup.Bin 0 1 ~
+	   This file can be inspected by executing: Hex.Open MBRBackup.Bin ~
+
+	In case of trouble, the MBRBackup.Bin file can be restored by executing:
+		Partitions.WriteMBR dev#0 MBRBackup.Bin ~
+
+4.2 On a partitioned volume execute, in Oberon:
+		Partitions.WriteMBR dev#0 BM.Bin ~
+		Partitions.FileToPartition dev#0 Rec1.Bin 1 12 ~
+
+4.3 On a floppy diskette
+	Insert a DOS formatted FD in the FDD and execute, in Oberon:
+		Diskettes.Install ~
+		Partitions.FileToPartition Diskette0#0 TCGBOOTM.COM 0 13 ~ (13 = 1 MBR + 12 blocks)
+
+4.4 On a bootable CD-ROM
+	On the Main menu follow > Files > CDRecorder > Tools > Burn Iso Image
+	Then browse to locate AosCD.iso to burn a new CD-ROM.
+	One may also use a third-party software such as Nero for example.
+
+]]></Span><Span style="Bold"><![CDATA[5. Start the boot manager]]></Span><Span style="Normal"><![CDATA[
+	Start the PC and directed it (via BIOS set-up or boot menu) to boot from the volume where it resides.
+	A textual user interface described in section 4 appears.
+
+]]></Span><Span style="Bold"><![CDATA[6. What happens to a Bluebottle boot manager when a new operating system is installed]]></Span><Span style="Normal"><![CDATA[?
+	If another operating system is installed or re-installed which overwrites/replaces the MBR for its own purpose,
+	the Bluebottle MBR can 	easily be restored. For example, a Windows install effectively replaces the MBR.
+	Consequently, before re-installing a Bluebottle MBR user handling is required to guarantee the integrity of Windows,
+	or else the Windows install will have failed.
+
+]]></Span><Span style="Bold"><![CDATA[7. How to restore the original MBR of an operating system]]></Span><Span style="Normal"><![CDATA[
+	In Oberon, execute Partitions.WriteMBR dev#0 MBRBackup.Bin ~
+
+]]></Span><Span style="Bold"><![CDATA[8. How to access other volumes when Bluebottle is started]]></Span><Span style="Normal"><![CDATA[
+	Usually, Bluebottle is configured to include the disk driver for the volume it resides on, that is, the kernel
+	used is either AosIDE.Bin or AosUSB.Bin . Thus make sure to install another driver when needed. The commands are
+	 - AosATADisks.Install
+	 - AosUsbHubDriver.Install followed by AosUsbUhci.Install
+
+
+]]></Span><Span style="Bold"><![CDATA[Comparison with other similar products
+-------------------------------]]></Span><Span style="Normal"><![CDATA[__
+
+Other boot managers are installed as follows:
+	- in a special partition, a primary partition occupying one entry of the 4 possible ones in the partition table.
+	- in the Windows partition itself (Vista and others)
+	- in same manner as the Bluebottle one, starting at LBA=0 and the following sectors within the limit of the first cylinder.
+	    GRUB is an example.
+
+Windows Vista boot manager
+------------------------
+
+That boot manager resides in the Vista partition and if the BB boot manager succeeds to access the Vista PBR
+the Vista boot menu will be presented.
+
+Vista requires that the Windows partition remain active in order to boot. That is not required by the BB BM.
+
+Vista requires that the Vista boot loader be present in the MBR in order to boot else it will refuse to boot saying that winload.exe is corrupt.
+This is because Vista's boot loader checks for a disk signature in the MBR. That is not the case with the BB BM provide the disk signature
+of the volume is noted first and written in the BM MBR at the offset 1b8h (4 bytes).
+
+
+Vista requires that the Windows partition remain active in order to boot.
+Vista requires that the Vista bootloader be present in the MBR in order to boot. If you put any other bootloader in the MBR (like Grub stage1), Vista will refuse to boot saying that winload.exe is corrupt. This is because Vistas loader checks for a disk signature in the MBR! More info is available here: http://www.windowsbbs.com/showthread.php?t=55415. Microsoft talks about it in a whitepaper giving some weird reasons: http://www.google.co.in/search?q=OEMBoot_Vista.
+
+GRUB (tested together with Ubuntu)
+----
+
+Notes collected from test
+GRUB is stored in sectors LBA=0 to 16. LBAs 17 to 63 contain all zeroes, except LBA 17.
+No idea yet if 17 contains something of interest to GRUB.
+
+LILO (tested together with Mandriva Spring 2007)
+---
+
+Boot-US
+-------
+
+Boot-US installs itself at the beginning of a volume, that is, replaces the MBR by its own and occupies a number
+of sectors immediately above, where a variable number of sectors is available in front of the first partition.
+It thus behaves just like the Bluebottle boot manager with which it cannot coexist.
+
+AFAIK Boot-US alters the partition boot record in such a manner that the Bluebottle boot manager cannot
+simply transfer control to an MBR for starting the residing OS. It will fail.
+
+BootIt NG - http://www.terabyteunlimited.com
+--------
+
+
+External links
+-----------
+Boot From Flash Drive - "http:/www.usb-flash-drives-now.com/cheaper/Boot-From-Flash-Drive.html"]]></Span>
+
+</Text>
