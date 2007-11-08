@@ -47,7 +47,7 @@ To update: AosConfig.Init ~
 				<Setting name="FatFS" value="AosFATVolumes.New;AosFATFiles.NewFS"/>
 				<Setting name="IsoFS" value="AosISO9660Volumes.New;AosISO9660Files.NewFS"/>
 				<Setting name="ZipFS" value="NIL;AosZipFS.NewFS"/>
-				<Setting name="WinRelFS" value="NIL;Win32RelFS.NewFS" />
+				<Setting name="WinRelFS" value="NIL;Win32RelFS.NewFS"/>
 			</Section>
 		</Section>
 		
@@ -188,6 +188,7 @@ To update: AosConfig.Init ~
 		
 		<Section name="Filehandlers">
 		<!-- use lower case for extensions, sort lexographically -->
+			
 			<Setting name="avi" value="WMPlayer.Open"/>
 			<Setting name="bak" value="PET.Open"/>
 			<Setting name="bmp" value="WMPicView.Open"/>
@@ -212,7 +213,7 @@ To update: AosConfig.Init ~
 			<Setting name="text" value="Notepad.OpenAuto"/>
 			<Setting name="txt" value="Notepad.OpenAuto"/>
 			<Setting name="tool" value="PET.Open"/>
-			<Setting name="wav" value="WMPlayer.Open"/>			
+			<Setting name="wav" value="WMPlayer.Open"/>
 			<Setting name="xml" value="PET.Open"/>
 		</Section>
 		
@@ -269,6 +270,23 @@ To update: AosConfig.Init ~
 	<!-- Applications -->
 		
 		<Section name="Applications">
+		
+			<Section name="PET">
+				<Section name="General">
+					<Setting name="BackupOnStore" value="TRUE"/>
+				</Section>
+				<Section name="Diff">
+					<Setting name="Command" value="WMDiff.Open"/>
+					<Setting name="Prefix" value=""/>
+					<Setting name="Suffix" value=".Bak"/>
+				</Section>
+				<Section name="Search">
+					<Setting name="Wrap" value="FALSE"/>
+					<Setting name="HighlightAll" value="FALSE"/>
+					<Setting name="CaseSensitive" value="TRUE"/>
+				</Section>
+			</Section>
+			
 			<Section name="WMV24Component">
 				<Setting name="WindowStartupSize" value="800x400"/>
 				<Setting name="IndicateKeyboardFocus" value="TRUE"/>
