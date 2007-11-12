@@ -63,13 +63,13 @@
 		<String>MODULE </String><Arg nr="0"/><String>; (** AUTHOR ""; PURPOSE ""; *)</String><CR/>
 		<CR/>
 		<String>IMPORT</String><CR/>
-		<Indent/><String>AosModules;</String><Cursor/><CR/>
+		<Indent/><String>Modules;</String><Cursor/><CR/>
 		<CR/>
 		<String>PROCEDURE Cleanup;</String><CR/>
 		<String>BEGIN</String><CR/>
 		<String>END Cleanup;</String><CR/><CR/>
 		<String>BEGIN</String><CR/>
-		<Indent/><String>AosModules.InstallTermHandler(Cleanup)</String><CR/>
+		<Indent/><String>Modules.InstallTermHandler(Cleanup)</String><CR/>
 		<String>END </String><Arg nr="0"/><String>.</String><CR/>
 	</Macro>
 	<Macro key="doc">
