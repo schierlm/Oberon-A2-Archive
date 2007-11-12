@@ -465,7 +465,7 @@
 		</Properties><SystemCommand>
 			<Properties>
 				<ID>X</ID>
-				<CommandString>AosDecoder.Open AosBoot.Obx</CommandString>
+				<CommandString>AosDecoder.Open Machine.Obx</CommandString>
 			</Properties>
 		</SystemCommand>
 		
