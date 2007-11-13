@@ -180,7 +180,7 @@
     <Error code="172"></Error>
     <Error code="173"></Error>
     <Error code="174"></Error>
-    <Error code="175"></Error>
+    <Error code="175">this procedure type cannot be used with GETPROCEDURE</Error>
     <Error code="176"></Error>
     <Error code="177"></Error>
     <Error code="178"></Error>
