@@ -24,6 +24,7 @@
 	<!DOCTYPE HotKeys [
 		<!ELEMENT HotKey ANY>
 		<!ATTLIST HotKey
+			name NMTOKEN #REQUIRED
 			keys NMTOKEN #REQUIRED
 			command CDATA #REQUIRED
 		>
@@ -32,56 +33,56 @@
 <HotKeys>
 
 	<!-- Standard hot keys (don't change) -->
-	<HotKey keys="F1" command="Notepad.OpenAuto Tutorial.Text"/>
-	<HotKey keys="F11" command="AosHotKeys.Show"/>
-	<HotKey keys="F12" command="S.Free AosHotKeys"/>
+	<HotKey name="Show Hotkeys" keys="F11" command="AosHotKeys.Show"/>
+	<HotKey name="Disable Hotkeys" keys="F12" command="S.Free AosHotKeys"/>
 	
 	<!-- Example hot keys -->
 	
 	<!-- Example: Switch keyboard layout -->
-	<HotKey keys="F5" command="WMOSD.Open 'US Keyboard Layout';AosKeyboard.SetLayout KeyUS.Bin"/>
-	<HotKey keys="F6" command="WMOSD.Open 'CH Keyboard Layout';AosKeyboard.SetLayout KeyCH.Bin"/>
+	<!-- Only works with Native AOS
+	<HotKey name="Keyboard US" keys="F5" command="WMOSD.Open 'US Keyboard Layout';AosKeyboard.SetLayout KeyUS.Bin"/>
+	<HotKey name="Keyboard CH" keys="F6" command="WMOSD.Open 'CH Keyboard Layout';AosKeyboard.SetLayout KeyCH.Bin"/>
+	-->
 	
 	<!-- Example: Screenshot -->
-	<HotKey keys="F8" command="WMOSD.Close;WMScreenShot.SnapShotView test.bmp;WMOSD.Open 'Screenshot saved in test.bmp'"/>
+	<HotKey name="Screenshot" keys="F10" command="WMOSD.Close;WMScreenShot.SnapShotView test.bmp;WMOSD.Open 'Screenshot saved in test.bmp'"/>
 	
 	<!-- Example: Open applications -->
-	<HotKey keys="META+P" command="PET.Open"/>
-	<HotKey keys="META+N" command="Notepad.OpenEmpty"/>
-	<HotKey keys="META+L" command="LogWindow.Open"/>
-	<HotKey keys="META+S" command="WMShell.Open"/>
+	<HotKey name="PET" keys="META+P" command="PET.Open"/>
+	<HotKey name="Notepad" keys="META+N" command="Notepad.OpenEmpty"/>
+	<HotKey name="LogWindow" keys="META+O" command="LogWindow.Open"/>
+	<HotKey name="Shell" keys="META+S" command="WMShell.Open"/>
 
 	<!-- Example: Virtual desktop -->
-	<HotKey keys="META+1" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 1 1 d;WMOSD.Open 'Desktop 1'"/>
-	<HotKey keys="META+2" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 -1 1 1 d;WMOSD.Open 'Desktop 2'"/>
-	<HotKey keys="META+3" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 0 1 1 d;WMOSD.Open 'Desktop 3'"/>
-	<HotKey keys="META+4" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 0 1 1 d;WMOSD.Open 'Desktop 4'"/>
-	<HotKey keys="META+5" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 2 2 d"/>
+	<HotKey name="Desktop 1" keys="F1" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 1 1 d;WMOSD.Open 'Desktop 1'"/>
+	<HotKey name="Desktop 1 (WinAos)" keys="META+F1" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 1 1 d;WMOSD.Open 'Desktop 1'"/>
+	<HotKey name="Desktop 2" keys="F2" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 -1 1 1 d;WMOSD.Open 'Desktop 2'"/>
+	<HotKey name="Desktop 3" keys="F3" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 0 1 1 d;WMOSD.Open 'Desktop 3'"/>
+	<HotKey name="Desktop 4" keys="F4" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 0 1 1 d;WMOSD.Open 'Desktop 4'"/>
+	<HotKey name="Desktops Overview" keys="F5" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 2 2 d"/>
 	
 	<!-- Example: Open window to enter and execute a command -->
-	<HotKey keys="CTRL+R" command="AosHotKeysCommands.EnterCommand"/>
+	<HotKey name="Run" keys="CTRL+R" command="AosHotKeysCommands.EnterCommand"/>
 
 	<!-- Example: Apply text style to currently selected text -->
-	<HotKey keys="META+C" command="WMTextStyleTool.SetStyleByName Comment"/>
+	<HotKey name="Change Style" keys="F7" command="WMTextStyleTool.SetStyleByName Comment"/>
 	
 	<!-- Example: Misc -->
-	<HotKey keys="META+O" command="AosHotKeysCommands.ClearLog"/>
+	<HotKey name="Clear LogWindow" keys="META+CTRL+O" command="AosHotKeysCommands.ClearLog"/>
 	
 	<!-- Example: Control window that has keyboard focus -->
-	<HotKey keys="META+M" command="AosHotKeysCommands.ToggleFullscreen"/>
-	<HotKey keys="F4" command="AosHotKeysCommands.CloseWindow"/>
+	<HotKey name="Toggle Fullscreen" keys="ALT+RETURN" command="AosHotKeysCommands.ToggleFullscreen"/>
+	<HotKey name="Close Window" keys="ALT+F4" command="AosHotKeysCommands.CloseWindow"/>
 	
 	<!-- Example: Simulate mouse wheel by keys -->
-	<HotKey keys="CTRL+UP" command="AosHotKeysCommands.SimulateMouse MouseWheel -3"/>
-	<HotKey keys="CTRL+DOWN" command="AosHotKeysCommands.SimulateMouse MouseWheel 3"/>
+	<HotKey name="WHEEL UP" keys="CTRL+UP" command="AosHotKeysCommands.SimulateMouse MouseWheel -3"/>
+	<HotKey name="WHEEL DOWN" keys="CTRL+DOWN" command="AosHotKeysCommands.SimulateMouse MouseWheel 3"/>
 
 	<!-- Example: Key remappings -->
 	
-	<HotKey keys="CTRL+I" command="REMAP UP"/>
-	<HotKey keys="CTRL+J" command="REMAP LEFT"/>
-	<HotKey keys="CTRL+K" command="REMAP DOWN"/>
-	<HotKey keys="CTRL+L" command="REMAP RIGHT"/>
-	<HotKey keys="CTRL+;" command="REMAP END"/>
-	<HotKey keys="CTRL+H" command="REMAP HOME"/>
+	<HotKey name="UP" keys="CTRL+I" command="REMAP UP"/>
+	<HotKey name="LEFT" keys="CTRL+J" command="REMAP LEFT"/>
+	<HotKey name="DOWN" keys="CTRL+K" command="REMAP DOWN"/>
+	<HotKey name="RIGHT" keys="CTRL+L" command="REMAP RIGHT"/>
 	
 </HotKeys>
