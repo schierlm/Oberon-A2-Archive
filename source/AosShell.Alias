@@ -1,6 +1,7 @@
 reboot=S.Reboot
 free=S.Free
 freeall=S.FreeDownTo
+find=SearchTools.Find
 whoimports=S.WhoImports
 pc=PC0.Compile
 gc=S.CollectGarbage
