@@ -131,6 +131,7 @@ To update: AosConfig.Init ~
 			
 			<Section name="Demultiplexer">
 				<Setting name="AVI" value="AVI.Factory"/>
+				<Setting name="MPG" value="MPEGVideoDecoder.DemuxFactory"/>
 			</Section>
 			
 		<!-- Encoders -->
@@ -176,6 +177,7 @@ To update: AosConfig.Init ~
 					<Setting name="DivX" value="AosDivXDecoder.Factory"/>
 					<Setting name="DIVX" value="AosDivXDecoder.Factory"/>
 					<Setting name="divx" value="AosDivXDecoder.Factory"/>
+					<Setting name="MPG" value="MPEGVideoDecoder.DecoderFactory"/>
 				</Section>
 				<Section name="Audio">
 					<Setting name="MP3" value="AosMP3Decoder.Factory"/>
