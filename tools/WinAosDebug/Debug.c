@@ -887,10 +887,10 @@ DWORD WINAPI ThreadProc(LPVOID arg) {
 									EnableMenuItem(GetMenu(hwndMain), IDM_A_ALLSTACKS, MF_BYCOMMAND);
 
 									fetchAdr = FALSE;
-								} else if (strncmp(msg, "AosModules.root", 21) == 0) {
+								} else if (strncmp(msg, "Modules.root", 21) == 0) {
 									fetchAdr = TRUE;
 								}
-							} else if ((level > 0) && (strncmp(msg, "AosModules.Shutdown", 19) == 0)) {
+							} else if ((level > 0) && (strncmp(msg, "Modules.Shutdown", 19) == 0)) {
 								EnableMenuItem(GetMenu(hwndMain), IDM_A_STATE, MF_BYCOMMAND | MF_GRAYED);
 								EnableMenuItem(GetMenu(hwndMain), IDM_A_STACK, MF_BYCOMMAND | MF_GRAYED);
 								EnableMenuItem(GetMenu(hwndMain), IDM_A_ALLSTACKS, MF_BYCOMMAND | MF_GRAYED);

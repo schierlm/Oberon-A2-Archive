@@ -29,7 +29,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-DEBUG                   ICON                    "ico00001.ico"
+DEBUG                   ICON                    "ressources\ico00001.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -136,35 +136,7 @@ BEGIN
     EDITTEXT        IDD_ProcessID,4,4,152,12,ES_AUTOHSCROLL
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_BITMAP              BITMAP                  "DEBUG.bmp"
 #endif    // Neutral (Default) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-#ifdef _WIN32
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
-#pragma code_page(1252)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_BITMAP1             BITMAP                  "bitmap1.bmp"
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
 
 /////////////////////////////////////////////////////////////////////////////
 // German (Switzerland) resources

@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by Debug.rc
 //
-#define IDB_BITMAP1                     113
 #define IDD_AllStacks                   1015
 #define IDM_A_ALLSTACKS                 40005
 
