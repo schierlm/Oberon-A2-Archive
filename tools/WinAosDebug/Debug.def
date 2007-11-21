@@ -1,0 +1,11 @@
+NAME		Debug
+
+DESCRIPTION	'Debug (ejz)'
+
+EXPORTS
+	WndProc
+	ChildWndProc
+	StartDlgProc
+	AboutDlgProc
+	StateDlgProc
+	ThreadProc
