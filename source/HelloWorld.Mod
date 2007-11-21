@@ -1,31 +1,31 @@
 MODULE HelloWorld;
 
 IMPORT
-	AosOut;
+	Commands;
 
-PROCEDURE Hello*;
+PROCEDURE Hello* (context: Commands.Context);
 BEGIN
-	AosOut.String("Hello"); AosOut.Ln; 
+	context.out.String("Hello"); context.out.Ln; 
 END Hello;
 
-PROCEDURE HelloCn*;
+PROCEDURE HelloCn* (context: Commands.Context);
 BEGIN
-	AosOut.String("你好"); AosOut.Ln;
+	context.out.String("你好"); context.out.Ln;
 END HelloCn;
 
-PROCEDURE HelloKr*;
+PROCEDURE HelloKr* (context: Commands.Context);
 BEGIN
-	AosOut.String("여보세요"); AosOut.Ln; 
+	context.out.String("여보세요"); context.out.Ln; 
 END HelloKr;
 
-PROCEDURE HelloJp*;
+PROCEDURE HelloJp* (context: Commands.Context);
 BEGIN
-	AosOut.String("こんにちは"); AosOut.Ln; 
+	context.out.String("こんにちは"); context.out.Ln; 
 END HelloJp;
 
-PROCEDURE HelloRu*;
+PROCEDURE HelloRu* (context: Commands.Context);
 BEGIN
-	AosOut.String("привет"); AosOut.Ln; 
+	context.out.String("привет"); context.out.Ln; 
 END HelloRu;
 
 END HelloWorld.
