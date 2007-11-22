@@ -14,3 +14,4 @@ reboot=S.Reboot
 rn=AosFSTools.RenameFiles
 time=S.Time
 whoimports=S.WhoImports
+open=AosOpen.Open
