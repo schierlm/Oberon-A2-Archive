@@ -350,7 +350,6 @@ To update: AosConfig.Init ~
 				<!-- kernel statistics plugins -->
 					
 					<Setting name="WMPerfMonPluginActive" value="FALSE"/>
-					<Setting name="WMPerfMonPluginLocks" value="FALSE"/>
 					<Setting name="WMPerfMonPluginHeap" value="FALSE"/>
 					
 				<!-- device performance plugins -->
