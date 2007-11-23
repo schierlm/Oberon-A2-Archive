@@ -277,6 +277,9 @@ To update: AosConfig.Init ~
 				<Section name="General">
 					<Setting name="BackupOnStore" value="TRUE"/>
 				</Section>
+				<Section name="Compiler">
+					<Setting name="DefaultOptions" value="\Ws"/>
+				</Section>
 				<Section name="Diff">
 					<Setting name="Command" value="WMDiff.Open"/>
 					<Setting name="Prefix" value=""/>
