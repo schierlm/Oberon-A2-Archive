@@ -276,6 +276,7 @@ To update: AosConfig.Init ~
 			<Section name="PET">
 				<Section name="General">
 					<Setting name="BackupOnStore" value="TRUE"/>
+					<Setting name="ShowPathInTabs" value="FALSE"/>
 				</Section>
 				<Section name="Compiler">
 					<Setting name="DefaultOptions" value="\Ws"/>
