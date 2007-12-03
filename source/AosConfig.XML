@@ -202,9 +202,10 @@ To update: AosConfig.Init ~
 			<Setting name="jpg" value="WMPicView.Open"/>
 			<Setting name="mod" value="PET.Open"/>
 			<Setting name="mp3" value="WMPlayer.Open"/>
-			<Setting name="abx" value="AosAMD64Decoder.Init;AosDecoder.Open"/>
-			<Setting name="oba" value="AosARMDecoder.Init;AosDecoder.Open"/>
-			<Setting name="obx" value="Aos386Decoder.Init;AosDecoder.Open"/>
+			<Setting name="abx" value="AosDecoder.Open"/>
+			<Setting name="oba" value="AosDecoder.Open"/>
+			<Setting name="obx" value="AosDecoder.Open"/>
+			<Setting name="obw" value="AosDecoder.Open"/>
 			<Setting name="ogg" value="OGGVorbisPlayer.Play"/>
 			<Setting name="pet" value="PET.OpenState"/>
 			<Setting name="pict" value="WMPicView.Open"/>
