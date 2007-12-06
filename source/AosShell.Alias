@@ -1,5 +1,6 @@
 cp=AosFSTools.CopyFiles
 create=AosTar.Create
+decode=AosDecoder.Open
 extract=AosTar.Extract
 free=S.Free
 freeall=S.FreeDownTo
@@ -10,8 +11,8 @@ pc=PC0.Compile
 kill=S.Kill
 list=S.List
 ls=AosFSTools.Directory
+open=AosOpen.Open
 reboot=S.Reboot
 rn=AosFSTools.RenameFiles
 time=S.Time
 whoimports=S.WhoImports
-open=AosOpen.Open
