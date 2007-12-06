@@ -45,10 +45,9 @@
 		<String>END </String><Arg nr="0"/><String>;</String><CR/>
 	</Macro>
 	<Macro key="C">
-		<String>PROCEDURE </String><Arg nr="0"/><String>*(par : ANY) : ANY;</String><CR/>
+		<String>PROCEDURE </String><Arg nr="0"/><String>*(context : Commands.Context);</String><CR/>
 		<String>BEGIN</String><CR/>
 		<Indent/><Cursor/><CR/>
-		<Indent/><String>RETURN NIL</String><CR/>
 		<String>END </String><Arg nr="0"/><String>;</String><CR/>
 	</Macro>
 	<Macro key="M">
