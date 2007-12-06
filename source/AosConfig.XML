@@ -66,12 +66,14 @@ To update: AosConfig.Init ~
 			<Setting value="AosQuoteServer.Open"/>
 		-->
 			
-			<Setting name="DefaultSkin" value="SkinEngine.Load stijn.skin"/>
+			<Setting name="DefaultSkin" value="SkinEngine.Unload"/>
 			
 		<!--Setting name="Hotkey support" value="AosHotKeys.Open"/-->
 			
 			
 		<!--Setting name="Hardware Detection" value="AosPCITools.DetectHardware"/-->
+		
+			<Setting name="TrapWriter" value="WMTrapWriter.Install"/>
 			</Section>
 		
 	<!-- WindowManager -->
@@ -131,7 +133,6 @@ To update: AosConfig.Init ~
 			
 			<Section name="Demultiplexer">
 				<Setting name="AVI" value="AVI.Factory"/>
-				<Setting name="MPG" value="MPEGVideoDecoder.DemuxFactory"/>
 			</Section>
 			
 		<!-- Encoders -->
@@ -177,7 +178,6 @@ To update: AosConfig.Init ~
 					<Setting name="DivX" value="AosDivXDecoder.Factory"/>
 					<Setting name="DIVX" value="AosDivXDecoder.Factory"/>
 					<Setting name="divx" value="AosDivXDecoder.Factory"/>
-					<Setting name="MPG" value="MPEGVideoDecoder.DecoderFactory"/>
 				</Section>
 				<Section name="Audio">
 					<Setting name="MP3" value="AosMP3Decoder.Factory"/>
@@ -202,10 +202,9 @@ To update: AosConfig.Init ~
 			<Setting name="jpg" value="WMPicView.Open"/>
 			<Setting name="mod" value="PET.Open"/>
 			<Setting name="mp3" value="WMPlayer.Open"/>
-			<Setting name="abx" value="AosDecoder.Open"/>
-			<Setting name="oba" value="AosDecoder.Open"/>
-			<Setting name="obx" value="AosDecoder.Open"/>
-			<Setting name="obw" value="AosDecoder.Open"/>
+			<Setting name="abx" value="AosAMD64Decoder.Init;AosDecoder.Open"/>
+			<Setting name="oba" value="AosARMDecoder.Init;AosDecoder.Open"/>
+			<Setting name="obx" value="Aos386Decoder.Init;AosDecoder.Open"/>
 			<Setting name="ogg" value="OGGVorbisPlayer.Play"/>
 			<Setting name="pet" value="PET.OpenState"/>
 			<Setting name="pict" value="WMPicView.Open"/>
@@ -216,8 +215,8 @@ To update: AosConfig.Init ~
 			<Setting name="text" value="Notepad.OpenAuto"/>
 			<Setting name="txt" value="Notepad.OpenAuto"/>
 			<Setting name="tool" value="PET.Open"/>
-			<Setting name="wav" value="WMPlayer.Open"/>
 			<Setting name="xml" value="PET.Open"/>
+			<Setting name="wav" value="WMPlayer.Open"/>
 		</Section>
 		
 	<!-- Net Configuration Example -->
@@ -273,27 +272,6 @@ To update: AosConfig.Init ~
 	<!-- Applications -->
 		
 		<Section name="Applications">
-		
-			<Section name="PET">
-				<Section name="General">
-					<Setting name="BackupOnStore" value="TRUE"/>
-					<Setting name="ShowPathInTabs" value="FALSE"/>
-				</Section>
-				<Section name="Compiler">
-					<Setting name="DefaultOptions" value="\Ws"/>
-				</Section>
-				<Section name="Diff">
-					<Setting name="Command" value="WMDiff.Open"/>
-					<Setting name="Prefix" value=""/>
-					<Setting name="Suffix" value=".Bak"/>
-				</Section>
-				<Section name="Search">
-					<Setting name="Wrap" value="FALSE"/>
-					<Setting name="HighlightAll" value="FALSE"/>
-					<Setting name="CaseSensitive" value="TRUE"/>
-				</Section>
-			</Section>
-			
 			<Section name="WMV24Component">
 				<Setting name="WindowStartupSize" value="800x400"/>
 				<Setting name="IndicateKeyboardFocus" value="TRUE"/>
@@ -355,6 +333,7 @@ To update: AosConfig.Init ~
 				<!-- kernel statistics plugins -->
 					
 					<Setting name="WMPerfMonPluginActive" value="FALSE"/>
+					<Setting name="WMPerfMonPluginLocks" value="FALSE"/>
 					<Setting name="WMPerfMonPluginHeap" value="FALSE"/>
 					
 				<!-- device performance plugins -->
