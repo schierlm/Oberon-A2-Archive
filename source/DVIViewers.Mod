@@ -11,7 +11,7 @@ MODULE DVIViewers;
     available which maps to the File attribute of the underlying
     model. **)
 IMPORT Display, Display3, Effects, Files, Gadgets, Oberon, Strings, Input,
-   Objects := ObjectBase, Printer, In, Out, Documents, Desktops, DVIFiles, Gfx,
+   Objects := OberonObjects, Printer, In, Out, Documents, Desktops, DVIFiles, Gfx,
    GfxImages, GfxDisplay, GfxRegions, GfxMatrix, GfxFonts, GfxPS, Math,
    Links, Attributes, Images, BIT;
 CONST
