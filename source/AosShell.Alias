@@ -17,4 +17,5 @@ reboot=S.Reboot
 rn=AosFSTools.RenameFiles
 setcb=AosTextUtilities.SetClipboard
 time=S.Time
+uptime=UpTime.Show
 whoimports=S.WhoImports
