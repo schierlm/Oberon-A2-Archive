@@ -282,6 +282,7 @@ To update: AosConfig.Init ~
 				<Section name="General">
 					<Setting name="BackupOnStore" value="TRUE"/>
 					<Setting name="ShowPathInTabs" value="FALSE"/>
+					<Setting name="ScratchPanelHeight" value="250"/>
 				</Section>
 				<Section name="Compiler">
 					<Setting name="DefaultOptions" value="\Ws"/>
