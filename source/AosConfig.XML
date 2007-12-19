@@ -284,8 +284,8 @@ To update: AosConfig.Init ~
 					<Setting name="ShowPathInTabs" value="FALSE"/>
 					<Setting name="ScratchPanelHeight" value="250"/>
 				</Section>
-				<Section name="Compiler">
-					<Setting name="DefaultOptions" value="\Ws"/>
+				<Section name="Compilers">
+					<Setting name="PACO" options="\Ws" fileExtension="MOD" loadmodule="PC0" tree="TRUE"/>
 				</Section>
 				<Section name="Diff">
 					<Setting name="Command" value="WMDiff.Open"/>
