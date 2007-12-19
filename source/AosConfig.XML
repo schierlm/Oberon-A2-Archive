@@ -286,6 +286,7 @@ To update: AosConfig.Init ~
 				</Section>
 				<Section name="Compilers">
 					<Setting name="PACO" options="\Ws" fileExtension="MOD" loadmodule="PC0" tree="TRUE"/>
+					<Setting name="ReleaseTool" options="\check" fileExtension="Tool" loadmodule="AosRelease" tree="FALSE"/>
 				</Section>
 				<Section name="Diff">
 					<Setting name="Command" value="WMDiff.Open"/>
