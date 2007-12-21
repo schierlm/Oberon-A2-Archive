@@ -61,6 +61,12 @@
 	<HotKey name="Desktop 4" keys="F4" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange 0 0 1 1 d;WMOSD.Open 'Desktop 4'"/>
 	<HotKey name="Desktops Overview" keys="F5" command="WMOSD.Close;AosHotKeysCommands.SetViewportRange -1 -1 2 2 d"/>
 	
+	<!-- Example: Move the window that has the keyboard focus relative to its current position -->
+	<HotKey name="MoveRight" keys="ALT+RIGHT" command="AosHotKeysCommands.MoveWindow 1280 0"/>
+	<HotKey name="MoveLeft" keys="ALT+LEFT" command="AosHotKeysCommands.MoveWindow -1280 0"/>
+	<HotKey name="MoveUp" keys="ALT+UP" command="AosHotKeysCommands.MoveWindow 0 -1024"/>
+	<HotKey name="MoveDown" keys="ALT+DOWN" command="AosHotKeysCommands.MoveWindow 0 1024"/>
+	
 	<!-- Example: Open window to enter and execute a command -->
 	<HotKey name="Run" keys="CTRL+R" command="AosHotKeysCommands.EnterCommand"/>
 
