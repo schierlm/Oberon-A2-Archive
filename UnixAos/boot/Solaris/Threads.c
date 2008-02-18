@@ -1,0 +1,1 @@
+link ../Threads.solaris.c
