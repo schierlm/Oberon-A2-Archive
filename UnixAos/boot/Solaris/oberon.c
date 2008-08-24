@@ -1,1 +1,0 @@
-link ../oberon.c
