@@ -1,0 +1,2832 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:st1="urn:schemas-microsoft-com:office:smarttags"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="SymObjectFileFormat-Dateien/filelist.xml">
+<link rel=Edit-Time-Data href="SymObjectFileFormat-Dateien/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Native Oberon: Symbol and Object File Format</title>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="PersonName"/>
+<o:SmartTagType namespaceuri="urn:schemas-microsoft-com:office:smarttags"
+ name="place"/>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Ulrike Glavitsch</o:Author>
+  <o:LastAuthor>Ulrike Glavitsch</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:Created>2007-03-06T08:25:00Z</o:Created>
+  <o:LastSaved>2007-03-06T08:25:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>2809</o:Words>
+  <o:Characters>14045</o:Characters>
+  <o:Company> ETH</o:Company>
+  <o:Lines>668</o:Lines>
+  <o:Paragraphs>561</o:Paragraphs>
+  <o:CharactersWithSpaces>16293</o:CharactersWithSpaces>
+  <o:Version>11.6360</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:DisplayBackgroundShape/>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:HyphenationZone>21</w:HyphenationZone>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]--><!--[if !mso]><object
+ classid="clsid:38481807-CA0E-42D2-BF39-B33AF135CC4D" id=ieooui></object>
+<style>
+st1\:*{behavior:url(#ieooui) }
+</style>
+<![endif]-->
+<link rel=Stylesheet type="text/css" media=all
+href="SymObjectFileFormat_dateien/ObjectFile.css">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Century Schoolbook";
+	panose-1:2 4 6 4 5 5 5 2 3 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:647 0 0 0 159 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0pt;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+h1
+	{mso-margin-top-alt:auto;
+	margin-right:0pt;
+	mso-margin-bottom-alt:auto;
+	margin-left:0pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:1;
+	font-size:24.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+h2
+	{mso-margin-top-alt:auto;
+	margin-right:0pt;
+	mso-margin-bottom-alt:auto;
+	margin-left:0pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:18.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+h4
+	{mso-margin-top-alt:auto;
+	margin-right:0pt;
+	mso-margin-bottom-alt:auto;
+	margin-left:0pt;
+	mso-pagination:widow-orphan;
+	mso-outline-level:4;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0pt;
+	mso-margin-bottom-alt:auto;
+	margin-left:0pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+address
+	{margin:0pt;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	font-style:italic;}
+code
+	{font-family:"Courier New";
+	mso-ascii-font-family:"Courier New";
+	mso-fareast-font-family:"Times New Roman";
+	mso-hansi-font-family:"Courier New";
+	mso-bidi-font-family:"Courier New";}
+pre
+	{margin:0pt;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	mso-fareast-font-family:"Times New Roman";}
+tt
+	{font-family:"Courier New";
+	mso-ascii-font-family:"Courier New";
+	mso-fareast-font-family:"Times New Roman";
+	mso-hansi-font-family:"Courier New";
+	mso-bidi-font-family:"Courier New";}
+p.math, li.math, div.math
+	{mso-style-name:math;
+	mso-margin-top-alt:auto;
+	margin-right:0pt;
+	mso-margin-bottom-alt:auto;
+	margin-left:0pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";}
+p.boldmath, li.boldmath, div.boldmath
+	{mso-style-name:boldmath;
+	mso-margin-top-alt:auto;
+	margin-right:0pt;
+	mso-margin-bottom-alt:auto;
+	margin-left:0pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	font-weight:bold;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 56.7pt 70.85pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:887060981;
+	mso-list-template-ids:-45596058;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l0:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l1
+	{mso-list-id:1018628322;
+	mso-list-template-ids:-136309922;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:1144350085;
+	mso-list-template-ids:-305070698;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3
+	{mso-list-id:1624114458;
+	mso-list-template-ids:-224519420;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4
+	{mso-list-id:1651132981;
+	mso-list-template-ids:1070234460;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l5
+	{mso-list-id:1667780215;
+	mso-list-template-ids:-236844566;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l5:level2
+	{mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level3
+	{mso-level-tab-stop:108.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level4
+	{mso-level-tab-stop:144.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level5
+	{mso-level-tab-stop:180.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level6
+	{mso-level-tab-stop:216.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level7
+	{mso-level-tab-stop:252.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level8
+	{mso-level-tab-stop:288.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l5:level9
+	{mso-level-tab-stop:324.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+ol
+	{margin-bottom:0pt;}
+ul
+	{margin-bottom:0pt;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Normale Tabelle";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0pt 5.4pt 0pt 5.4pt;
+	mso-para-margin:0pt;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]--><!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<meta name=description content="Native Oberon: Symbol and Object File Format">
+<meta name=keywords content=ObjectFile>
+<meta name=resource-type content=document>
+<meta name=distribution content=global>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="19458"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=DE-CH link=blue vlink=blue style='tab-interval:35.4pt'>
+
+<div class=Section1>
+
+<h1 align=center style='text-align:center'><span class=SpellE><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Aos</span></span><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>/Bluebottle: Symbol and Object File Format<o:p></o:p></span></h1>
+
+<p align=center style='text-align:center'><strong><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>P. <span class=SpellE>Reali</span>/U. Glavitsch</span><o:p></o:p></strong></p>
+
+<p align=center style='text-align:center'><strong><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Nov. 17, 2006</span></strong></p>
+
+<h1><a name=SECTION00010000000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Introduction</span></a><span lang=EN-GB style='mso-ansi-language:EN-GB'>
+<o:p></o:p></span></h1>
+
+<p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>This
+document describes the object and symbol file format used in <span
+class=SpellE>Aos</span>/Bluebottle for releases not older than Nov. 17, 2006. <o:p></o:p></span></p>
+
+<h1><a name=SECTION00020000000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Notation</span></a><span lang=EN-GB style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h1>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The EBNF (Extended Backus <span
+class=SpellE>Naur</span> Format) is used to describe the syntax of the symbol
+and object file format. The semantics of the format are specified whenever
+needed. <o:p></o:p></span></p>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>We use the following
+writing conventions: <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>name</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>write</span> 0X <span class=SpellE>terminated</span>
+  <span class=SpellE>string</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>num</span><span style='font-size:10.0pt'>
+  1</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>write num
+  as 1 byte value<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>num</span><span style='font-size:10.0pt'>
+  4</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>write num
+  as 4 byte value<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>num</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>write num
+  as compressed value<o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<h1><a name=SECTION00030000000000000000><span lang=EN-GB style='font-size:12.0pt;
+mso-ansi-language:EN-GB;font-weight:normal;mso-bidi-font-weight:bold'>The main
+idea is to write all integer numbers as compressed values. There are, however, a
+few places where integers are written as fixed size numbers. For instance, it
+often occurs that the space for an integer is reserved at a certain position in
+the object file and the actual value is written later. In these cases, four
+bytes are reserved for that integer independently of the actual value. At some
+other locations, one byte integers are written. <o:p></o:p></span></a></h1>
+
+<h1><span style='mso-bookmark:SECTION00030000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Symbol File</span></span><span lang=EN-GB
+style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h1>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The symbol file implements
+a variation of the fine-grained object fingerprinting <span class=SpellE>presentend</span>
+in R. <span class=SpellE>Crelier</span> dissertation, also known as Object
+Model (OM). The <st1:place w:st="on">OM</st1:place> allows <span class=GramE>to
+extend a symbol file, e.g. add</span> symbols to a module interface, without
+invalidating the clients of the module. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SymFile</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>{<span class=SpellE>modname</span>}
+  </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFConst</span>
+  {<span class=SpellE>Structure</span> <span class=SpellE>name</span> <span
+  class=SpellE>val</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFvar</span>
+  {[<span class=SpellE>SFreadonly</span>] <span class=SpellE>Structure</span> <span
+  class=SpellE>name</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFxproc</span>
+  {<span class=SpellE>Structure</span> <span class=SpellE>name</span> <span
+  class=SpellE>ParList</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFoperator</span>
+  {<span class=SpellE>Structure</span> <span class=SpellE>name</span> <span
+  class=SpellE>ParList</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFcproc</span>
+  {<span class=SpellE>Structure</span> <span class=SpellE>name</span> <span
+  class=SpellE>ParList</span> <span class=SpellE>code</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFalias</span>
+  {<span class=SpellE>Structure</span> <span class=SpellE>name</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFtyp</span>
+  {<span class=SpellE>Structure</span>}]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>SFEnd</span></tt></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:9'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:10'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>ParList</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>{[<span class=SpellE>SFvar</span>]
+  <span class=SpellE>Structure</span> <span class=SpellE>name</span>} <span
+  class=SpellE>SFEnd</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:11'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Structure</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>Basic | <span
+  class=SpellE>UserStr</span> | <span class=SpellE>oldstr</span> | <span
+  class=SpellE>modno</span> (<span class=SpellE>name</span> | 0X <span
+  class=SpellE>oldimpstrn</span>) </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:12'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Basic</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>SFtypBool</span></tt></span><tt><span
+  style='font-size:10.0pt'> .. <span class=SpellE>SFtypNilTyp</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:13'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>UserStr</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFinvisible</span>][<span
+  class=SpellE>SFsysflag</span> <span class=SpellE>flag</span>] UserStr2 </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:14'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>UserStr2</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>(<span class=SpellE>SFtypOpenArr</span>
+  | <span class=SpellE>SFtypDynArr</span>) <span class=SpellE>Structure</span> <span
+  class=SpellE>name</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:15'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>|</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>SFtypArray</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>Structure</span> <span
+  class=SpellE>name</span> <span class=SpellE>size</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:16'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>|</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>SFtypPointer</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>Structure</span> <span
+  class=SpellE>name</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:17'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>|</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>SFtypProcTyp</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>Structure</span> <span
+  class=SpellE>name</span> <span class=SpellE>ParList</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:18'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>|</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span lang=EN-GB style='font-size:
+  10.0pt;mso-ansi-language:EN-GB'>SFtypRecord</span></tt></span><tt><span
+  lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'> Structure name <span
+  class=SpellE>prio</span> flags <span class=SpellE>RecStr</span> </span></tt><span
+  lang=EN-GB style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:19'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>RecDef</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>{ <span class=SpellE>FieldDef</span>
+  }[<span class=SpellE>SFtproc</span> {<span class=SpellE>MethodDef</span>}] <span
+  class=SpellE>SFend</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:20'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>FieldDef</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>[<span class=SpellE>SFreadonly</span>]
+  <span class=SpellE>Structure</span> <span class=SpellE>name</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:21;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>MethodDef</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>Structure</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>name</span> <span class=SpellE>ParList</span>
+  </span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<ul type=disc>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo3;tab-stops:list 36.0pt'><span lang=EN-GB
+     style='mso-ansi-language:EN-GB'>records: invisible fields and methods are
+     exported with name &quot;&quot; (empty string) <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo3;tab-stops:list 36.0pt'><span lang=EN-GB
+     style='mso-ansi-language:EN-GB'>internal structure numbering: the first
+     time an <span class=SpellE>UserStr</span> is exported, it is assigned a
+     number (starting from 0, decreasing) which will be used as &quot;<span
+     class=SpellE>oldstr</span>&quot;-reference for further export <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo3;tab-stops:list 36.0pt'><span class=GramE><span
+     lang=EN-GB style='mso-ansi-language:EN-GB'>external</span></span><span
+     lang=EN-GB style='mso-ansi-language:EN-GB'> structure numbering: the first
+     time an imported structure is re-exported, it is assigned a number
+     (starting form 0, ascending) which will be used as &quot;<span
+     class=SpellE>oldimpstr</span>&quot;-reference for further export. </span><span
+     class=SpellE>Every</span> <span class=SpellE>imported</span> <span
+     class=SpellE>module</span> has an <span class=SpellE>own</span> <span
+     class=SpellE>re-export</span> <span class=SpellE>numbering</span> </li>
+</ul>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+margin-left:18.0pt'><o:p>&nbsp;</o:p></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><b>Basic <span class=SpellE>Types</span> <span
+  class=SpellE>Encoding</span> <o:p></o:p></b></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypBool</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>1</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypChar8</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>2</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypChar16</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypChar32</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>4<o:p></o:p></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypInt8</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>5<o:p></o:p></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypInt16</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>6</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypInt32</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>7</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypInt64</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>8</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:9'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypFloat32</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>9</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:10'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFtypFloat64</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>10</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:11'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypSet</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>11</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:12'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypString</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>12</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:13'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypNoTyp</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>13</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:14'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypNilTyp</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>14</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:15'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypByte</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>15</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:16'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypSptr</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>16</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:17'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>SFmod1</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>17</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:18;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+  </td>
+ </tr>
+</table>
+
+<p style='margin:0pt;margin-bottom:.0001pt'><span style='display:none;
+mso-hide:all'><o:p>&nbsp;</o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><b>Composed</b></span><b> <span
+  class=SpellE>Types</span> <o:p></o:p></b></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypOpenArr</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>2EX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypDynArr</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>2FX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypArray</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>30X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypPointer</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>31X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypRecord</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>32X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtypProcTyp</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>33X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<p style='margin:0pt;margin-bottom:.0001pt'><span style='display:none;
+mso-hide:all'><o:p>&nbsp;</o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><b>Flags <o:p></o:p></b></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFsysflag</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>34X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFinvisible</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>35X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFreadonly</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>36X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<p style='margin:0pt;margin-bottom:.0001pt'><span style='display:none;
+mso-hide:all'><o:p>&nbsp;</o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><b>Section</b></span><b> <span
+  class=SpellE>Delimiters</span> <o:p></o:p></b></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFconst</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>37X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFvar</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>38X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFlproc</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>39X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFxproc</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3AX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFoperator</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3BX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtproc</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3CX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFcproc</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>SFtproc</span></tt></span><tt><span
+  style='font-size:10.0pt'><o:p></o:p></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFalias</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3DX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:9'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFtyp</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3EX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:10;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SFend</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3FX</span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<h1><a name=SECTION00040000000000000000><o:p>&nbsp;</o:p></a></h1>
+
+<h1><span style='mso-bookmark:SECTION00040000000000000000'><span class=SpellE>Object</span>
+File</span> </h1>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>ObjectFile</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>OFTag</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>NoZeroCompression</span> <span
+  class=SpellE>OFVersion</span> <span class=SpellE>symfilesize</span> <span
+  class=SpellE>SymbolFile</span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>Header</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>Entries</span> <span
+  class=SpellE>Commands</span> <span class=SpellE>Pointers</span> Imports <span
+  class=SpellE>VarConsLinks</span> Links</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>Consts</span></tt></span><tt><span
+  style='font-size:10.0pt'> Exports Code <span class=SpellE>Use</span> <span
+  class=SpellE>Types</span> <span class=SpellE>ExceptionTable</span> <span
+  class=SpellE>PtrsInProcBlock</span> <span class=SpellE>References</span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>OFTag</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0BBX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>NoZeroCompression</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0ADX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>OFVersion</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0B1X</span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name=SECTION00041000000000000000><o:p>&nbsp;</o:p></a></h2>
+
+<h2><span style='mso-bookmark:SECTION00041000000000000000'><span class=SpellE>Heading</span></span>
+</h2>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Header</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>refSize</span></tt></span><tt><span
+  style='font-size:10.0pt'> 4 <span class=SpellE>nofEntries</span> 4 <span
+  class=SpellE>nofCommands</span> 4 <span class=SpellE>nofPointers</span> 4 </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>nofTypes</span></tt></span><tt><span
+  style='font-size:10.0pt'> 4 <span class=SpellE>nofImports</span> 4 <span
+  class=SpellE>nofVarConsLinks</span> 4 <span class=SpellE>nofLinks</span> 4</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span lang=EN-GB style='font-size:
+  10.0pt;mso-ansi-language:EN-GB'>dataSize</span></tt></span><tt><span
+  lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'> 4 <span
+  class=SpellE>constSize</span> 4 <span class=SpellE>codeSize</span> 4 <span
+  class=SpellE>exTableLen</span> 4 </span></tt><span lang=EN-GB
+  style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span lang=EN-GB style='font-size:
+  10.0pt;mso-ansi-language:EN-GB'>nofProcs</span></tt></span><tt><span
+  lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'> 4 <span
+  class=SpellE>maxPtrs</span> 4 <span class=SpellE>moduleName</span><o:p></o:p></span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This sections gives the
+number of entries in the following sections. <o:p></o:p></span></p>
+
+<h2><a name=SECTION00042000000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'><o:p>&nbsp;</o:p></span></a></h2>
+
+<h2><span style='mso-bookmark:SECTION00042000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Entry Section</span></span><span lang=EN-GB
+style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The entry table contains
+the address relative to the code base of the exported procedures. Also in this
+table are the procedures that are assigned to a procedure variable, because the
+assignment requires the absolute address of the procedure. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Entries</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>82X { <span
+  class=SpellE>entryOffset</span> } <span class=SpellE><sup>nofEntries</sup></span>
+  </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name=SECTION00043000000000000000></a><span class=SpellE><span
+style='mso-bookmark:SECTION00043000000000000000'>Command</span></span><span
+style='mso-bookmark:SECTION00043000000000000000'> <span class=SpellE>Section</span></span>
+</h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>Exported procedures without
+parameters are commands and can be invoked by the system. <span class=SpellE><span
+class=GramE><em>cmdOffset</em></span></span> is relative to the code base. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Commands</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>83X { <span
+  class=SpellE>cmdName</span> <span class=SpellE>cmdOffset</span> } <span
+  class=SpellE><sup>nofCommands</sup></span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name=SECTION00044000000000000000>Pointer </a><span class=SpellE><span
+style='mso-bookmark:SECTION00044000000000000000'>Section</span></span><span
+style='mso-bookmark:SECTION00044000000000000000'></span> </h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This section lists the
+pointers in the global variables. This information is used as root set for the current
+module by the garbage collector. The <span class=SpellE><em>pointerOffset</em></span>
+is relative to the static base of the module and is always a negative number
+(variables are stored below the static base). <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Pointers</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>84X { <span
+  class=SpellE>pointerOffset</span> } <span class=SpellE><sup>nofPointers</sup></span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name=SECTION00045000000000000000>Import </a><span class=SpellE><span
+style='mso-bookmark:SECTION00045000000000000000'>Section</span></span><span
+style='mso-bookmark:SECTION00045000000000000000'></span> </h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This section lists the
+modules needed by the current modules. These modules must be loaded before the
+current module. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Imports</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>85X { <span
+  class=SpellE>moduleName</span> } <span class=SpellE><sup>nofImports</sup></span>
+  </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<h2><span class=SpellE>VarConstLink</span> <span class=SpellE>Section</span> </h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This section contains the <span
+class=SpellE>fixup</span> lists for global variables and constants (including
+type descriptors). The list contains the <em>count</em> of fixes to be done and
+their <em>offset</em> relative to the code base. The address of the entry has
+to be added to the value found at the offset! <o:p></o:p></span></p>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>For every imported entry, <em>mod</em>
+is the module where the entry is defined (as implicitly numbered in the import
+section), <em>entry</em> is always 0. The Use Section contains the table that
+maps an imported symbol to a <span class=SpellE>fixup</span> list. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>VarConstLinks</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>8DX { <span
+  class=SpellE>VarConstLinkEntry</span> } </span></tt><span class=SpellE><tt><sup><span
+  lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'>noVarConsLinks</span></sup></tt></span><tt><span
+  lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>VarConstLinkEntry</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span lang=EN-GB style='font-size:10.0pt;mso-ansi-language:
+  EN-GB'>mod 1 entry count 4 { offset } <sup>count</sup></span></tt><span
+  lang=EN-GB style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>&nbsp;<o:p></o:p></span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>&nbsp;<o:p></o:p></span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>&nbsp;<o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name=SECTION00047000000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Link Section</span></a><span lang=EN-GB style='mso-ansi-language:EN-GB'>
+<o:p></o:p></span></h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This section contains the <span
+class=SpellE>fixup</span> list for procedure calls, system calls, and some
+other special <span class=SpellE>fixups</span> in the code. <span class=GramE><em>offset</em></span>
+is relative to the code base. That location contains the address of the next <span
+class=SpellE>fixup</span> (this <span class=SpellE>fixup</span> chain is
+embedded in the code). <o:p></o:p></span></p>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The following <em>mod /
+entry</em> have special meanings: <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 255</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>case</span> <span class=SpellE>table</span>
+  <span class=SpellE>fixup</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 254</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>local</span> <span class=SpellE>procedure</span>
+  <span class=SpellE>assignment</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 253</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to <span class=SpellE>NewRec</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 252</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to <span class=SpellE>NewSys</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 251</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to <span class=SpellE>NewArr</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 250</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to Start</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 249</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to <span class=SpellE>Passivate</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 247</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to Lock</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>00 / 246</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>system</span> <span class=SpellE>call</span>
+  to <span class=SpellE>Unlock</span></p>
+  </td>
+ </tr>
+</table>
+
+<p style='margin:0pt;margin-bottom:.0001pt'><span style='display:none;
+mso-hide:all'><o:p>&nbsp;</o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Links</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>86X { <span
+  class=SpellE>LinkEntry</span> } <span class=SpellE><sup>nofLinks</sup></span><span
+  style='mso-spacerun:yes'>  </span>{ <span class=SpellE>FixupCount</span> } <span
+  class=SpellE><sup>nofEntries</sup></span><span style='mso-spacerun:yes'> 
+  </span><span class=SpellE>caseTableSize</span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>LinkEntry</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>mod</span></tt></span><tt><span
+  style='font-size:10.0pt'> 1 <span class=SpellE>entry</span> 1 <span
+  class=SpellE>offset</span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>FixupCount</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>count</span></tt></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name=SECTION00048000000000000000></a><span class=SpellE><span
+style='mso-bookmark:SECTION00048000000000000000'>Const</span></span><span
+style='mso-bookmark:SECTION00048000000000000000'> and Code <span class=SpellE>Sections</span></span>
+</h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The <span class=SpellE><em>Consts</em></span>
+are loaded in memory beginning at the static base. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Consts</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>87X {<span
+  class=SpellE>char</span> 1}</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Code</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>89X {<span
+  class=SpellE>char</span> 1}</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+ </tr>
+</table>
+
+<h2>Export <span class=SpellE>Section</span> </h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This section lists the
+exported symbols of the module <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Exports</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>88X <span class=SpellE>nofExports</span>
+  4 {<span class=SpellE>ExportEntry</span>} 0X </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>ExportEntry</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>FP <span class=SpellE>fixup</span>
+  [1X <span class=SpellE>ExportRecord</span>]</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>ExportRecord</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>oldref</span></tt></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>&nbsp;</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>|</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span lang=EN-GB style='font-size:
+  10.0pt;mso-ansi-language:EN-GB'>tdentry</span></tt></span><tt><span
+  lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'> [1X <span
+  class=SpellE>ExportRecord</span>] <span class=SpellE>nofFPs</span> 4 {FP [1X <span
+  class=SpellE>ExportRecord</span>]} 0X</span></tt><span lang=EN-GB
+  style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The Export Section contains
+the information and linking point of all the exported symbols in the module.
+The <span class=SpellE><em>ExportEntry</em></span> describes different entry
+kinds, depending on the value of the <span class=SpellE><em>fixup</em></span>: <o:p></o:p></span></p>
+
+<ul type=disc>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l3 level1 lfo6;tab-stops:list 36.0pt'><span class=SpellE><span
+     class=GramE><i><span lang=EN-GB style='mso-ansi-language:EN-GB'>fixup</span></i></span></span><span
+     lang=EN-GB style='mso-ansi-language:EN-GB'> &lt; 0 <span class=SpellE>Fixup</span>
+     is the offset of a variable relative to the static base. If the variable
+     type is a record, <span class=SpellE><em>ExportRecord</em></span> will
+     describe it. <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l3 level1 lfo6;tab-stops:list 36.0pt'><span class=SpellE><span
+     class=GramE><i><span lang=EN-GB style='mso-ansi-language:EN-GB'>fixup</span></i></span></span><span
+     lang=EN-GB style='mso-ansi-language:EN-GB'> = 0 Anchor for a named record
+     type, always followed by <span class=SpellE><em>ExportRecord</em></span>. <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l3 level1 lfo6;tab-stops:list 36.0pt'><span class=SpellE><span
+     class=GramE><i><span lang=EN-GB style='mso-ansi-language:EN-GB'>fixup</span></i></span></span><span
+     lang=EN-GB style='mso-ansi-language:EN-GB'> &gt; 0 <span class=SpellE>Fixup</span>
+     is the offset of a procedure entry point relative to the code base; it
+     never has an <span class=SpellE>ExportRecord</span>. <o:p></o:p></span></li>
+</ul>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>A record may be described
+in two ways (recognized by the first value read): <o:p></o:p></span></p>
+
+<ul type=disc>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l5 level1 lfo9;tab-stops:list 36.0pt'><!-- MATH: $tdentry > 0$ --><span
+     class=SpellE><span class=GramE><i><span lang=EN-GB style='mso-ansi-language:
+     EN-GB'>tdentry</span></i></span></span><span lang=EN-GB style='mso-ansi-language:
+     EN-GB'> &gt; 0 <span class=SpellE>tdentry</span> is the offset of the
+     pointer to the type descriptor in the constant section; followed by the
+     fingerprints of the base type (if existent), the public and private record
+     fingerprints, the methods and fields fingerprints. If a record field has
+     record type, then it is followed by the description of the type. <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l5 level1 lfo9;tab-stops:list 36.0pt'><!-- MATH: $oldref < 0$ --><span
+     class=SpellE><span class=GramE><i><span lang=EN-GB style='mso-ansi-language:
+     EN-GB'>oldref</span></i></span></span><span lang=EN-GB style='mso-ansi-language:
+     EN-GB'> &lt; 0 the -<span class=SpellE>oldref-th</span> <span
+     class=SpellE>explicitely</span> described type descriptor. <o:p></o:p></span></li>
+</ul>
+
+<h2><span lang=EN-GB style='mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></h2>
+
+<h2><span class=SpellE>Use</span> <span class=SpellE>Section</span> </h2>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Use</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>08AX {<span
+  class=SpellE>UsedModules</span>} 0X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>UsedModules</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>moduleName</span></tt></span><tt><span
+  style='font-size:10.0pt'> {<span class=SpellE>UsedVar</span> |<span
+  class=SpellE>UsedProc</span> |<span class=SpellE>UsedType</span>} 0X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>UsedVar</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span lang=EN-GB style='font-size:10.0pt;mso-ansi-language:
+  EN-GB'>FP <span class=SpellE>varName</span> <span class=SpellE>fixlist</span>
+  [1X <span class=SpellE>UsedRecord</span>]</span></tt><span lang=EN-GB
+  style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>UsedProc</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>FP <span class=SpellE>procName</span>
+  <span class=SpellE>offset</span> </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>UsedType</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span lang=EN-GB style='font-size:10.0pt;mso-ansi-language:
+  EN-GB'>FP <span class=SpellE>typeName</span> 0X [1X <span class=SpellE>UsedRecord</span>]</span></tt><span
+  lang=EN-GB style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>UsedRecord</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>tdentry</span></tt></span><tt><span
+  style='font-size:10.0pt'> [FP &quot;@&quot;] 0X</span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The Use Section contains
+the information for the linker about all the imported entries (Variables,
+Procedures and Type Descriptors). Every entry has the format </span><tt><span
+lang=EN-GB style='font-size:10.0pt;mso-ansi-language:EN-GB'>fingerprint name
+value</span></tt><span lang=EN-GB style='mso-ansi-language:EN-GB'>. Variables
+have a positive value, procedures a negative one and types have <i>value</i> =
+0. <o:p></o:p></span></p>
+
+<h4><a name=SECTION000410010000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Variables</span></a><span lang=EN-GB style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h4>
+
+<p class=MsoNormal><span class=SpellE><span class=GramE><em><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>fixlist</span></em></span></span><span
+lang=EN-GB style='mso-ansi-language:EN-GB'> is an index to a <span
+class=SpellE>fixup</span> list in the <span class=SpellE>VarConstLink</span>
+Section. The address to be patched is found in the Export Section of the module
+exporting the variable using the fingerprint. <o:p></o:p></span></p>
+
+<h4><a name=SECTION000410020000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Procedures</span></a><span lang=EN-GB style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h4>
+
+<p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>The <span
+class=SpellE>fixup</span> chain for this call starts at -<i>offset</i> relative
+to the code base. The address to be patched is found in the Export Section of
+the module exporting the procedure. <o:p></o:p></span></p>
+
+<h4><a name=SECTION000410030000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Type Descriptors</span></a><span lang=EN-GB style='mso-ansi-language:
+EN-GB'> <o:p></o:p></span></h4>
+
+<p class=MsoNormal><span lang=EN-GB style='mso-ansi-language:EN-GB'>For every
+imported type descriptor, a hidden copy of the pointer to the descriptor is
+allocated in the local constant section at offset <span class=SpellE><em>tdentry</em></span>.
+The address to be patched is found using the fingerprint in the Export Section
+of the module exporting the Type. <a name=SECTION000411000000000000000><o:p></o:p></a></span></p>
+
+<h2><span style='mso-bookmark:SECTION000411000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></span></h2>
+
+<h2><span style='mso-bookmark:SECTION000411000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Types Section</span></span><span lang=EN-GB
+style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This section contains the
+description about the type descriptors. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Types</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>08BX {<span
+  class=SpellE>TypeEntry</span>} <span class=SpellE><sup>nofTypes</sup></span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>TypeEntry</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span lang=EN-GB style='font-size:10.0pt;mso-ansi-language:
+  EN-GB'>size <span class=SpellE>tdaddr</span> Base Count name Methods Pointers</span></tt><span
+  lang=EN-GB style='mso-ansi-language:EN-GB'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Base</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>module</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>entry</span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Count</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>nofMethods</span></tt></span><tt><span
+  style='font-size:10.0pt'> <span class=SpellE>nofInheritedMethods</span> <span
+  class=SpellE>nofNewMethods</span> <span class=SpellE>nofPointers</span> 4 </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Methods</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>{ <span class=SpellE>methodNumber</span>
+  <span class=SpellE>entryNumber</span> } <span class=SpellE><sup>nofNewMethods</sup></span>
+  </span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Pointers</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>{ <span class=SpellE>pointerOffset</span>
+  } <span class=SpellE><sup>nofPointers</sup></span> </span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>There are 3 different <em>Base</em>
+allowed: <o:p></o:p></span></p>
+
+<p class=MsoNormal><span class=GramE><strong><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>no</span></strong></span><strong><span lang=EN-GB style='mso-ansi-language:
+EN-GB'> base</span></strong><span lang=EN-GB style='mso-ansi-language:EN-GB'> <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt'><span class=GramE><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>module</span></span><span
+lang=EN-GB style='mso-ansi-language:EN-GB'> and entry are equal to -1 <o:p></o:p></span></p>
+
+<p class=MsoNormal><span class=GramE><strong><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>local</span></strong></span><strong><span lang=EN-GB style='mso-ansi-language:
+EN-GB'> record</span></strong><span lang=EN-GB style='mso-ansi-language:EN-GB'>
+<o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt'><span class=GramE><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>module</span></span><span
+lang=EN-GB style='mso-ansi-language:EN-GB'> equal to -1; entry is the offset in
+the constant section of the pointer to the base type <o:p></o:p></span></p>
+
+<p class=MsoNormal><span class=GramE><strong><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>imported</span></strong></span><strong><span lang=EN-GB
+style='mso-ansi-language:EN-GB'> record</span></strong><span lang=EN-GB
+style='mso-ansi-language:EN-GB'> <o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt'><span class=GramE><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>module</span></span><span
+lang=EN-GB style='mso-ansi-language:EN-GB'> is an index in the table of
+imported modules; entry is the fingerprint of the record (to be found and
+checked in the export section of the module)</span><a name=tex2html1></a><a
+href="#foot649"><span style='mso-bookmark:tex2html1'><sup><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>1</span></sup></span><span style='mso-bookmark:
+tex2html1'></span></a><span style='mso-bookmark:tex2html1'></span><span
+style='mso-ansi-language:EN-GB'> <span lang=EN-GB><o:p></o:p></span></span></p>
+
+<h2><a name=SECTION000412000000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'><o:p>&nbsp;</o:p></span></a></h2>
+
+<h2><span style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Exception Table Section <o:p></o:p></span></span></h2>
+
+<p><span style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>This section contains the description about the
+exception table. <o:p></o:p></span></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><span
+  class=SpellE>ExceptionTable</span></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'>=</span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><tt><span
+  style='font-size:10.0pt'>08EX { <span class=SpellE>ExTableEntry</span> } <span
+  class=SpellE><sup>exTableLen</sup></span></span></tt></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><span
+  class=SpellE>ExTableEntry</span></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'>=</span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><tt><span
+  style='font-size:10.0pt'>0FEX <span class=SpellE>pcFrom</span> <span
+  class=SpellE>pcTo</span> <span class=SpellE>pcHandler</span></span></tt></span><span
+  style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+  style='mso-ansi-language:EN-GB'><o:p></o:p></span></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+ </tr>
+ <tr style='mso-yfti-irow:2;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'><span style='mso-bookmark:
+  SECTION000412000000000000000'></span>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><o:p>&nbsp;</o:p></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'><span style='mso-bookmark:
+  SECTION000412000000000000000'></span>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><o:p>&nbsp;</o:p></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'><span style='mso-bookmark:
+  SECTION000412000000000000000'></span>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><o:p>&nbsp;</o:p></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+ </tr>
+</table>
+
+<h2><span style='mso-bookmark:SECTION000412000000000000000'><span class=SpellE><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>PtrsInProcs</span></span></span><span
+style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'> Section <o:p></o:p></span></span></h2>
+
+<p><span style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>This section contains the description about the
+pointer locations on the stack for each procedure. A procedure can be a module
+procedure, a method or the body of either a module or an object. <o:p></o:p></span></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><span
+  class=SpellE>PtrsInProcs</span></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'>=</span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><tt><span
+  style='font-size:10.0pt'>08FX { <span class=SpellE>ProcEntry</span> } <span
+  class=SpellE><sup>nofProcs</sup></span></span></tt></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+ </tr>
+ <tr style='mso-yfti-irow:1;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><span
+  class=SpellE>ProcEntry</span></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'>=</span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span style='mso-bookmark:SECTION000412000000000000000'><span
+  class=SpellE><tt><span style='font-size:10.0pt'>codeoffset</span></tt></span></span><span
+  style='mso-bookmark:SECTION000412000000000000000'><tt><span style='font-size:
+  10.0pt'> <span class=SpellE>beginoffset</span> <span class=SpellE>endoffset</span>
+  <span class=SpellE>nofPtrs</span> 4 { <span class=SpellE>pointer</span> } <span
+  class=SpellE><sup>nofPtrs</sup></span></span></tt></span></p>
+  </td>
+  <span style='mso-bookmark:SECTION000412000000000000000'></span>
+ </tr>
+</table>
+
+<p><span style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>The maximum of the number of pointers over all
+procedures is stored in the variable <span class=SpellE>maxPtrs</span> in the
+Header Section.<o:p></o:p></span></span></p>
+
+<h2><span style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></span></h2>
+
+<h2><span style='mso-bookmark:SECTION000412000000000000000'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>Reference Section</span></span><span
+lang=EN-GB style='mso-ansi-language:EN-GB'> <o:p></o:p></span></h2>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>The reference section is
+used by the Oberon trap handler to display the values on the stack when the
+trap <span class=SpellE>occured</span>. With some extensions (i.e. object
+types) it may be also used for some meta-programming. <o:p></o:p></span></p>
+
+<table class=MsoNormalTable border=0 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Reference</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>8CX {<span
+  class=SpellE>ProcRef</span>}</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>ProcRef</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0F8X <span
+  class=SpellE>offset</span> <span class=SpellE>name</span> {<span
+  class=SpellE>VarMode</span> <span class=SpellE>VarType</span> [<span
+  class=SpellE>dim</span>] [<span class=SpellE>td</span>] <span class=SpellE>offset</span>
+  <span class=SpellE>name</span>}</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>VarMode</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE><tt><span style='font-size:10.0pt'>Direct</span></tt></span><tt><span
+  style='font-size:10.0pt'> | <span class=SpellE>Indirect</span></span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>VarType</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>Byte | <span
+  class=SpellE>Bool</span> | <span class=SpellE>Char</span> | <span
+  class=SpellE>SInt</span> | <span class=SpellE>Int</span> | <span
+  class=SpellE>LInt</span> | Real | <span class=SpellE>LReal</span> | Set |
+  Pointer | <span class=SpellE>Proc</span> | String </span></tt><span
+  style='font-size:10.0pt;font-family:"Courier New"'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Direct</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>1X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Indirect</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Byte</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>1X | 81X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Bool</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>2X | 82X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Char</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>3X | 83X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:9'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>SInt</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>4X | 84X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:10'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Int</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>5X | 85X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:11'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>LInt</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>6X | 86X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:12'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Real</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>7X | 87X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:13'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>LReal</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>8X | 88X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:14'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Set</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>9X | 89X</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:15'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>Pointer</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0DX | 8DX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:16'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><span class=SpellE>Proc</span></p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0EX | 8EX</span></tt></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:17;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>String</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal>=</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal><tt><span style='font-size:10.0pt'>0FX</span></tt></p>
+  </td>
+ </tr>
+</table>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>A <span class=SpellE><!-- MATH: $VarType \geq 80X$ -->VarType</span>
+&#8805; 80X means an array of the given type; in this case the number of
+dimensions must follow the type. Open Arrays have dimension 0. <o:p></o:p></span></p>
+
+<h1><a name=SECTION00050000000000000000><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>Oberon Kernel System Calls</span></a><span lang=EN-GB style='mso-ansi-language:
+EN-GB'> <o:p></o:p></span></h1>
+
+<p><span lang=EN-GB style='mso-ansi-language:EN-GB'>This appendix has been <span
+class=SpellE>contribued</span> by Pieter Muller. Many thanks. <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>TYPE <span class=SpellE>ProtectedObject</span> = POINTER TO RECORD END<span
+class=GramE>;<span style='mso-spacerun:yes'>  </span>(</span>* protected object (10000) *)<o:p></o:p></span></pre><pre><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>TYPE Body = PROCEDURE (<span
+class=SpellE>typetag</span>: LONGINT; self: <span class=SpellE>ProtectedObject</span>);<o:p></o:p></span></pre><pre><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span class=SpellE><span
+class=GramE>CreateActivity</span></span><span class=GramE>(</span>body: Body; priority: LONGINT; flags: SET; <span
+class=SpellE>obj</span>: <span class=SpellE>ProtectedObject</span>);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>Create a thread associated with the
+active object &quot;<span class=SpellE>obj</span>&quot;. &quot;<span
+class=GramE>body</span>&quot; contains the body method of the active object.
+&quot;<span class=GramE>priority</span>&quot; and &quot;flags&quot; are the
+values specified in the annotation of the body. This call is generated by the
+compiler when an active object (a &quot;POINTER TO RECORD&quot; variable with a
+&quot;BEGIN-END&quot; body) is allocated with &quot;NEW&quot;. First the object
+is allocated as usual, then its <span class=SpellE>initializer</span> is called
+(if defined), and then &quot;Create&quot; is called to activate it. <o:p></o:p></span></p>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>The call creates a new thread that
+has the body entry point as initial instruction pointer. A stack is set up for
+the local variables of the thread, in such a way so that return from the body
+will terminate the thread. A stack overflow will cause an extension of the
+stack, or a trap if no more memory is available to the thread. Any trap will
+cause the thread to be either restarted at the body, or terminated (this
+depends on &quot;flags&quot;). It is not (yet) defined what happens to the
+locks that are held by a trapping thread. Priority levels are not yet defined.
+The thread of an active object will anchor the object until it terminates.
+After that the object may remain anchored by other references to it, but it can
+not become active again. It can remain in the system as a protected object. <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span
+class=GramE>Lock(</span><span class=SpellE>obj</span>: <span class=SpellE>ProtectedObject</span>; exclusive: BOOLEAN);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>Lock protected object &quot;<span
+class=SpellE>obj</span>&quot;. The compiler generates this call at the entry to
+a method with the &quot;EXCLUSIVE&quot; or &quot;SHARED&quot; annotation
+(called a protected method). &quot;<span class=GramE>exclusive</span>&quot;
+indicates which is the relevant case. Only one thread can lock an object
+exclusively, and many threads may obtain a shared lock when no exclusive lock
+is held. A thread is not allowed to re-enter its own exclusive region. Any
+object with exclusive or shared methods (also if only in an extension) can be
+locked. The compiler must indicate this in the type descriptor of the object,
+so that the object can be allocated with the relevant header. (As an
+approximation, any object with methods may be treated as a protected object).
+Shared locks may be implemented identical to exclusive locks in the simplest
+case. <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span
+class=GramE>Unlock(</span><span class=SpellE>obj</span>: <span class=SpellE>ProtectedObject</span>; dummy: LONGINT);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>Unlock protected object &quot;<span
+class=SpellE>obj</span>&quot;. The compiler generates this call at the exit of
+a protected method. The relevant lock is released. (The &quot;dummy&quot;
+parameter is a placeholder to be used or removed later). <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>TYPE Condition = PROCEDURE (slink: LONGINT): BOOLEAN;<o:p></o:p></span></pre><pre><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span class=SpellE><span
+class=GramE>Passivate</span></span><span class=GramE>(</span><span
+class=SpellE>cond</span>: Condition; slink: LONGINT; <span class=SpellE>obj</span>: <span
+class=SpellE>ProtectedObject</span>; flags: SET);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+class=SpellE><span lang=EN-GB style='mso-ansi-language:EN-GB'>Passivate</span></span><span
+lang=EN-GB style='mso-ansi-language:EN-GB'> the current thread until some condition
+becomes true. The compiler generates this call for the &quot;PASSIVATE&quot;
+statement. The <span class=SpellE><span class=GramE>boolean</span></span>
+condition is compiled in a separate procedure which is logically nested in the
+scope where the <span class=SpellE>passivate</span> resides, and which returns
+the <span class=SpellE>boolean</span> result of the expression. The static link
+value to that scope is passed in the &quot;slink&quot; parameter. This value is
+used when calling the condition procedure, so that it can access the variables
+of the enclosing scope. &quot;<span class=SpellE><span class=GramE>obj</span></span>&quot;
+points to the object instance containing the <span class=SpellE>passivate</span>
+statement. Bit 0 of the &quot;flags&quot; parameter is set if the compiler
+detects a `global' condition, i.e. a <span class=SpellE><span class=GramE>boolean</span></span>
+expression with function calls or reference to non-local variables. <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span
+class=SpellE>NewRec</span>*(VAR p: SYSTEM.PTR; <span class=SpellE>typetag</span>: LONGINT);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>This call is generated for the
+&quot;NEW&quot; procedure with a &quot;POINTER TO RECORD&quot; parameter.
+&quot;<span class=SpellE><span class=GramE>typetag</span></span>&quot; is a the
+address of a type descriptor for the specified record type. From the type
+descriptor can be learned if the relevant object is a protected object, in
+which case a heap block with the required protected object header is allocated.
+(It would be advantageous to have the compiler generate a separate kernel call
+for this case). &quot;<span class=GramE>p</span>&quot; returns the allocated
+pointer value. <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span
+class=SpellE>NewArr</span>*(VAR p: SYSTEM.PTR; <span class=SpellE>elemTag</span>, <span
+class=SpellE>numElems</span>, <span class=SpellE>numDims</span>: LONGINT);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>This call is generated for the
+&quot;NEW&quot; procedure with a &quot;POINTER TO ARRAY OF&quot; parameter,
+where the array elements are pointers or records containing pointers. &quot;<span
+class=SpellE><span class=GramE>elemTag</span></span>&quot; is the address of a
+type descriptor for the element record type, or 0 in the case of an array of
+pointers. &quot;<span class=SpellE><span class=GramE>numElems</span></span>&quot;
+and &quot;<span class=SpellE>numDims</span>&quot; indicate the total size and
+number of dimensions of the array. The array is allocated with a special header
+where the sizes of the different dimensions are stored. These fields are
+initialized by code generated by the compiler after the kernel call. <o:p></o:p></span></p>
+
+<pre><span lang=EN-GB style='mso-ansi-language:EN-GB'>PROCEDURE <span
+class=SpellE>NewSys</span>*(VAR p: SYSTEM.PTR; size: LONGINT);<o:p></o:p></span></pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>This call is generated for the
+&quot;SYSTEM.NEW&quot; procedure to allocate a block of memory that does not
+contain any pointers that have to be traced by the garbage collector. It is
+also used for the &quot;NEW&quot; procedure with a &quot;POINTER TO ARRAY
+OF&quot; parameter, where the array elements do not contain pointers. <o:p></o:p></span></p>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+class=SpellE>Kernel</span> <span class=SpellE>call</span> <span class=SpellE>numbers</span>:
+</p>
+
+<table class=MsoNormalTable border=1 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:2.25pt 2.25pt 2.25pt 2.25pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>244</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>-</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>245</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>-</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>246</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'><span class=SpellE>Unlock</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>247</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>Lock</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>248</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>-</p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>249</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'><span class=SpellE>Passivate</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:6'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>250</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'><span class=SpellE>CreateActivity</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:7'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>251</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'><span class=SpellE>NewArr</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:8'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>252</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'><span class=SpellE>NewSys</span></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:9;mso-yfti-lastrow:yes'>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'>253</p>
+  </td>
+  <td style='padding:2.25pt 2.25pt 2.25pt 2.25pt'>
+  <p class=MsoNormal align=center style='text-align:center'><span class=SpellE>NewRec</span></p>
+  </td>
+ </tr>
+</table>
+
+<pre><a name=SECTION00060000000000000000>&nbsp;</a> <a name=ZeroComp>&nbsp;</a> </pre>
+
+<p style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><o:p>&nbsp;</o:p></p>
+
+<div class=MsoNormal align=center style='text-align:center;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>
+
+<hr size=2 width="100%" align=center>
+
+</div>
+
+<h4 style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>Footnotes<o:p></o:p></span></h4>
+
+<p class=MsoNormal style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><a
+name=foot649><span lang=EN-GB style='mso-ansi-language:EN-GB'>... </span></a><span
+class=GramE><span style='mso-bookmark:foot649'><span lang=EN-GB
+style='mso-ansi-language:EN-GB'>module</span></span></span><span
+style='mso-bookmark:foot649'><span lang=EN-GB style='mso-ansi-language:EN-GB'>)</span></span><a
+href="http://www.oberon.ethz.ch/native/compiler/objectfile236/ObjectFile.html#tex2html1"><span
+style='mso-bookmark:foot649'><sup><span lang=EN-GB style='mso-ansi-language:
+EN-GB'>1</span></sup></span><span style='mso-bookmark:foot649'></span></a><span
+style='mso-bookmark:foot649'></span><span style='mso-ansi-language:EN-GB'> <span
+lang=EN-GB><o:p></o:p></span></span></p>
+
+<p class=MsoNormal style='margin-left:36.0pt;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'>In fact this is not really needed,
+because for every imported record, a pointer to it is created in the local
+constants section. The module number could be safely ignored and entry <span
+class=GramE>be</span> the offset in the constants; the fingerprint would be
+checked in the use section when fixing the reference to the td. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><span
+lang=EN-GB style='mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></p>
+
+<div class=MsoNormal align=center style='text-align:center;tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'>
+
+<hr size=2 width="100%" align=center>
+
+</div>
+
+<address style='tab-stops:45.8pt 91.6pt 137.4pt 183.2pt 229.0pt 274.8pt 320.6pt 366.4pt 412.2pt 458.0pt 503.8pt 549.6pt 595.4pt 641.2pt 687.0pt 732.8pt'><st1:PersonName
+w:st="on">ulrike.glavitsch@inf.ethz.ch</st1:PersonName> </address>
+
+</div>
+
+</body>
+
+</html>
