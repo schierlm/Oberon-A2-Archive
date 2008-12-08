@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
-"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg height="164.675" id="svg1" inkscape:version="0.40" sodipodi:docbase="/mnt/donnees/09-Mes_images/Travaux/Travaux vectoriel/pictogrammes/sécu SVG/Obligation" sodipodi:docname="ObligationGenerale.svg" sodipodi:version="0.32" width="164.675" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Generator: Adobe Illustrator 12.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 51448)  --><svg height="137.522" id="Layer_1" inkscape:version="0.42" sodipodi:docbase="F:\openclip\svg da inviare" sodipodi:docname="tasto10.svg" sodipodi:version="0.32" space="preserve" style="overflow:visible;enable-background:new 0 0 137.561 137.522;" version="1.1" viewBox="0 0 137.561 137.522" width="137.561" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg">
   <metadata>
     <rdf:RDF xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <cc:Work rdf:about="">
-        <dc:title>obligation generale</dc:title>
-        <dc:description>obligation</dc:description>
+        <dc:title>Tasto 10</dc:title>
+        <dc:description></dc:description>
         <dc:subject>
           <rdf:Bag>
-            <rdf:li></rdf:li>
-            <rdf:li>symbol</rdf:li>
-            <rdf:li>signs_and_symbols</rdf:li>
+            <rdf:li>unsorted</rdf:li>
           </rdf:Bag>
         </dc:subject>
         <dc:publisher>
-          <cc:Agent rdf:about="http://www.openclipart.org">
-            <dc:title>yves GUILLOU</dc:title>
+          <cc:Agent rdf:about="http://www.openclipart.org/">
+            <dc:title>Open Clip Art Library</dc:title>
           </cc:Agent>
         </dc:publisher>
         <dc:creator>
           <cc:Agent>
-            <dc:title>yves GUILLOU</dc:title>
+            <dc:title>Architetto Francesco Rollandin</dc:title>
           </cc:Agent>
         </dc:creator>
         <dc:rights>
           <cc:Agent>
-            <dc:title>yves GUILLOU</dc:title>
+            <dc:title>Architetto Francesco Rollandin</dc:title>
           </cc:Agent>
         </dc:rights>
         <dc:date></dc:date>
@@ -42,21 +38,20 @@
       </cc:License>
     </rdf:RDF>
   </metadata>
-  <sodipodi:namedview bordercolor="#666666" borderopacity="1.0" id="base" inkscape:current-layer="svg1" inkscape:cx="65.870001" inkscape:cy="65.870001" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:window-height="1121" inkscape:window-width="1590" inkscape:window-x="0" inkscape:window-y="0" inkscape:zoom="7.1580384" pagecolor="#ffffff"/>
-  <defs id="defs2">
-    <marker id="ArrowEnd" markerHeight="3" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="0" refY="5" viewBox="0 0 10 10">
-      <path d="M 0 0 L 10 5 L 0 10 z" id="path4"/>
-    </marker>
-    <marker id="ArrowStart" markerHeight="3" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="10" refY="5" viewBox="0 0 10 10">
-      <path d="M 10 0 L 0 5 L 10 10 z" id="path6"/>
-    </marker>
-  </defs>
-  <g id="g7">
-    <path d="M 84.4626 153.222C 123.584 152.076 154.369 119.431 153.222 80.3101C 152.076 41.1891 119.431 10.4038 80.3103 11.5504C 41.1893 12.697 10.4039 45.3414 11.5506 84.4624C 12.6972 123.583 45.3416 154.369 84.4626 153.222z" id="path8" style="stroke:none; fill:#000000"/>
-    <path d="M 84.2891 148.923C 121.063 147.846 150.001 117.16 148.923 80.386C 147.846 43.6122 117.16 14.6739 80.386 15.7517C 43.6121 16.8296 14.6738 47.5154 15.7517 84.2892C 16.8295 121.063 47.5153 150.001 84.2891 148.923z" id="path9" style="stroke:#ffffff; stroke-width:3; fill:#004cff"/>
-  </g>
-  <g id="g10">
-    <path d="M 89.015700,45.666000 C 92.055110,48.505337 90.231233,54.092473 90.213900,58.112000 C 90.163333,69.838073 89.215334,80.885119 88.292000,92.639500 C 88.169834,94.194719 86.657336,95.784094 84.960200,96.489100 C 82.276836,97.603794 79.808374,96.430699 77.656600,95.311300 C 75.745874,94.317299 75.082868,89.703543 74.770213,87.742398 C 72.886368,75.925843 74.252252,67.348435 71.666400,55.338700 C 70.936152,51.947135 71.101959,47.839437 73.134400,45.106700 C 75.671859,41.694937 81.863303,38.984418 84.930700,41.849900 L 89.015700,45.666000 z " id="path11" sodipodi:nodetypes="csssssssss" style="stroke:none; fill:#ffffff"/>
-    <path d="M 91.822000,108.22600 C 93.819224,112.18961 92.734473,116.09174 90.525700,119.44800 C 88.577873,122.40774 84.442649,122.95041 80.824000,122.55400 C 77.267549,122.16441 74.540979,118.72380 73.424100,115.86900 C 72.328579,113.06880 72.533425,110.22337 73.732000,107.62500 C 75.308025,104.20837 79.804902,101.92947 84.194800,102.56000 C 87.707002,103.06447 90.309124,105.22361 91.822000,108.22600 z " id="path12" sodipodi:nodetypes="cssssss" style="stroke:none; fill:#ffffff"/>
+  <defs id="defs27"/>
+  <sodipodi:namedview bordercolor="#666666" borderopacity="1.0" id="base" inkscape:current-layer="Layer_1" inkscape:cx="68.780502" inkscape:cy="68.761002" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:window-height="510" inkscape:window-width="787" inkscape:window-x="22" inkscape:window-y="29" inkscape:zoom="2.6177629" pagecolor="#ffffff"/>
+  <g id="g3">
+    <path d="M0,68.736c0,35.047,27.489,65.293,62.416,68.504c34.939,3.211,67.633-21.357,74.024-55.91   c6.391-34.546-15.17-69.343-49.026-78.837C53.547-7.005,16.951,11.434,4.462,44.311C1.504,52.097,0,60.408,0,68.736" id="path5" style="fill:#970F00;"/>
+    <radialGradient cx="68.7954" cy="68.7383" gradientUnits="userSpaceOnUse" id="XMLID_2_" r="63.9294">
+      <stop id="stop8" offset="0" style="stop-color:#F28888"/>
+      <stop id="stop10" offset="1" style="stop-color:#D82A2A"/>
+    </radialGradient>
+    <path d="M4.866,68.736c0,34.84,29.089,63.932,63.929,63.932c34.839,0,63.929-29.092,63.929-63.932   c0-34.838-29.09-63.928-63.929-63.928C33.956,4.809,4.866,33.898,4.866,68.736" id="path12" style="fill:url(#XMLID_2_);"/>
+    <path d="M11.031,43.889c-5.166,30.106,12.817,60.349,41.733,70.201c30.669,10.451,65.179-4.994,78.005-34.7   c-6.163,35.951-43.128,59.583-78.349,50.078C16.055,119.655-3.957,78.563,11.031,43.889" id="path14" style="fill:#B20D0D;"/>
+    <path d="M28.866,40.359c8.843,1.829,19.021-10.696,26.687-13.884c14.322-5.952,32.211-3.188,45.186,4.917   c13.725,8.577,23.487,25.046,24.988,41.214c0.005,0.046,0.005,0.055,0.001,0.024c-1.014-9.79-0.329-18.994-4.058-28.458   c-6.178-15.686-19.538-27.97-35.646-32.907c-16.655-5.102-34.868-1.854-49.216,7.87C32.378,22.137,15.325,37.556,28.866,40.359" id="path16" style="fill:#EF5656;"/>
+    <path d="M56.402,29.004c0,12.468,2.023,25.46,3.989,37.73   c0.611,3.81,6.289,34.225,12.748,19.444c6.113-13.989,6.633-31.416,7.934-46.428c0.374-4.312,1.738-10.094,0.152-14.32   C76.878,13.842,56.402,15.899,56.402,29.004 M59.232,29.004c0-9.723,15.119-11.221,19.028-3.301   c2.143,4.336,0.3,11.619-0.168,16.177c-1.413,13.733-2.669,28.264-6.791,41.504c-0.96,3.083-2.245,6.081-3.875,1.675   c-2.043-5.521-2.899-11.584-3.847-17.364C61.503,55.065,59.232,41.844,59.232,29.004" id="path18" style="fill-rule:evenodd;clip-rule:evenodd;fill:#970F00;"/>
+    <path d="M55.695,107.186c0,16.873,26.18,16.873,26.18,0   C81.875,90.309,55.695,90.307,55.695,107.186 M58.528,107.186c0-13.229,20.511-13.229,20.511,0   C79.039,120.412,58.528,120.412,58.528,107.186" id="path20" style="fill-rule:evenodd;clip-rule:evenodd;fill:#970F00;"/>
+    <path d="M80.459,29.004c0,12.923-2.271,26.35-4.382,39.055   c-0.511,3.066-5.097,29.739-9.896,17.146c-5.206-13.656-6.03-29.752-7.442-44.173c-0.443-4.519-2.079-11.104-0.213-15.484   C62.677,15.795,80.459,17.606,80.459,29.004" id="path22" style="fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;"/>
+    <path d="M80.459,107.186c0,15.054-23.347,15.054-23.347,0   C57.112,92.129,80.459,92.129,80.459,107.186" id="path24" style="fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;"/>
   </g>
 </svg>
