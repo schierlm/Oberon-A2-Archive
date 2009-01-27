@@ -1,0 +1,6 @@
+Image  License  Source
+
+close.svg  [1] clipart\computer\icons\etiquette-theme\b_stop.svg
+minimize.svg  [1] clipart\computer\icons\etiquette-theme\b_minus.svg
+
+[1] Public Domain, www.openclipart.org, library version 0.18
