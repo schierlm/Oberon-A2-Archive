@@ -23,6 +23,7 @@ WMPlayer.svg  [1] clipart\computer\icons\bb_music_.svg
 WMScribble.svg  [1] clipart\office\feather.svg
 WMSearchTool.svg  [1] clipart\office\magnifying_glass_teudimu_01.svg
 WMShell.svg  [1] clipart\computer\icons\etiquette-theme\gnome-terminal.svg
+WMTaskScheduler.svg [1] clipart\office\tabella_architetto_franc.svg
 WMTCPTracker.svg  [1] clipart\sign_and_symbols\traffic_light_dan_gerhar_01.svg
 WMTextTool.svg  [1] clipart\computer\icons\etiquette-theme\gnome-graphics.svg
 WMTrapWriter.svg [1] clipart\computer\icons\lightning_icon_benji_par_01.svg

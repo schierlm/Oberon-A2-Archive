@@ -1,0 +1,10 @@
+Image  License  Source
+
+MeetBoss.svg  [1] \clipart\people\people_juliane_krug_4a.svg
+Meeting.svg  [1] \clipart\people\people.svg
+PhoneCall.svg  [1] \clipart\people\people_juliane_krug_2b.svg
+Presentation.svg  [1] \clipart\office\inservice_presentation_01.svg
+Unknown.svg  [1] \clipart\office\user_frederic_moser_01.svg
+
+[0] Unknown license
+[1] Public Domain, www.openclipart.org, library version 0.18
