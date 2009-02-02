@@ -1,0 +1,154 @@
+\documentclass[a4wide,11pt]{article}
+\usepackage{color,bbm}
+\usepackage{longtable}
+\usepackage{amssymb,amsmath,graphicx}
+\usepackage{nonfloat}
+\usepackage{colortbl}
+\usepackage{fancybox}
+\usepackage{hyperref}
+\usepackage{listings}
+
+% --------------------------------- page layout --------------------------------------
+\pagestyle{headings}
+% other font styles:
+%\usepackage[math]{iwona} % iwona, kurier
+%\usepackage{cmbright}
+
+\oddsidemargin -0 cm
+\evensidemargin 0 cm
+%\topmargin -1.5cm
+\textwidth 16   cm
+%\textheight 25 cm
+
+\parskip 5pt
+\parindent 0cm
+
+\definecolor{lightgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+
+% --------------------------------- listings --------------------------------------
+
+
+\newcommand{\changefont}[3]{\fontfamily{#1}\fontseries{#2}\fontshape{#3}\selectfont}
+
+\newcommand{\progfont}{\changefont{pcr}{m}{n}}
+\newcommand{\kwfont}{\changefont{pcr}{b}{n}}
+\renewcommand{\lstlistingname}{Fig.}
+\newcommand{\todo}[1]
+            {\setlength{\fboxrule}{2pt}\fcolorbox{red}{yellow}{\begin{minipage}{\textwidth} \color{blue}$todo:$ #1 \end{minipage}}}
+
+\newcommand{\pc}[1]{\makebox{\progfont #1}}
+\newcommand{\kw}[1]{\makebox{\kwfont #1}}
+
+\lstdefinelanguage{ebnf}[]{}
+{morekeywords={},
+sensitive=true,
+comment=[l]{//},
+comment=[s]{(*}{*)},
+morestring=[b]',
+morestring=[b]",
+}
+\lstdefinelanguage{Oberon}[]{Pascal}%
+  {morekeywords={len,module},%
+   sensitive=f,%
+    morecomment=[s][\color{red}]{(*!}{*)}
+  }[keywords]%
+\lstset{language=Oberon,
+basicstyle=\scriptsize\progfont,keywordstyle=\kwfont ,identifierstyle=\progfont,
+commentstyle=\color{darkgrey}, stringstyle=, showstringspaces=false, %keepspaces=true,
+numbers=none, numberstyle=\tiny, stepnumber=1, numbersep=5pt, captionpos=b,
+columns=flexible % flexible, fixed, fullflexible
+framerule=1mm,frame=shadowbox, rulesepcolor=\color{blue}, % frame = shadowbox
+xleftmargin=2mm,xrightmargin=2mm,
+}
+\renewcommand{\lstlistingname}{Fig.}
+
+\begin{document}
+\title{Programming in Active Oberon \\[1em] \normalsize Short Introductory Course}
+\author{Sven Stauber, Ulrike Glavitsch, Felix Friedrich}
+\maketitle
+
+\tableofcontents
+
+% --------------------------------------- example -------------------------------
+\section{Section}
+\subsection{Subsection}
+\subsubsection{SubSubSection}
+\paragraph{Paragraph}
+
+Example Listing EBNF
+\begin{lstlisting}[language=ebnf]
+Number       =  Integer | Real.
+Integer      =  Digit {Digit} | Digit {HexDigit} 'H'.
+Real         =  Digit {Digit} '.' {Digit} [ScaleFactor].
+ScaleFactor  =  ('E' | 'D') ['+' | '-'] digit {digit}.
+HexDigit     =  Digit | 'A' | 'B' | 'C' | 'D' | 'E' | 'F'.
+Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' .
+\end{lstlisting}
+
+Example Listing EBNF no frame
+\begin{lstlisting}[language=ebnf,frame=none]
+Number       =  Integer | Real.
+Integer      =  Digit {Digit} | Digit {HexDigit} 'H'.
+\end{lstlisting}
+
+
+Example Listing Oberon
+\begin{lstlisting}[language=Oberon]
+    MODULE Test;
+    PROCEDURE Test;
+    VAR a,b,c: LONGINT;
+    BEGIN
+        a := b*b (*! b is not initialized *) 
+    END Test;
+    END Test.
+\end{lstlisting}
+
+Example Listing Oberon no frame with line numbers
+\begin{lstlisting}[language=Oberon,frame=none,numbers=left]
+    MODULE Test; (* module in upper case *)
+    PROCEDURE Test;
+    VAR a,b,c: LONGINT;
+    BEGIN
+        a := b*b
+    END Test;
+    END Test.
+\end{lstlisting}
+
+Example Listing Oberon NoFrame
+\begin{lstlisting}[language=Oberon,frame=none]
+    module Test; (* module in lower case *)
+    procedure Test;
+    var a,b,c: longint;
+    begin
+        a := b*b
+    end Test;
+    end Test.
+\end{lstlisting}
+
+Oberon keyword \kw{module} in text.
+
+Oberon programming content \verb+a := b*b+ in text.
+
+Math content $x \leftarrow 10$ in text.
+
+Math content alone:
+$$x \leftarrow 10$$
+
+% --------------------------------------- end of example --------------------------
+
+\section{A First Oberon Program}
+
+\section{Basic Types}
+
+\section{In- and Output}
+
+\section{The module System}
+
+\section{Active Objects}
+
+\section{Active Oberon EBNF}
+
+
+\end{document}
+
