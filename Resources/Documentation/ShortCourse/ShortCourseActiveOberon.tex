@@ -49,7 +49,7 @@ morestring=[b]',
 morestring=[b]",
 }
 \lstdefinelanguage{Oberon}[]{Pascal}%
-  {morekeywords={len,module},%
+  {morekeywords={len,module,import},%
    sensitive=f,%
     morecomment=[s][\color{red}]{(*!}{*)}
   }[keywords]%
@@ -64,13 +64,191 @@ xleftmargin=2mm,xrightmargin=2mm,
 \renewcommand{\lstlistingname}{Fig.}
 
 \begin{document}
-\title{Programming in Active Oberon \\[1em] \normalsize Short Introductory Course}
-\author{Sven Stauber, Ulrike Glavitsch, Felix Friedrich}
+\title{Programming in Active Oberon / A2 \\[1em] \normalsize A Short Introduction}
+\author{Sven Stauber, Florian Negele, Ulrike Glavitsch, Felix Friedrich}
 \maketitle
 
 \tableofcontents
+% --------------------------------------------------------------------------------
+\subsection*{Objective}
+This is a small introduction to the programming language Oberon and the operating / runtime system A2. This introduction does not replace a language report, neither is it an introduction to programming. It rather should provide a fast access to the used operating system and programming language by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009 at ETH Zurich as accompanying material for the practial exercises.
 
-% --------------------------------------- example -------------------------------
+\section{The Operating System A2 and the Language Active Oberon}
+\subsection{A2 and Active Oberon}
+A2 is a modern, multi-threaded operating system in the tradition of the ETH operating systems Medos, Oberon and Aos. It is completely written in Active Oberon with only very few exceptions: little parts of the kernel and some low-level optimized routines are implemented in in-line assembler. A2 does not use heavyweight processes but is rather composed of light-weight processes (`threads') that are supported by {\em Active Objects} in the language Active Oberon. Active Oberon is a highly readable, abstract programming language. Its abstraction protects programmers from artificial technical complexities while system-near programming is still possible by ways of a special `system' module. The interplay of an abstract language and efficient runtime accounts for the special flavour of A2.
+
+\subsection{Modules and Commands}
+Oberon is a modular programming language that is supported by a dynamic loading concept in the operating system A2. The role of programs and applications is played by {\em modules}. Instead of loading and executing a `program', {\em modules} are loaded and {\em commands} are executed. Once a module is loaded, it stays loaded until it is explicitly unloaded or until the system goes down. Before we give more details on modules and commands, we show an example of a very simple Oberon module:
+
+\begin{lstlisting}[language=Oberon,frame=none,caption=A simple Oberon Module]
+    MODULE Hello;
+
+    IMPORT Commands;
+
+        PROCEDURE World*(context: Commands.Context);
+        BEGIN
+            context.out.String("Hello World");
+            context.out.Ln
+        END World;
+
+    END Hello.
+\end{lstlisting}
+
+Commands are executed by activating a command string of the form \verb+moduleName.commandName+. In the simple example above, this would be \verb+Hello.World+. A command is usually activated by a middle-mouse click. When a command is activated, the module with name \verb+moduleName+ is dynamically loaded on demand and the program counter (potentially of a newly created process) is set to the loaded procedure named \verb+commandName+ in module \verb+moduleName+.
+
+Note that a module name has nothing to do with the name of the file that contains the source code of the module. It is pure convention that source code files are denominated as \verb+moduleName.Mod+.
+
+An Active Oberon module consists of {\em constants}, {\em variables}, {\em types} and {\em procedures}. Procedures contain executable code. A procedure may or may not accept parameters and a procedure may or may not return a parameter. A procedure can act as a command if and only if
+\begin{itemize}
+\item it is exported and
+\item it provides no return parameter and
+\item it provides at most one input parameter of type \verb+Commands.Context+
+\item it is declared immediately in the module context
+\end{itemize}
+
+The following example module contains examples of procedures that can or cannot act as commands. Note that comments in Oberon are embraced by \verb+(*+ and \verb+*)+.
+\begin{lstlisting}[language=Oberon,frame=none,caption=Procedures and Commands]
+    MODULE Sample;
+
+    IMPORT Commands,KernelLog;
+
+        (* Simple is a command, "*" indicates that Simple is exported *)
+        PROCEDURE Simple*;
+        BEGIN KernelLog.String("SimpleOutput called"); KernelLog.Ln;
+        END Simple;
+
+        (*! Internal is not a command: it is not marked exported *)
+        PROCEDURE Internal;
+        BEGIN KernelLog.String("InternalOutput called"); KernelLog.Ln;
+        END Internal;
+
+        (* WithContext is a valid command *)
+        PROCEDURE WithContext*(context: Commands.Context);
+        BEGIN
+            context.out.String("this is written to the standard output stream");
+            context.out.Ln;
+        END WithContext;
+
+        (*! WithOther is not a command as its parameter is not a Commands.Context*)
+        PROCEDURE WithOther*(VAR x: REAL);
+        BEGIN x := 2*x
+        END WithOther
+
+        (*! WithReturn is not a command as it provides a return parameter: *)
+        PROCEDURE WithReturn*(): LONGINT;
+        BEGIN RETURN 10
+        END WithReturn;
+
+    END Sample.
+\end{lstlisting}
+
+After compilation of the module \verb+Sample+, the commands \verb+Sample.Simple+ and \verb+Sample.WithContext+ can be activated. The attempt to activate \verb+Sample.Internal+, \verb+Sample.WithOther+ or \verb+Sample.WithReturn+ will fail with a short error message.
+
+\subsection{Loading and Unloading Modules}
+When a module is compiled, an {\em object file} is generated and is made persistent in a file. It is not immediately loaded.
+Basically, a module \verb+module+ is loaded when a command of the form \verb+module.command+ is activated. \footnote{The loading of a module M takes place independent of the string M.C being a valid command or not.} Additionally, a module is loaded when an importing module is being loaded (cf.~ Paragraph \ref{Imports}).
+
+Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call. Consider the following example:
+
+\begin{lstlisting}[language=Oberon,frame=none,caption=A simple Oberon Module]
+    MODULE Hello;
+
+    IMPORT KernelLog;
+
+        PROCEDURE World*;
+        BEGIN KernelLog.String("Hello World"); KernelLog.Ln;
+        END World;
+
+    BEGIN
+        (* this is a special `procedure': the module body
+          it is executed once a module has been freshly loaded *)
+        KernelLog.String("Hello has been loaded"); KernelLog.Ln;
+    END Hello.
+\end{lstlisting}
+
+The module body will be executed once the module has been loaded. Thus, a first call of \verb+Hello.World+ will result in the output \pc{Hello has been loaded} and  \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, a modification and re-compilation of a module has an effect only after it has been unloaded.
+
+Modules can be unloaded explicitly with the command \verb+SystemTools.Unload ModuleNames ~+ where \verb+ModuleNames+ is a white space separated list of module names and `\verb+~+' indicates the end of the list. Note that a module \verb+A+ can only be unloaded if no other currently loaded module imports \verb+A+.
+
+
+\section{Parts of an Active Oberon Module}
+An Active Oberon Module consists of the following parts
+\begin{itemize}
+\item an import list,
+\item a constant declarations section,
+\item a type declarations section,
+\item a variable declarations section and
+\item a procedure declarations section.
+\end{itemize}
+Before we describe each of the sections in more detail, let us start with a little example module.
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={A useless module containing constants, types, variables and procedures}]
+    MODULE Simple;
+
+    (*-------------     import list       ------------*)
+     IMPORT KernelLog, Commands, Streams;
+
+    (*------------- constant declarations ------------*)
+    CONST 
+        a*=100; 
+        s="a string";
+    
+    (*--------------  type declarations   ------------*)
+    TYPE 
+        MyNumberType = LONGINT; 
+        MyRecordType = POINTER TO RECORD a,b,c: LONGINT END; 
+                
+    (*------------- variable declarations ------------*)
+    VAR 
+        globalObject: MyObjectType; x: INTEGER; 
+        
+    (*------------- procedure declarations -----------*)
+    PROCEDURE Modify(t: MyRecordType);
+    BEGIN t.a := 10; t.b := 20; t.c := 30; 
+    END Modify;
+
+    PROCEDURE Display(stream: Streams.Stream; t: MyRecordType);
+    BEGIN 
+        stream.Int(t.a,10); 
+        stream.Int(t.b,10); 
+        stream.Int(t.c,10); 
+    END Display; 
+
+    PROCEDURE Test*(context: Commands.Context); 
+    VAR t: MyRecordType; 
+    BEGIN Modify(t); Display(context.out,t); 
+    END Test; 
+
+    BEGIN (* the module body *) 
+        KernelLog.String("Simple Started"); KernelLog.Ln; 
+    END Simple.
+\end{lstlisting}
+
+
+
+\subsection{Imports} \label{Imports}
+The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden. This is checked by the compiler.
+
+\subsection{Constant Declarations}
+
+\subsection{Type Declarations}
+
+\subsection{Procedure Declarations}
+
+\section{Basic Types}
+
+\section{Active Objects}
+
+\section{In- and Output}
+
+\section{The module System}
+
+\section{Active Oberon EBNF}
+
+
+
+% --------------------------------------- examples -------------------------------
+\newpage {\Huge EXAMPLES}
 \section{Section}
 \subsection{Subsection}
 \subsubsection{SubSubSection}
@@ -99,7 +277,7 @@ Example Listing Oberon
     PROCEDURE Test;
     VAR a,b,c: LONGINT;
     BEGIN
-        a := b*b (*! b is not initialized *) 
+        a := b*b (*! b is not initialized *)
     END Test;
     END Test.
 \end{lstlisting}
@@ -135,19 +313,7 @@ Math content $x \leftarrow 10$ in text.
 Math content alone:
 $$x \leftarrow 10$$
 
-% --------------------------------------- end of example --------------------------
 
-\section{A First Oberon Program}
-
-\section{Basic Types}
-
-\section{In- and Output}
-
-\section{The module System}
-
-\section{Active Objects}
-
-\section{Active Oberon EBNF}
 
 
 \end{document}
