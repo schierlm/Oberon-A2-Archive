@@ -146,7 +146,7 @@ After compilation of the module \verb+Sample+, the commands \verb+Sample.Simple+
 
 \subsection{Loading and Unloading Modules}
 When a module is compiled, an {\em object file} is generated and is made persistent in a file. It is not immediately loaded.
-Basically, a module \verb+module+ is loaded when a command of the form \verb+Module.Command+ is activated.\footnote{The loading of a module M takes place independent of the string M.C being a valid command or not.} Additionally, modules are automatically loaded by the system when a module is loaded that imports them (cf.~ Paragraph \ref{Imports}).
+Basically, a module \verb+M+ is loaded when a command of the form \verb+M.CommandName+ is activated.\footnote{The loading of a module M takes place independent of the string M.C being a valid command or not.} Additionally, modules are automatically loaded by the system when a module is loaded that imports them (cf.~ Paragraph \ref{Imports}).
 
 Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call. Consider the following example:
 
@@ -189,47 +189,95 @@ Before we describe each of the sections in more detail, let us start with a litt
      IMPORT KernelLog, Commands, Streams;
 
     (*------------- constant declarations ------------*)
-    CONST 
-        a*=100; 
+    CONST
+        a*=100;
         s="a string";
-    
+
     (*--------------  type declarations   ------------*)
-    TYPE 
-        MyNumberType = LONGINT; 
-        MyRecordType = POINTER TO RECORD a,b,c: LONGINT END; 
-                
+    TYPE
+        MyNumberType = LONGINT;
+        MyRecordType* = POINTER TO RECORD a*,b,c: LONGINT END;
+
     (*------------- variable declarations ------------*)
-    VAR 
-        globalObject: MyObjectType; x: INTEGER; 
-        
+    VAR
+        globalObject: MyObjectType; x: INTEGER;
+
     (*------------- procedure declarations -----------*)
     PROCEDURE Modify(t: MyRecordType);
-    BEGIN t.a := 10; t.b := 20; t.c := 30; 
+    BEGIN t.a := 10; t.b := 20; t.c := 30;
     END Modify;
 
-    PROCEDURE Display(stream: Streams.Stream; t: MyRecordType);
-    BEGIN 
-        stream.Int(t.a,10); 
-        stream.Int(t.b,10); 
-        stream.Int(t.c,10); 
-    END Display; 
+    (* an exported procedure *)
+    PROCEDURE Display*(stream: Streams.Stream; t: MyRecordType);
+    BEGIN
+        stream.Int(t.a,10);
+        stream.Int(t.b,10);
+        stream.Int(t.c,10);
+    END Display;
 
-    PROCEDURE Test*(context: Commands.Context); 
-    VAR t: MyRecordType; 
-    BEGIN Modify(t); Display(context.out,t); 
-    END Test; 
+    (* a valid command *)
+    PROCEDURE Test*(context: Commands.Context);
+    VAR t: MyRecordType;
+    BEGIN Modify(t); Display(context.out,t);
+    END Test;
 
-    BEGIN (* the module body *) 
-        KernelLog.String("Simple Started"); KernelLog.Ln; 
+    BEGIN (* the module body *)
+        KernelLog.String("Simple Started"); KernelLog.Ln;
     END Simple.
 \end{lstlisting}
 
-
-
-\subsection{Imports} \label{Imports}
+\subsection{Imports and Exported Symbols} \label{Imports}
 The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden. This is checked by the compiler.
 
+Symbols in one module that are to be used in any other module must be exported. A symbol is exported by suffixing the name with an asterisk `\verb+*+'. It is exported read only by suffixing with a minus symbol `\verb+-+'. We provide a little example of a module \verb+A+ being imported by a module \verb+B+.
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={B imports A}]
+MODULE A;
+    CONST exportedConst*=100;
+END A.
+
+MODULE B;
+    IMPORT A;
+    VAR c: LONGINT;
+BEGIN
+    c := A.exportedConst;
+END B.
+\end{lstlisting}
+
 \subsection{Constant Declarations}
+Static values can be used directly in expressions as, for example, in \verb~a := 3+b~. To support better maintainable and readable code, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. In Active Oberon, only values of basic type and strings can be declared as constant\footnote{There are exceptions: special mathematical arrays can also be declared as constants.}. The following module contains some examples.
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={Declaration and Usage of Constants}]
+MODULE A;
+
+    CONST 
+        (* ---------------------- global constants ----------------------- *) 
+        someInteger* = 800; (* exported *) 
+        anotherInteger= someInteger + 1; (* constant expression *) 
+        someReal = 4.44E-5;
+        anotherReal* = 5.5; (* exported *) 
+        someString = "This is a string"; 
+        max       = 2147483647;
+        allbits   = 7FFFFFFFH; (* hex number *) 
+        step      = 7;
+        
+    VAR 
+        (* ----------------------- global variable ----------------------- *) 
+        Z: LONGINT; 
+        
+        PROCEDURE Rand*(): LONGINT;
+        (* constants can also be declared in procedure scope: *) 
+        CONST a = 16807; q = 127773; r = 2836; 
+        VAR t: LONGINT;
+        BEGIN
+            t := a * (Z MOD q) - r * (Z DIV q);
+            IF t > 0 THEN Z := t ELSE Z := t + max END;
+            RETURN Z;
+        END Rand;
+BEGIN 
+    Z := someInteger; 
+END A.
+\end{lstlisting}
 
 \subsection{Type Declarations}
 
