@@ -94,30 +94,30 @@ Oberon is a modular programming language that is supported by a dynamic loading 
     END Hello.
 \end{lstlisting}
 
-Commands are executed by activating a command string of the form \verb+moduleName.commandName+. In the simple example above, this would be \verb+Hello.World+. A command is usually activated by a middle-mouse click. When a command is activated, the module with name \verb+moduleName+ is dynamically loaded on demand and the program counter (potentially of a newly created process) is set to the loaded procedure named \verb+commandName+ in module \verb+moduleName+.
+Commands are executed by activating a command string of the form \verb+ModuleName.CommandName+ within any text displayed on the screen. In the simple example above, this would be \verb+Hello.World+. A command is usually activated by a middle-mouse click or by selecting the command string and using the key-combination \verb|Ctrl+Return|. When a command is activated, the module with name \verb+ModuleName+ is dynamically loaded on demand and the program counter (potentially of a newly created process) is set to the loaded procedure named \verb+CommandName+ in module \verb+ModuleName+.
 
-Note that a module name has nothing to do with the name of the file that contains the source code of the module. It is pure convention that source code files are denominated as \verb+moduleName.Mod+.
+Note that a module name has nothing to do with the name of the file that contains the source code of the module. It is pure convention that source code files are denominated as \verb+ModuleName.Mod+.
 
 An Active Oberon module consists of {\em constants}, {\em variables}, {\em types} and {\em procedures}. Procedures contain executable code. A procedure may or may not accept parameters and a procedure may or may not return a parameter. A procedure can act as a command if and only if
 \begin{itemize}
 \item it is exported and
 \item it provides no return parameter and
 \item it provides at most one input parameter of type \verb+Commands.Context+
-\item it is declared immediately in the module context
+\item it is declared immediately in the module scope
 \end{itemize}
 
 The following example module contains examples of procedures that can or cannot act as commands. Note that comments in Oberon are embraced by \verb+(*+ and \verb+*)+.
 \begin{lstlisting}[language=Oberon,frame=none,caption=Procedures and Commands]
     MODULE Sample;
 
-    IMPORT Commands,KernelLog;
+    IMPORT Commands, KernelLog;
 
         (* Simple is a command, "*" indicates that Simple is exported *)
         PROCEDURE Simple*;
         BEGIN KernelLog.String("SimpleOutput called"); KernelLog.Ln;
         END Simple;
 
-        (*! Internal is not a command: it is not marked exported *)
+        (* Internal is not a command: it is not marked exported *)
         PROCEDURE Internal;
         BEGIN KernelLog.String("InternalOutput called"); KernelLog.Ln;
         END Internal;
@@ -129,12 +129,12 @@ The following example module contains examples of procedures that can or cannot 
             context.out.Ln;
         END WithContext;
 
-        (*! WithOther is not a command as its parameter is not a Commands.Context*)
+        (* WithOther is not a command as the type of its parameter is not Commands.Context *)
         PROCEDURE WithOther*(VAR x: REAL);
         BEGIN x := 2*x
         END WithOther
 
-        (*! WithReturn is not a command as it provides a return parameter: *)
+        (* WithReturn is not a command as it provides a return value *)
         PROCEDURE WithReturn*(): LONGINT;
         BEGIN RETURN 10
         END WithReturn;
@@ -142,11 +142,11 @@ The following example module contains examples of procedures that can or cannot 
     END Sample.
 \end{lstlisting}
 
-After compilation of the module \verb+Sample+, the commands \verb+Sample.Simple+ and \verb+Sample.WithContext+ can be activated. The attempt to activate \verb+Sample.Internal+, \verb+Sample.WithOther+ or \verb+Sample.WithReturn+ will fail with a short error message.
+After compilation of the module \verb+Sample+, the commands \verb+Sample.Simple+ and \verb+Sample.WithContext+ can be activated. The attempt to activate \verb+Sample.Internal+, \verb+Sample.WithOther+ or \verb+Sample.WithReturn+ will fail with a short error message on the kernel log.
 
 \subsection{Loading and Unloading Modules}
 When a module is compiled, an {\em object file} is generated and is made persistent in a file. It is not immediately loaded.
-Basically, a module \verb+module+ is loaded when a command of the form \verb+module.command+ is activated. \footnote{The loading of a module M takes place independent of the string M.C being a valid command or not.} Additionally, a module is loaded when an importing module is being loaded (cf.~ Paragraph \ref{Imports}).
+Basically, a module \verb+module+ is loaded when a command of the form \verb+Module.Command+ is activated.\footnote{The loading of a module M takes place independent of the string M.C being a valid command or not.} Additionally, modules are automatically loaded by the system when a module is loaded that imports them (cf.~ Paragraph \ref{Imports}).
 
 Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call. Consider the following example:
 
@@ -166,7 +166,7 @@ Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ w
     END Hello.
 \end{lstlisting}
 
-The module body will be executed once the module has been loaded. Thus, a first call of \verb+Hello.World+ will result in the output \pc{Hello has been loaded} and  \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, a modification and re-compilation of a module has an effect only after it has been unloaded.
+The module body will be executed once after the module has been loaded but prior to any of its commands. Thus, a first call of \verb+Hello.World+ will result in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded.
 
 Modules can be unloaded explicitly with the command \verb+SystemTools.Unload ModuleNames ~+ where \verb+ModuleNames+ is a white space separated list of module names and `\verb+~+' indicates the end of the list. Note that a module \verb+A+ can only be unloaded if no other currently loaded module imports \verb+A+.
 
@@ -277,7 +277,7 @@ Example Listing Oberon
     PROCEDURE Test;
     VAR a,b,c: LONGINT;
     BEGIN
-        a := b*b (*! b is not initialized *)
+        a := b*b (* b is not initialized *)
     END Test;
     END Test.
 \end{lstlisting}
