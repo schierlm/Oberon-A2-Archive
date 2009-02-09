@@ -51,7 +51,7 @@ morestring=[b]",
 \lstdefinelanguage{Oberon}[]{Pascal}%
   {morekeywords={len,module,import},%
    sensitive=f,%
-    morecomment=[s][\color{red}]{(*!}{*)}
+    morecomment=[s][\color{red}]{(*!}{!*)}
   }[keywords]%
 \lstset{language=Oberon,
 basicstyle=\scriptsize\progfont,keywordstyle=\kwfont ,identifierstyle=\progfont,
@@ -226,7 +226,7 @@ Before we describe each of the sections in more detail, let us start with a litt
     END Simple.
 \end{lstlisting}
 
-\subsection{Imports and Exported Symbols} \label{Imports}
+\subsection{Imports and Exported Symbols} \label{subsection:Imports}
 The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden. This is checked by the compiler.
 
 Symbols in one module that are to be used in any other module must be exported. A symbol is exported by suffixing the name with an asterisk `\verb+*+'. It is exported read only by suffixing with a minus symbol `\verb+-+'. We provide a little example of a module \verb+A+ being imported by a module \verb+B+.
@@ -250,40 +250,93 @@ Static values can be used directly in expressions as, for example, in \verb~a :=
 \begin{lstlisting}[language=Oberon,frame=none,caption={Declaration and Usage of Constants}]
 MODULE A;
 
-    CONST 
-        (* ---------------------- global constants ----------------------- *) 
-        someInteger* = 800; (* exported *) 
-        anotherInteger= someInteger + 1; (* constant expression *) 
+    CONST
+        (* ---------------------- global constants ----------------------- *)
+        someInteger* = 800; (* exported *)
+        anotherInteger= someInteger + 1; (* constant expression *)
         someReal = 4.44E-5;
-        anotherReal* = 5.5; (* exported *) 
-        someString = "This is a string"; 
+        anotherReal* = 5.5; (* exported *)
+        someString = "This is a string";
         max       = 2147483647;
-        allbits   = 7FFFFFFFH; (* hex number *) 
+        allbits   = 7FFFFFFFH; (* hex number *)
         step      = 7;
-        
-    VAR 
-        (* ----------------------- global variable ----------------------- *) 
-        Z: LONGINT; 
-        
+
+    VAR
+        (* ----------------------- global variable ----------------------- *)
+        Z: LONGINT;
+
         PROCEDURE Rand*(): LONGINT;
-        (* constants can also be declared in procedure scope: *) 
-        CONST a = 16807; q = 127773; r = 2836; 
+        (* constants can also be declared in procedure scope: *)
+        CONST a = 16807; q = 127773; r = 2836;
         VAR t: LONGINT;
         BEGIN
             t := a * (Z MOD q) - r * (Z DIV q);
             IF t > 0 THEN Z := t ELSE Z := t + max END;
             RETURN Z;
         END Rand;
-BEGIN 
-    Z := someInteger; 
+BEGIN
+    Z := someInteger;
 END A.
 \end{lstlisting}
 
 \subsection{Type Declarations}
+Type declarations bind an identifier to a type. On the one hand, a type declaration can provide an alias to another type including built-in (basic) types, such as integer, real, character etc. On the other hand, a type declaration can provide a {\em binding of an identifier to a custom form of representation} (usually a composite type). However, type declarations go beyond a mere convenience: in Active Oberon two variables are not necessarily of the same type, if their representation coincide. Before we provide the syntax of type declaration, have a short glance at the following example:
+\begin{lstlisting}[language=Oberon,frame=none,caption={Incompatible types}]
+MODULE Test; 
+VAR 
+    x: RECORD a,b: INTEGER END; 
+    y: RECORD a,b: INTEGER END; 
+BEGIN 
+    x := y; (* THIS WILL NOT COMPILE *) 
+END Test; 
+\end{lstlisting}
+Although in the previous example the variables \verb+x+ and \verb+y+ are declared as types with a compatible structure, they are not allowed to be assigned as their types are not the same. The following example will provide a solution of this `dilemma': 
+\begin{lstlisting}[language=Oberon,frame=none,caption={Same Types}]
+MODULE Test;
+VAR
+    x,y: RECORD a,b: INTEGER END;
+BEGIN
+    x := y; (* x and y are of the same type, thus assignment compatible *)
+END Test;
+\end{lstlisting}
+Now, assume that variables \verb+x+ and \verb+y+ were declared in different scopes, then such a solution would not be possible any more and then type declarations are a must. In the following example, a type declaration is used instead of an immediate formulation in the variable declaration:
+\begin{lstlisting}[language=Oberon,frame=none,caption={Using type declarations}]
+MODULE Test;
+TYPE
+    MyRecord = RECORD a,b: INTEGER END; 
+VAR
+    x: MyRecord; 
+    
+    PROCEDURE Print(m: MyRecord); 
+    BEGIN
+        KernelLog.Int(x,10); KernelLog.Int(y,10); KernelLog.Ln; 
+    END Print; 
+BEGIN
+    Print(x)
+END Test;
+\end{lstlisting}
+Note that the call of procedure \verb+Print+ with variable \verb+x+ requires that \verb+x+ is assignment compatible to the respective parameter (which is the case, as \verb+x+ and \verb+m+ are of the same type). 
+
+Two types are of the same type, if they are provided by the same qualified identifier, or if one is an (immediate or indirect) alias of the other. Examples: 
+\begin{lstlisting}[language=Oberon,frame=none,caption={Same and different types}]
+TYPE 
+    Number=REAL; (* type Number is of same type as REAL and Float *) 
+    Float =REAL; (* type Float is of same type as REAL and Number *) 
+    MyRecord = RECORD a,b: INTEGER END;  (* MyRecord is same as MyAlias and AnotherAlias *) 
+    AnotherRecord = RECORD a,b: INTEGER END; (* There is no same type as AnotherRecord *) 
+    MyAlias = MyRecord; (* MyAlias is same as MyRecord and AnotherAlias *) 
+    AnotherAlias = MyAlias; (* AnotherAlias is same as MyAlias and MyRecord *)
+\end{lstlisting}
+
+We will introduce the basic and composite types in more details in sections \ref{section:BasicTypes} and \ref{section:CompositeTypes}
+
+\subsection{Variable and Parameter Declarations}
 
 \subsection{Procedure Declarations}
 
-\section{Basic Types}
+\section{Basic Types}\label{section:BasicTypes}
+
+\section{Composite Types}\label{section:CompositeTypes}
 
 \section{Active Objects}
 
