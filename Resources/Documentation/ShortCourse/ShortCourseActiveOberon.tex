@@ -1,5 +1,5 @@
 \documentclass[a4paper,11pt]{article}
-\usepackage{color,bbm}
+\usepackage{color}
 \usepackage{longtable}
 \usepackage{amssymb,amsmath,graphicx}
 \usepackage{nonfloat}
@@ -335,18 +335,22 @@ We will introduce the basic and composite types in more details in sections \ref
 \subsection{Procedure Declarations}
 
 \section{Basic Types}\label{section:BasicTypes}
-There are eight basic types in Active Oberon. They are identified by the predeclared identifiers SHORTINT, INTEGER, LONGINT, REAL, LONGREAL, BOOLEAN, SET and CHAR.
+There are nine predeclared basic types in Active Oberon. Their names and valid values are the following:
 
-For the basic types, the set of admissible values is bounded by extremal values, which may be accessed in Oberon programs through the (predeclared) functions
 \begin{itemize}
-\item[] MIN(T): The minimum value of type T
-\item[] MAX(T): The maximum value of type T
+\item BOOLEAN the truth values TRUE and FALSE. 
+\item CHAR the characters of the extended ASCII set (0X ... 0FFX). 
+\item SHORTINT the integers between MIN(SHORTINT) and MAX(SHORTINT). 
+\item INTEGER the integers between MIN(INTEGER) and MAX(INTEGER). 
+\item LONGINT the integers between MIN(LONGINT) and MAX(LONGINT). 
+\item HUGEINT the integers between MIN(HUGEINT) and MAX(HUGEINT). 
+\item REAL real numbers between MIN(REAL) and MAX(REAL). 
+\item LONGREAL real numbers between MIN(LONGREAL) and MAX(LONGREAL). 
+\item SET the sets of integers between 0 and MAX(SET). 
 \end{itemize}
 
-For example, if SHORTINT is represented by 8 bits, then MAX(SHORTINT) = 127 and MIN(SHORTINT) = -128.
-
-\subsection{The types SHORTINT, INTEGER and LONGINT}\label{subsection:IntegerTypes}
-The three types comprise the {\em integer types}. They represent the integer numbers and differ by the cardinality of the set of random numbers represented by each type. The need for different types arises from the architecture of machines which - for reasons of efficiency - provide various word formats with corresponding machine instructions. It is the responsability of the programmer to insure that the result of a computation lies within the set of numbers represented by each type. Otherwise, an {\em overflow} is said to have occurred leading in general to a termination of the program which caused the overflow.
+\subsection{The types SHORTINT, INTEGER, LONGINT and HUGEINT}\label{subsection:IntegerTypes}
+These four types comprise the {\em integer types}. They represent the integer numbers and differ by the cardinality of the set of random numbers represented by each type. The need for different types arises from the architecture of machines which - for reasons of efficiency - provide various word formats with corresponding machine instructions.
 
 \subsection{The types REAL and LONGREAL} \label{subsection:RealTypes}
 The real types approximate the real numbers. Each element from the set of REAL or LONGREAL is a representative of an interval of genuine real numbers. Variables of a real type are represented by pairs of integers, a {\em mantissa} and an {\em exponent}. This is called {\em floating-point} representation. The two types are distinguished by the number of digits of the mantissa (fractional part) and the exponent. As with the integer types, {\em overflow} may occur and result in termination of the program.
@@ -356,9 +360,9 @@ Floating point numbers are only an approximation to the real numbers of mathemat
 \subsection{Hierarchy of the numeric types} \label{subsection:HierarchyNumericTypes}
 The {\em numeric types} are comprised of the integer and real types and form a set hierarchy
 
-$LONGREAL \supseteq REAL \supseteq LONGINT \supseteq INTEGER \supseteq SHORTINT$
+$LONGREAL \supseteq REAL \supseteq HUGEINT \supseteq LONGINT \supseteq INTEGER \supseteq SHORTINT$
 
-The range of the larger type includes the ranges of the smaller types. For example, REAL {\em includes} LONGINT \ldots SHORTINT. The smaller type is said to be {\em compatible} with the larger one in the sense that it can without danger of loss of leading digits be converted. In most cases, such a conversion is also exact. In assignments and in expansions the conversion of internal representations is automatic.
+The range of the larger type includes the ranges of the smaller types. For example, REAL {\em includes} HUGEINT \ldots SHORTINT. The smaller type is said to be {\em compatible} with the larger one in the sense that it can without danger of loss of leading digits be converted. In most cases, such a conversion is also exact. In assignments and in expansions the conversion of internal representations is automatic.
 
 \subsection{The type BOOLEAN} \label{subsection:BooleanType}
 A Boolean value is one of the {\em logical truth values} which are represented in Active Oberon by the standard identifiers TRUE and FALSE.
