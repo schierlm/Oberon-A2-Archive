@@ -54,7 +54,7 @@ morestring=[b]",
     morecomment=[s][\color{red}]{(*!}{!*)}
   }[keywords]%
 \lstset{language=Oberon,
-basicstyle=\scriptsize\progfont,keywordstyle=\kwfont ,identifierstyle=\progfont,
+basicstyle=\small\progfont,keywordstyle=\kwfont ,identifierstyle=\progfont,
 commentstyle=\color{darkgrey}, stringstyle=, showstringspaces=false, %keepspaces=true,
 numbers=none, numberstyle=\tiny, stepnumber=1, numbersep=5pt, captionpos=b,
 columns=flexible % flexible, fixed, fullflexible
@@ -64,7 +64,7 @@ xleftmargin=2mm,xrightmargin=2mm,
 \renewcommand{\lstlistingname}{Fig.}
 
 \begin{document}
-\title{Programming in Active Oberon / A2 \\[1em] \normalsize A Short Introduction}
+\title{A2 Programming Quickstart Guide\\[1em] \normalsize A Very Short Introduction into Programming on A2 with Active Oberon}
 \author{Sven Stauber, Florian Negele, Ulrike Glavitsch, Felix Friedrich}
 \maketitle
 
@@ -81,17 +81,17 @@ A2 is a modern, multi-threaded operating system in the tradition of the ETH oper
 Oberon is a modular programming language that is supported by a dynamic loading concept in the operating system A2. The role of programs and applications is played by {\em modules}. Instead of loading and executing a `program', {\em modules} are loaded and {\em commands} are executed. Once a module is loaded, it stays loaded until it is explicitly unloaded or until the system goes down. Before we give more details on modules and commands, we show an example of a very simple Oberon module:
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=A simple Oberon Module]
-    MODULE Hello;
+MODULE Hello;
 
-    IMPORT Commands;
+IMPORT Commands;
 
-        PROCEDURE World*(context: Commands.Context);
-        BEGIN
-            context.out.String("Hello World");
-            context.out.Ln
-        END World;
+    PROCEDURE World*(context: Commands.Context);
+    BEGIN
+        context.out.String("Hello World");
+        context.out.Ln
+    END World;
 
-    END Hello.
+END Hello.
 \end{lstlisting}
 
 Commands are executed by activating a command string of the form \verb+ModuleName.CommandName+ within any text displayed on the screen. In the simple example above, this would be \verb+Hello.World+. A command is usually activated by a middle-mouse click or by selecting the command string and using the key-combination \verb|Ctrl+Return|. When a command is activated, the module with name \verb+ModuleName+ is dynamically loaded on demand and the program counter (potentially of a newly created process) is set to the loaded procedure named \verb+CommandName+ in module \verb+ModuleName+.
@@ -108,38 +108,38 @@ An Active Oberon module consists of {\em constants}, {\em variables}, {\em types
 
 The following example module contains examples of procedures that can or cannot act as commands. Note that comments in Oberon are embraced by \verb+(*+ and \verb+*)+.
 \begin{lstlisting}[language=Oberon,frame=none,caption=Procedures and Commands]
-    MODULE Sample;
+MODULE Sample;
 
-    IMPORT Commands, KernelLog;
+IMPORT Commands, KernelLog;
 
-        (* Simple is a command, "*" indicates that Simple is exported *)
-        PROCEDURE Simple*;
-        BEGIN KernelLog.String("SimpleOutput called"); KernelLog.Ln;
-        END Simple;
+    (* Simple is a command, "*" indicates that Simple is exported *)
+    PROCEDURE Simple*;
+    BEGIN KernelLog.String("SimpleOutput called"); KernelLog.Ln;
+    END Simple;
 
-        (* Internal is not a command: it is not marked exported *)
-        PROCEDURE Internal;
-        BEGIN KernelLog.String("InternalOutput called"); KernelLog.Ln;
-        END Internal;
+    (* Internal is not a command: it is not marked exported *)
+    PROCEDURE Internal;
+    BEGIN KernelLog.String("InternalOutput called"); KernelLog.Ln;
+    END Internal;
 
-        (* WithContext is a valid command *)
-        PROCEDURE WithContext*(context: Commands.Context);
-        BEGIN
-            context.out.String("this is written to the standard output stream");
-            context.out.Ln;
-        END WithContext;
+    (* WithContext is a valid command *)
+    PROCEDURE WithContext*(context: Commands.Context);
+    BEGIN
+        context.out.String("this is written to the standard output stream");
+        context.out.Ln;
+    END WithContext;
 
-        (* WithOther is not a command as the type of its parameter is not Commands.Context *)
-        PROCEDURE WithOther*(VAR x: REAL);
-        BEGIN x := 2*x
-        END WithOther
+    (* WithOther is not a command: parameter type is not Commands.Context *)
+    PROCEDURE WithOther*(VAR x: REAL);
+    BEGIN x := 2*x
+    END WithOther
 
-        (* WithReturn is not a command as it provides a return value *)
-        PROCEDURE WithReturn*(): LONGINT;
-        BEGIN RETURN 10
-        END WithReturn;
+    (* WithReturn is not a command as it provides a return value *)
+    PROCEDURE WithReturn*(): LONGINT;
+    BEGIN RETURN 10
+    END WithReturn;
 
-    END Sample.
+END Sample.
 \end{lstlisting}
 
 After compilation of the module \verb+Sample+, the commands \verb+Sample.Simple+ and \verb+Sample.WithContext+ can be activated. The attempt to activate \verb+Sample.Internal+, \verb+Sample.WithOther+ or \verb+Sample.WithReturn+ will fail with a short error message on the kernel log.
@@ -151,19 +151,19 @@ Basically, a module \verb+M+ is loaded when a command of the form \verb+M.Comman
 Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call. Consider the following example:
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=A simple Oberon Module]
-    MODULE Hello;
+MODULE Hello;
 
-    IMPORT KernelLog;
+IMPORT KernelLog;
 
-        PROCEDURE World*;
-        BEGIN KernelLog.String("Hello World"); KernelLog.Ln;
-        END World;
+    PROCEDURE World*;
+    BEGIN KernelLog.String("Hello World"); KernelLog.Ln;
+    END World;
 
-    BEGIN
-        (* this is a special `procedure': the module body
-          it is executed once a module has been freshly loaded *)
-        KernelLog.String("Hello has been loaded"); KernelLog.Ln;
-    END Hello.
+BEGIN
+    (* this is a special `procedure': the module body
+      it is executed once a module has been freshly loaded *)
+    KernelLog.String("Hello has been loaded"); KernelLog.Ln;
+END Hello.
 \end{lstlisting}
 
 The module body will be executed once after the module has been loaded but prior to any of its commands. Thus, a first call of \verb+Hello.World+ will result in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded.
@@ -183,47 +183,47 @@ An Active Oberon Module consists of the following parts
 Before we describe each of the sections in more detail, let us start with a little example module.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={A useless module containing constants, types, variables and procedures}]
-    MODULE Simple;
+MODULE Simple;
 
-    (*-------------     import list       ------------*)
-     IMPORT KernelLog, Commands, Streams;
+(*-------------     import list       ------------*)
+ IMPORT KernelLog, Commands, Streams;
 
-    (*------------- constant declarations ------------*)
-    CONST
-        a*=100;
-        s="a string";
+(*------------- constant declarations ------------*)
+CONST
+    a*=100;
+    s="a string";
 
-    (*--------------  type declarations   ------------*)
-    TYPE
-        MyNumberType = LONGINT;
-        MyRecordType* = POINTER TO RECORD a*,b,c: LONGINT END;
+(*--------------  type declarations   ------------*)
+TYPE
+    MyNumberType = LONGINT;
+    MyRecordType* = POINTER TO RECORD a*,b,c: LONGINT END;
 
-    (*------------- variable declarations ------------*)
-    VAR
-        globalObject: MyObjectType; x: INTEGER;
+(*------------- variable declarations ------------*)
+VAR
+    globalObject: MyObjectType; x: INTEGER;
 
-    (*------------- procedure declarations -----------*)
-    PROCEDURE Modify(t: MyRecordType);
-    BEGIN t.a := 10; t.b := 20; t.c := 30;
-    END Modify;
+(*------------- procedure declarations -----------*)
+PROCEDURE Modify(t: MyRecordType);
+BEGIN t.a := 10; t.b := 20; t.c := 30;
+END Modify;
 
-    (* an exported procedure *)
-    PROCEDURE Display*(stream: Streams.Stream; t: MyRecordType);
-    BEGIN
-        stream.Int(t.a,10);
-        stream.Int(t.b,10);
-        stream.Int(t.c,10);
-    END Display;
+(* an exported procedure *)
+PROCEDURE Display*(stream: Streams.Stream; t: MyRecordType);
+BEGIN
+    stream.Int(t.a,10);
+    stream.Int(t.b,10);
+    stream.Int(t.c,10);
+END Display;
 
-    (* a valid command *)
-    PROCEDURE Test*(context: Commands.Context);
-    VAR t: MyRecordType;
-    BEGIN Modify(t); Display(context.out,t);
-    END Test;
+(* a valid command *)
+PROCEDURE Test*(context: Commands.Context);
+VAR t: MyRecordType;
+BEGIN Modify(t); Display(context.out,t);
+END Test;
 
-    BEGIN (* the module body *)
-        KernelLog.String("Simple Started"); KernelLog.Ln;
-    END Simple.
+BEGIN (* the module body *)
+    KernelLog.String("Simple Started"); KernelLog.Ln;
+END Simple.
 \end{lstlisting}
 
 \subsection{Imports and Exported Symbols} \label{subsection:Imports}
@@ -250,30 +250,30 @@ Static values can be used directly in expressions as, for example, in \verb~a :=
 \begin{lstlisting}[language=Oberon,frame=none,caption={Declaration and Usage of Constants}]
 MODULE A;
 
-    CONST
-        (* ---------------------- global constants ----------------------- *)
-        someInteger* = 800; (* exported *)
-        anotherInteger= someInteger + 1; (* constant expression *)
-        someReal = 4.44E-5;
-        anotherReal* = 5.5; (* exported *)
-        someString = "This is a string";
-        max       = 2147483647;
-        allbits   = 7FFFFFFFH; (* hex number *)
-        step      = 7;
+CONST
+    (* ---------------------- global constants ----------------------- *)
+    someInteger* = 800; (* exported *)
+    anotherInteger= someInteger + 1; (* constant expression *)
+    someReal = 4.44E-5;
+    anotherReal* = 5.5; (* exported *)
+    someString = "This is a string";
+    max       = 2147483647;
+    allbits   = 7FFFFFFFH; (* hex number *)
+    step      = 7;
 
-    VAR
-        (* ----------------------- global variable ----------------------- *)
-        Z: LONGINT;
+VAR
+    (* ----------------------- global variable ----------------------- *)
+    Z: LONGINT;
 
-        PROCEDURE Rand*(): LONGINT;
-        (* constants can also be declared in procedure scope: *)
-        CONST a = 16807; q = 127773; r = 2836;
-        VAR t: LONGINT;
-        BEGIN
-            t := a * (Z MOD q) - r * (Z DIV q);
-            IF t > 0 THEN Z := t ELSE Z := t + max END;
-            RETURN Z;
-        END Rand;
+    PROCEDURE Rand*(): LONGINT;
+    (* constants can also be declared in procedure scope: *)
+    CONST a = 16807; q = 127773; r = 2836;
+    VAR t: LONGINT;
+    BEGIN
+        t := a * (Z MOD q) - r * (Z DIV q);
+        IF t > 0 THEN Z := t ELSE Z := t + max END;
+        RETURN Z;
+    END Rand;
 BEGIN
     Z := someInteger;
 END A.
@@ -303,14 +303,16 @@ Now, assume that variables \verb+x+ and \verb+y+ were declared in different scop
 \begin{lstlisting}[language=Oberon,frame=none,caption={Using type declarations}]
 MODULE Test;
 TYPE
-    MyRecord = RECORD a,b: INTEGER END;
-VAR
-    x: MyRecord;
+MyRecord = RECORD a,b: INTEGER END;
 
-    PROCEDURE Print(m: MyRecord);
-    BEGIN
-        KernelLog.Int(x,10); KernelLog.Int(y,10); KernelLog.Ln;
-    END Print;
+VAR
+x: MyRecord;
+
+PROCEDURE Print(m: MyRecord);
+BEGIN
+    KernelLog.Int(x,10); KernelLog.Int(y,10); KernelLog.Ln;
+END Print;
+
 BEGIN
     Print(x)
 END Test;
@@ -320,33 +322,94 @@ Note that the call of procedure \verb+Print+ with variable \verb+x+ requires tha
 Two types are of the same type, if they are provided by the same qualified identifier, or if one is an (immediate or indirect) alias of the other. Examples:
 \begin{lstlisting}[language=Oberon,frame=none,caption={Same and different types}]
 TYPE
-    Number=REAL; (* type Number is of same type as REAL and Float *)
-    Float =REAL; (* type Float is of same type as REAL and Number *)
-    MyRecord = RECORD a,b: INTEGER END;  (* MyRecord is same as MyAlias and AnotherAlias *)
-    AnotherRecord = RECORD a,b: INTEGER END; (* There is no same type as AnotherRecord *)
-    MyAlias = MyRecord; (* MyAlias is same as MyRecord and AnotherAlias *)
-    AnotherAlias = MyAlias; (* AnotherAlias is same as MyAlias and MyRecord *)
+Number=REAL; (* same type as REAL and Float *)
+Float =REAL; (* same type as REAL and Number *)
+MyRecord = RECORD a,b: INTEGER END;  (* same as MyAlias and AnotherAlias *)
+AnotherRecord = RECORD a,b: INTEGER END; (* no same type available *)
+MyAlias = MyRecord; (* same as MyRecord and AnotherAlias *)
+AnotherAlias = MyAlias; (* same as MyAlias and MyRecord *)
 \end{lstlisting}
 
 We will introduce the basic and composite types in more details in sections \ref{section:BasicTypes} and \ref{section:CompositeTypes}
 
 \subsection{Variable and Parameter Declarations}
+In Active Oberon, variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope. Parameters are variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
+ 
+Parameters can be {\em value parameters}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
+
+We illustrate the concepts in the following example. 
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={Variables and Parameters}]
+MODULE Variables; 
+TYPE
+    (* variables in a record *) 
+    Pair=RECORD x,y: REAL END; 
+    PairPointer = POINTER TO Pair; 
+    
+VAR (* global variables *) 
+    a: LONGINT; 
+    b: Pair;
+    c: PairPointer; 
+
+PROCEDURE Square(x: REAL): REAL;
+BEGIN x := x*x; RETURN x
+END Square; 
+
+PROCEDURE SetValues(VAR p:Pair; x,y: REAL);  
+BEGIN p.x := x; p.y := y
+END SetValues;
+
+PROCEDURE SetValuesP(p:PairPointer; x,y: REAL);
+BEGIN p.x := x; p.y := y
+END SetValuesP;
+
+BEGIN 
+    a := 10; 
+    SetValues(b,a,Square(a)); 
+    NEW(c); 
+    SetValues(c^,a,Square(a));
+    SetValuesP(c,a,Square(a)); 
+END Variables; 
+\end{lstlisting}
 
 \subsection{Procedure Declarations}
+Procedures can be declared in a module scope, within procedure scopes (`nested procedures') and in object scopes:
+\begin{lstlisting}[language=Oberon,frame=none,caption={Procedures}]
+MODULE Procedures; 
+
+TYPE 
+    O = OBJECT
+    
+    PROCEDURE Method; 
+        PROCEDURE NestedProcedure;
+        BEGIN 
+        END NestedProcedure;
+    BEGIN 
+    END Method; 
+    
+    END O; 
+
+PROCEDURE GlobalProcedure; 
+    PROCEDURE NestedProcedure; 
+    BEGIN END NestedProcedure; 
+END GlobalProcedure; 
+
+END Procedures; 
+\end{lstlisting}
 
 \section{Basic Types}\label{section:BasicTypes}
 There are nine predeclared basic types in Active Oberon. Their names and valid values are the following:
 
 \begin{itemize}
-\item BOOLEAN the truth values TRUE and FALSE. 
-\item CHAR the characters of the extended ASCII set (0X ... 0FFX). 
-\item SHORTINT the integers between MIN(SHORTINT) and MAX(SHORTINT). 
-\item INTEGER the integers between MIN(INTEGER) and MAX(INTEGER). 
-\item LONGINT the integers between MIN(LONGINT) and MAX(LONGINT). 
-\item HUGEINT the integers between MIN(HUGEINT) and MAX(HUGEINT). 
-\item REAL real numbers between MIN(REAL) and MAX(REAL). 
-\item LONGREAL real numbers between MIN(LONGREAL) and MAX(LONGREAL). 
-\item SET the sets of integers between 0 and MAX(SET). 
+\item BOOLEAN the truth values TRUE and FALSE.
+\item CHAR the characters of the extended ASCII set (0X ... 0FFX).
+\item SHORTINT the integers between MIN(SHORTINT) and MAX(SHORTINT).
+\item INTEGER the integers between MIN(INTEGER) and MAX(INTEGER).
+\item LONGINT the integers between MIN(LONGINT) and MAX(LONGINT).
+\item HUGEINT the integers between MIN(HUGEINT) and MAX(HUGEINT).
+\item REAL real numbers between MIN(REAL) and MAX(REAL).
+\item LONGREAL real numbers between MIN(LONGREAL) and MAX(LONGREAL).
+\item SET the sets of integers between 0 and MAX(SET).
 \end{itemize}
 
 \subsection{The types SHORTINT, INTEGER, LONGINT and HUGEINT}\label{subsection:IntegerTypes}
@@ -378,11 +441,101 @@ Examples of set constants are:
 where \verb+{}+ denotes the empty set and the subset \verb+2..4+ refers to the elements 2, 3 and 4.
 
 \subsection{The type CHAR}
-A major portion of the input and output of computers is in the form of character strings that contain values of type CHAR. The value range of the type CHAR consists of the characters of the roman alphabet and a small set of special symbols used frequently in commerce and mathematics. 
+A major portion of the input and output of computers is in the form of character strings that contain values of type CHAR. The value range of the type CHAR consists of the characters of the roman alphabet and a small set of special symbols used frequently in commerce and mathematics.
 
 The set representing the type CHAR is ordered and each character has a fixed position or {\em ordinal number}. This is reflected in the notation for character constants which may be written as "a" or 61X for the letter a. The first representation denotes the value of the variable of type CHAR, the second its (hexadecimal) {\em ordinal} number.
 
 \section{Composite Types}\label{section:CompositeTypes}
+
+In Active Oberon, there are three composite types available. Arrays, Records and Pointers. 
+
+\subsection{Arrays}
+Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows expressions like ARRAY 12 OF ARRAY 13 OF ARRAY 11 OF REAL. Arrays can be declared open only in a parameter section. Open arrays are declared as ARRAY OF ...  Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime. They are declared as POINTER TO ARRAY OF ...
+\begin{lstlisting}[language=Oberon,frame=none]
+VAR 
+a: ARRAY 32 OF ARRAY 20 OF INTEGER; (* static *)
+b: POINTER TO ARRAY OF ARRAY OF REAL; (* dynamic *)
+    
+PROCEDURE Print(x: ARRAY OF CHAR); (* open *) 
+END Print; 
+\end{lstlisting}   
+
+\subsection{Records}
+Records are containers of data. Records are value types and are declared as RECORD (variables) END. Records can also be declared as reference types using POINTER TO. Record data are referred to via recordName.variableName.
+\begin{lstlisting}[language=Oberon,frame=none]
+VAR
+a: RECORD x,y: LONGINT END; 
+p: POINTER TO RECORD a,b: REAL END; 
+...
+BEGIN 
+...
+NEW(p); 
+p.x := a.x;
+....
+\end{lstlisting}    
+
+\subsection{Objects}
+Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
+\begin{lstlisting}[language=Oberon,frame=none]
+TYPE 
+MyObject = OBJECT (* class *) 
+VAR x,y: REAL; 
+
+PROCEDURE Equals(o: MyObject): BOOLEAN; 
+BEGIN 
+    IF o = SELF THEN RETURN TRUE
+    ELSE RETURN (o.x = x) & (o.y = y)
+    END; 
+END Equals; 
+
+END MyObject; 
+
+VAR p,q: MyObject; (* objects / instances *) 
+...
+
+BEGIN 
+    NEW(p); p.x := 10; p.y := 10; 
+    ...
+    IF p.Equals(q) THEN ...
+    END; 
+\end{lstlisting}
+
+\subsection{Inheritance}
+Active Oberon is an object oriented language. For both, records and objects, inheritance is supported by Oberon. It is possible to extend records and objects and to use type checks, type guards and overloading of methods. 
+Record and object extension is declared as in the following example:
+
+\begin{lstlisting}[language=Oberon,frame=none]
+TYPE
+
+Rectangle = RECORD
+    x,y,w,h: INTEGER
+END
+
+FilledRectangle= RECORD(Rectangle)
+    color: INTEGER
+END;
+
+Window = OBJECT
+VAR x,y,w,h: INTEGER; 
+
+    PROCEDURE Print; 
+    BEGIN 
+        (* draw frame *) 
+    END Print; 
+END Window; 
+
+FilledWindow = OBJECT (Window) 
+VAR color: INTEGER; 
+    
+    PROCEDURE Print; (* overwrites Window.Print *) 
+    BEGIN 
+        Print^; (* supercall *) 
+        (* fill *) 
+    END Print; 
+END FilledWindow; 
+
+\end{lstlisting}
+
 
 \section{Active Objects}
 

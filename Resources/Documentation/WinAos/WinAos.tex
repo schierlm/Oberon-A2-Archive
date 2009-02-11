@@ -1,0 +1,531 @@
+\documentclass[a4paper]{article}
+\usepackage{color,bbm}
+\usepackage{longtable}
+\usepackage{amssymb,amsmath,graphicx}
+\pagestyle{headings}
+\usepackage{cmbright}
+
+\oddsidemargin -1 cm
+\evensidemargin -1 cm
+\topmargin -1.5cm
+\textwidth 18   cm
+\textheight 24 cm
+%\parskip 5em
+%\parindent 2cm
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\calF}{\mathcal{F}}
+\definecolor{lightgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+
+
+
+\newcommand{\fcite}[1]{\cite{#1}}
+\newcommand{\changefont}[3]{\fontfamily{#1}\fontseries{#2}\fontshape{#3}\selectfont}
+
+\usepackage{listings}
+\lstdefinelanguage{OberonM}[]{Pascal}%
+  {morekeywords={range,len,dim,incr,all},%
+   sensitive=t,%
+  }[keywords]%
+\newcommand{\kwfont}{\changefont{cmr}{b}{n}}
+\renewcommand{\kwfont}{\bf}
+\lstset{language=OberonM,% was Oberon-2, but does not support small letter keywords
+basicstyle=\scriptsize\tt,keywordstyle=\kwfont ,identifierstyle=\tt,
+commentstyle=\color{darkgrey}, stringstyle=, showstringspaces=false, %keepspaces=true,
+numbers=none, numberstyle=\tiny, stepnumber=1, numbersep=5pt, captionpos=b,
+columns=flexible % flexible, fixed, fullflexible
+framerule=1mm,frame=lines, rulesepcolor=\color{blue}, % frame = shadowbox
+xleftmargin=2mm,xrightmargin=2mm
+}
+\renewcommand{\lstlistingname}{Fig.}
+
+
+\newcommand{\pc}[1]{\makebox{\tt#1}}
+
+\newcommand{\fof}[1]{{\color{blue} #1}}
+\newcommand{\sk}[1]{{\color{green} #1}}
+\newcommand{\kw}[1]{{\changefont{cmr}{b}{n}#1}}
+
+\newcommand{\MODULE}{\kw{module }}
+\newcommand{\IMPORT}{\kw{import }}
+\newcommand{\IF}{\kw{if }}
+\newcommand{\THEN}{\kw{then }}
+\newcommand{\ELSIF}{\kw{elsif }}
+\newcommand{\ELSE}{\kw{else }}
+\newcommand{\END}{\kw{end }}
+\newcommand{\CASE}{\kw{case }}
+\newcommand{\DO}{\kw{do }}
+\newcommand{\FOR}{\kw{for }}
+\newcommand{\BY}{\kw{by }}
+\newcommand{\WHILE}{\kw{while }}
+\newcommand{\REPEAT}{\kw{repeat }}
+\newcommand{\UNTIL}{\kw{until }}
+\newcommand{\LOOP}{\kw{loop }}
+\newcommand{\EXIT}{\kw{exit }}
+\newcommand{\RECORD}{\kw{record }}
+\newcommand{\OBJECT}{\kw{object }}
+\newcommand{\BEGIN}{\kw{begin }}
+\newcommand{\WITH}{\kw{with }}
+\newcommand{\PROCEDURE}{\kw{procedure }}
+\newcommand{\RETURN}{\kw{return }}
+\newcommand{\DEFINITION}{\kw{definition }}
+\newcommand{\REFINES}{\kw{refines }}
+\newcommand{\IMPLEMENTS}{\kw{implements }}
+\newcommand{\CONST}{\kw{const }}
+\newcommand{\VAR}{\kw{var }}
+\newcommand{\TYPE}{\kw{type }}
+\newcommand{\POINTER}{\kw{pointer }}
+\newcommand{\TO}{\kw{to }}
+\newcommand{\ARRAY}{\kw{array }}
+\newcommand{\OF}{\kw{of }}
+\newcommand{\TENSOR}{\kw{tensor }}
+\newcommand{\AWAIT}{\kw{await }}
+\newcommand{\DIV}{\kw{div }}
+\newcommand{\MOD}{\kw{mod }}
+\newcommand{\OR}{\kw{or }}
+\newcommand{\IN}{\kw{in }}
+\newcommand{\IS}{\kw{is }}
+\newcommand{\NIL}{\kw{nil }}
+\newcommand{\CODE}{\kw{code }}
+\newcommand{\TRUE}{\kw{true }}
+\newcommand{\FALSE}{\kw{false }}
+\newcommand{\FINALLY}{\kw{finally }}
+\newcommand{\NEW}{\kw{new }}
+\newcommand{\DIM}{\kw{dim }}
+\newcommand{\LEN}{\kw{len }}
+\newcommand{\SYSTEMINCR}{\kw{system.incr }}
+\newcommand{\ALL}{\kw{all }}
+
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\thefigure}{\arabic{section}.\arabic{figure}}
+  \renewcommand*{\thelstlisting}{\thefigure}%\arabic{section} - \arabic{lstlisting}}%
+  %\@addtoreset{lstlisting}{section}
+  \let\c@lstlisting\c@figure
+  \@addtoreset{figure}{section}}
+\makeatother
+
+\begin{document}
+%\renewcommand{\thelstlisting}{\thefigure}% use same counter display in listings and figures
+%\makeatletter
+%\let\c@lstlisting\c@figure % use same counter for listings and figures
+%\makeatother
+
+\title{Some notes on WinAos}
+%\titlerunning{Array Extensions and Statement-Level Parallelism}
+\author{Felix Friedrich \\ Computer Systems Institute, ETH Z\"urich, Switzerland\\ friedrich@inf.ethz.ch}
+\maketitle
+
+\section{What is WinAos?}
+WinAos is an emulation of the operating system Aos (``Native Aos'') on Windows. Native Aos is an operating system written in and for the programming language Active Oberon that supports the programming of multithreaded applications by ways of so called Active Objects. Aos has a zoomable user interface and contains a lot of sample applications, in particular it provides editors, some multimedia components and an Integrated Development Environment. Aos is the successor of the Oberon system, a single-threaded operating system with a very powerful and interesting GUI. Oberon is still supported as one (thread) of many windows in the Aos GUI.
+
+WinAos is the successor of (and initially based on) the ETH Plugin Oberon for Windows by E.\ Zeller. A lot of functionality of this Oberon emulation system was kept and is still contained in the system. Besides the pure emulation of the Aos GUI, it is therefore also possible to use it for seamless integration of the Oberon system in Windows, where for instance Oberon frames can be displayed and used like Windows windows. This dual nature of WinAos is also reflected in the two different implementations that come with a WinAos system and which can be selected by the user, cf. Section \ref{section:internalexternal}.
+
+\section{Purpose}
+The purpose of WinAos is to provide the functionality of the Aos operating system on Windows-based computers. This is achieved by a replacement of all very-low-level functionality of Aos by calls to the WinAPI library. The WinAos kernel is very much interface compatible to the kernel of the native Aos system and, together with some in- and output modules, provides the necessary translations to the Windows API.
+
+\section{Compatibility}
+Since the base modules in WinAos are supposed to be interface-compatible with the ones of Aos, in general Modules that can be compiled within Aos can also be compiled within WinAos. Applications that run on Aos do normally also run on WinAos.
+
+Of course there is low-level functionality of Aos that cannot be used under Windows in the same way. Examples are the direct access to devices (such as the USB subsystem) as these are shielded by windows from the user. In these cases workarounds normally are available such as the access of USB connected hard-disks via the file system of the Windows system.
+
+\section{Work- and Search-Path}
+WinAos uses the file system provided by the Windows system and therefore - unlike Native Aos\footnote{Naturally different file systems can be mounted from Aos but the native Aos file system does not support directories} - immediately features the use of directories.  In WinAos an ordered set of search paths and a working path can be specified in a configuration file (cf. Section \ref{section:configuration}). Whenever a file is looked for without specification of a relative or absolute path, it is first searched in the working directory and if not found there the search paths are traversed in the order in which they have been specified. Whenever a file is written without specified location it is written to the (current) working path.
+
+To understand this is particularly interesting and important for understanding the usage of object-files. As an example consider a work path being specified as \pc{C:/MyWork} and search paths being specified as $$\pc{C:/Aos/WinAos/ObjE; C:/Aos/WinAos/Aos}.$$ Assume you use, modify and compile a module file, say \pc{PCP.Mod} (a part of the compiler, by the way), the first time. Then at its first usage  the object file \pc{PCP.Obw} may not be contained in your work path but, say in one of the search paths, and therefore is loaded from the search path in memory. Now compiling \pc{PCP.Mod} results in writing a new object file to the work path. The next time you restart the system (or unload the module) this file will be available on and taken from the work path.
+
+In effect this means that if you update your WinAos system by exchanging everything but the Work path you may still be using `old' object files resident in the work path. Therefore it is wise to remove old object files from your local work path whenever you update WinAos.
+
+\section{Internal and External View}\label{section:internalexternal}
+WinAos comes in two different configurations, one of them being the `internal' the other being the `external' version. The major difference is that the Oberon subsystem UI of Aos is started as an Aos window in the first case while it is started as an (external to Aos) Windows window in the latter case. The advantage of the first case is that it is absolutely compatible with native Aos and therefore is suited best for the typical Aos system programmer while the external version can be customized to be much closer to a windows look and feel and subsystems (such as the ants software platform) even appear as ordinary application windows within Windows OS.
+
+As the external version needs a separate handling for the Oberon (Windows-)windows it is not binary compatible with the internal one. This is the reason why only the one or the other can be run and not both versions can be compiled to the same system. To be still able to choose between the two, the different versions are compiled in separate directories (note that naturally they share the same kernel) and just incorporating the one or the other directory in your search paths makes up the decision between the internal or the external version. The search path can be modified in the configuration files \pc{aos.ini} and \pc{myaos.ini}, cf. Section \ref{section:configuration}.
+
+\section{Configuration of the Oberon subsystem}
+The configuration of the Oberon subsystem is contained in a file whose file name is specified in the Aos configuration file. For the internal version this normally is \pc{Oberon.Text} while it usually is \pc{OberonExternal.Text} for the external version.
+
+\section{Configuration of WinAos}\label{section:configuration}
+WinAos is configured via the file \pc{aos.ini} (and, optionally, \pc{myaos.ini}) which has to be located in the same directory as the executable \pc{Aos.exe}. This file is read at startup and is mandatory for a functioning WinAos system. It contains an optional line pointing to an alternate configuration file, a specification of the search path, the work path, the default object file extension, the Oberon configuration file name and a (sequence of) commands that is (are) executed at startup. A tilde in a separate line ends the configuration.
+
+A configuration line is of the form
+\begin{center}
+\pc{identifier = "value"}
+\end{center}
+Here identifier currently can be one of \pc{AlternateConfig}, \pc{Paths.search}, \pc{Paths.Work}, \pc{Defaults.extension}, \pc{oberon} and \pc{cmd}.
+If two configuration lines have the same identifier then the first line is taken for configuration!
+
+A typical configuration file looks as follows
+\begin{quote}
+\begin{verbatim}
+; external, starting with Oberon
+AlternateConfig = "myAos.config"
+Paths.Search="Work;ObjE;Src;Src/vyants;Aos;../source;Doc.vy.ants"
+Paths.Work="Work"
+Defaults.Extension=".Obw"
+oberon="OberonExternal.Text"
+cmd="SEQ Oberon.DoStart;AosFSTools.Mount WORK WinRelFS ./"
+~
+(rest ignored)
+\end{verbatim}
+\end{quote}
+In this example first the file \pc{myAos.config} is read in, then the search path is set (if not already done in myAos.config!), the work path is set (if not ...) etc. Note that this configuration is a typical set up for the external version. The \pc{Defaults.Extension} entry is particularly interesting, if you want to build a new version with different object file suffix (for example to be able to fall back to previous versions if modifications are complex).
+
+If, together with the above example, the file \pc{myAos.config} just contains the following line
+\begin{quote}
+\begin{verbatim}
+Paths.Work="/tim/Work"
+
+\end{verbatim}
+\end{quote}
+then everything from the file \pc{Aos.Text} is kept for configuration but the work path is set to the user's work path {\pc /tim/Work}.
+
+\section{Building a new WinAos system}
+Building a WinAos system consists of compiling all necessary source files and linking the kernel. The steps necessary are contained in the files \pc{Win32.Aos.Tool} (external version) and \pc{Win32.Aos2.Tool} (internal version). The \pc{Release.Build} command contained in the respective Oberon-text files opens a script file to compile the release. Note that the compiler option \pc{$\backslash$s.Obw} determines the used suffix (.Obw) and \pc{P/Aos/WinAos/ObjE/} determines the out- and input path (/Aos/WinAos/ObjE/) for the compiler. To link the kernel to an executable file, execute the command
+\begin{center}\pc{PELinker.Link $\backslash$.Obw $\backslash$P/Aos/WinAos/ObjE/ Win32.Aos.Link}
+\end{center}
+being also
+contained in the file \pc{Win32.Aos.Tool}. The executable will be generated to your work path.
+The file \pc{Win32.Aos.Link} contains the files to be linked and other directives to the linker. It is out of the scope of this document to describe the PELinker in more detail.
+
+
+\end{document}
+
+%
+%Recently I had a problem where when I inserted a new CD/DVD into one of my drives it would show the files in the right hand pane of Explorer but not the volume name on the left hand side of Explorer. And if it did show the volume name, usually after a reboot with the CD/DVD still in the drive, it wouldn't remove the volume name after I ejected the CD/DVD. Even when I inserted a totally different CD/DVD the volume name from the old disc would still show in Explorer even though the files that showed in the right hand pane were from the new disc that had just been inserted. This was driving me crazy to no end and when I searched for a solution I realized that a lot of other people were having the same problem. Just about everywhere I looked people made reference to either the Windows XP Autorun setting or the Auto Insert Notification setting. Now in just about every case it seems that people didn't know the difference between the two settings because in just about all instances the item they described how to enable or disable was the Windows XP Autorun feature even though most referred to it as Auto Insert Notification. Now in the old days of Windows 9x you could enable or disable Auto Insert Notification by simply removing or replacing the checkmark in Device Manager for the drive in question but in Windows XP its not that easy. So here is the solution I found and hopefully it helps out a few other people as well.
+%
+%First of all you need to open Windows Registry Editor (regedit). To do this go to the RUN command and enter "regedit" and then press ENTER. Then browse down through the following key path.
+%
+%HKEY_CURRENT_USER
+%Software
+%Microsoft
+%Windows
+%CurrentVersion
+%Policies
+%Explorer
+%
+%Now look at the "NoDriveTypeAutoRun" key on the right. To enable Auto Insert Notification, right-click on that key, select Modify and change the value to 0000 95 00 00 00 and click OK. Now quit the Registry Editor and restart Windows for this to take effect.
+%
+%For those of you that don't feel comfortable messing around with their registry I have uploaded a .reg file in a ZIP that will automatically make the necessary changes, all you have to do is download the ZIP file and open it in your favorite ZIP file handler (ie. WinZip, WinRAR, WinACE) and double click on the windows_autorun.reg file inside. Then restart Windows for the changes to take effect.
+%
+%Thats it, your drives should now refresh their content automatically when a CD/DVD is inserted or ejected from the drive.
+%
+%Your welcome.
+%
+%PS - This has only been tested to work safely on Windows XP so I take no responsibility for what could happen to your system if you try this on any other version of a Microsoft operating system.
+%Attached Files
+%File Type: zip  windows_autorun.zip (330 Bytes, 12702 views)
+%88keyz is offline       Reply With Quote
+%88keyz
+%View Public Profile
+%Send a private message to 88keyz
+%Visit 88keyz's homepage!
+%Find More Posts by 88keyz
+%Add 88keyz to Your Buddy List
+%Sponsored Links - Remove these and a lot more ads by becoming a member to Club CD Freaks for free!
+%
+%
+%Old 10-04-2005    #2
+%RichMan
+%CD Freaks Expert
+%
+%RichMan's Avatar
+%
+%Join Date: Jan 2004
+%Posts: 496
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Quote:
+%...change the value to 0000 95 00 00 00 and click OK.
+%
+%
+%Seems to be too many numbers there and it doesn't match what is in your zip file.
+%
+%Thanks for this info. Do you know what value would be needed to turn it off as well?
+%RichMan is offline      Reply With Quote
+%RichMan
+%View Public Profile
+%Send a private message to RichMan
+%Find More Posts by RichMan
+%Add RichMan to Your Buddy List
+%Old 10-04-2005    #3
+%88keyz
+%New on Forum
+%
+%88keyz's Avatar
+%
+%Join Date: Aug 2003
+%Location: Oshawa, ON, Canada
+%Posts: 23
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%When you click modify on the registry value it shows "0000 95 00 00 00". Presumably 0000 is the line and 95 00 00 00 is the data value but for the sake of simplicity I stated that you should change it so the value in the key reflects "0000 95 00 00 00". As for a disable setting the value in my registry before I changed it so that it would work was was "0000 91 00 00 00". So if you really wanted to disable Auto Insert Notification then I suppose setting it to that value would be disabled.
+%88keyz is offline       Reply With Quote
+%88keyz
+%View Public Profile
+%Send a private message to 88keyz
+%Visit 88keyz's homepage!
+%Find More Posts by 88keyz
+%Add 88keyz to Your Buddy List
+%Old 10-04-2005    #4
+%Razor1982
+%CD Freaks Die Hard
+%
+%Join Date: Jun 2003
+%Posts: 1,485
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%... or you just use the Microsoft Powertoys "TweakUI" and go to "My Computer" -> "AutoPlay" -> "Drives" / "Types" and ENABLE all options / drives ...
+%very simple, very quick, very safe...
+%Razor1982 is offline    Reply With Quote
+%Razor1982
+%View Public Profile
+%Find More Posts by Razor1982
+%Add Razor1982 to Your Buddy List
+%Old 10-04-2005    #5
+%88keyz
+%New on Forum
+%
+%88keyz's Avatar
+%
+%Join Date: Aug 2003
+%Location: Oshawa, ON, Canada
+%Posts: 23
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Autoplay or Autorun and Auto Insert Notification are not the same thing. Auto Insert Notification MUST be enabled for Autoplay/Autorun to work but it doesn't matter if Autoplay/Autorun is enabled in order for Auto Insert Notification to function. Auto Insert Notification is the function of Windows that tells Autoplay/Autorun when a new CD has been inserted, Autoplay/Autorun simply runs the Autoplay or Autorun feature depending on the type of disc inserted into the drive. Auto Insert Notification is also responsible for changing the volume label in My Computer or Explorer when a new disc is inserted into or ejected from one of your optical drives.
+%88keyz is offline       Reply With Quote
+%88keyz
+%View Public Profile
+%Send a private message to 88keyz
+%Visit 88keyz's homepage!
+%Find More Posts by 88keyz
+%Add 88keyz to Your Buddy List
+%Old 10-04-2005    #6
+%Razor1982
+%CD Freaks Die Hard
+%
+%Join Date: Jun 2003
+%Posts: 1,485
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%you can enable / disable both, Autoplay (-run) / Auto Insert Notification in the latest Tweak UI (2.10.0.0) - the names are wrong, but if you disable the DRIVES under "drives", Auto Insert Notification will be DISABLED, so e.g. if you disable the drives, but enable the settings under "types", autorun will not work and windows will not recognize any disc-change until next reboot any more...
+%Razor1982 is offline    Reply With Quote
+%Razor1982
+%View Public Profile
+%Find More Posts by Razor1982
+%Add Razor1982 to Your Buddy List
+%Old 10-04-2005    #7
+%88keyz
+%New on Forum
+%
+%88keyz's Avatar
+%
+%Join Date: Aug 2003
+%Location: Oshawa, ON, Canada
+%Posts: 23
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%TweakUI was the first tool I tried to solve this issue and it didn't work for me. If it works for others then that's great because obviously its much easier and safer and I suggest that anyone having this problem try Razor1982's method first but in the event that TweakUI won't fix your problem, as it wouldn't for me, then my method of fixing the issue is there as a backup. Its always great to have multiple ways to attack a problem.
+%88keyz is offline       Reply With Quote
+%88keyz
+%View Public Profile
+%Send a private message to 88keyz
+%Visit 88keyz's homepage!
+%Find More Posts by 88keyz
+%Add 88keyz to Your Buddy List
+%Old 29-06-2005    #8
+%krkdnose
+%CD Freaks Member
+%
+%Join Date: Oct 2002
+%Posts: 144
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Thanks a lot! I couldn't get TweakUI to do what I wanted, but your method did the trick.
+%krkdnose is offline     Reply With Quote
+%krkdnose
+%View Public Profile
+%Send a private message to krkdnose
+%Find More Posts by krkdnose
+%Add krkdnose to Your Buddy List
+%Old 29-06-2005    #9
+%TimC
+%Moderator
+%
+%TimC's Avatar
+%
+%Join Date: Mar 2004
+%Location: UK
+%Posts: 7,461
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%I used DVD Decrypter to do it. Just a tick in the box, safer that way for most users.
+%TimC is offline     Reply With Quote
+%TimC
+%View Public Profile
+%Send a private message to TimC
+%Find More Posts by TimC
+%Add TimC to Your Buddy List
+%Old 29-06-2005    #10
+%besmirch
+%CD Freaks Senior Member
+%
+%besmirch's Avatar
+%
+%Join Date: Apr 2005
+%Location: P(r)oland|Falkenberg
+%Posts: 511
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Hmm try NitrousXP this is powerfull tool to optimize WinXP got all u need and more =p
+%__________________
+%"It's like I'll disappear as soon as I close my eyes
+%I feel like I've turned into someone that even I don't recognize"
+%
+%Device:
+%LiteOn SOHW-1673S@1693S - KC4B /patched/
+%Ausu CD-S500/A - 1.2C <i have it 4 years...still working fine >
+%Creative CDRW 8435 (Samsung SW-208) <retard but working fine >
+%
+%CPU: Barton 2500+(1833MHz)@2500MHz used 12.5x200MHz - AQXEA 2 win!
+%MotherBoard: MSI K7N2 Delta2 Platinium
+%Memory: KingMax 2x 256DDR 200@250MHz
+%Video: noname Radeon Saphire 9200 128mb-128bit 250/200@310/260
+%Drive: Maxtor 6Y080L0 80GB
+%Power Supply: noname 350W /MotherBoard/+300W /Device/
+%OS: WinXP Pro SP2, ubuntu
+%Soft: Nero 6.6.0.16, DVDDecrypter 3.5.4.0, CD-DA Extractor 8.1.4
+%
+%Secure Your PC Get 4 FREE: Opera, Avast, Ad-aware, ZoneAlarm . ~ or ~ Get linux 4 FREE: linuxiso
+%besmirch is offline     Reply With Quote
+%besmirch
+%View Public Profile
+%Send a private message to besmirch
+%Visit besmirch's homepage!
+%Find More Posts by besmirch
+%Add besmirch to Your Buddy List
+%Old 23-07-2006    #11
+%Andromeda M31
+%New on Forum
+%
+%Join Date: Jul 2006
+%Posts: 1
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Firstly, many thanks to 88keyz and others in this thread. I have now partially solved a problem that has been nagging to be fixed for a number of months. I have 2 drives in the computer: 1 x CD ROM and a CD-RW. Prior to using registry fix posted by 88keyz, both drives had the same problem as posted by 88keyz. After trying manually a number of times, the problem still persisted. However, after (registering on this forum and downloading the offered Zip file) running the regfix the CD-RW recognizes inserted discs correctly. The CD ROM does not. Obviously, there is another problem and I have not been brave or knowledgeable enough to go into other places that control Master and Slave or anywhere else that may resolve the problem. Is there someone out there like 88keyz who can write clear, easy-to-follow instructions (or point me to another fix) on what I can do to to overcome the non-recognition by the CD ROM drive? I shudder when I read advice like: "Hopefully both drives are connected to the secondary ide controller and one is jumpered as Master, the other as Slave. (unless you have a Cable Select (CS) system.) And hopefully both ide ports are enabled in pc bios setup." Other forum threads mention that some CD/DVD Burning programs will switch Auto Insert Notification off to prevent a burn failure. Is this a problem to be contended with? I have NERO latest version installed. Again, many thanks - Mac - (Andromeda M31)
+%Andromeda M31 is offline    Reply With Quote
+%Andromeda M31
+%View Public Profile
+%Send a private message to Andromeda M31
+%Find More Posts by Andromeda M31
+%Add Andromeda M31 to Your Buddy List
+%Old 05-08-2006    #12
+%88keyz
+%New on Forum
+%
+%88keyz's Avatar
+%
+%Join Date: Aug 2003
+%Location: Oshawa, ON, Canada
+%Posts: 23
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Does your optical drive (CD-ROM) still show up in My Computer with a drive letter? If not then you might have corrupted upper/lower filter drivers. For a fix to that problem try here. If that is not your problem then I'll need more details.
+%88keyz is offline       Reply With Quote
+%88keyz
+%View Public Profile
+%Send a private message to 88keyz
+%Visit 88keyz's homepage!
+%Find More Posts by 88keyz
+%Add 88keyz to Your Buddy List
+%Old 23-05-2007    #13
+%Jastone
+%New on Forum
+%
+%Join Date: May 2007
+%Posts: 1
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Hey guys, When i put in a disk such as a game it doesn't show that i have the game in (by looking at My Computer) and it doesn't autoplay. If i choose to explore the disk i can see the files there. I have tried using your registry zip file but it didn't work.
+%
+%Thanks .
+%Jastone is offline      Reply With Quote
+%Jastone
+%View Public Profile
+%Send a private message to Jastone
+%Find More Posts by Jastone
+%Add Jastone to Your Buddy List
+%Old 28-05-2007    #14
+%Mando Pluckerman
+%New on Forum
+%
+%Join Date: May 2007
+%Posts: 1
+%
+%Re: How to re-enable Auto Insert Notification in Windows XP
+%Hey 88keyz: Thanks for the regedit tip! This fixed a problem I've had for months. Note to other readers: In regedit it's easy - once you finally get to the right place. Just change 91 to 95, then exit and reboot. Also, the HEX code is 0x00000095, Decimal is 149, and binary data code is 0000 95 00 00 00.
+%
+%Mando Pluckerman is offline     Reply With Quote
+%Mando Pluckerman
+%View Public Profile
+%Send a private message to Mando Pluckerman
+%Send email to Mando Pluckerman
+%Find More Posts by Mando Pluckerman
+%Add Mando Pluckerman to Your Buddy List
+%Reply
+%
+%« Previous Thread | Next Thread »
+%
+%
+%
+%Thread Tools
+%Show Printable Version Show Printable Version
+%Email this Page Email this Page
+%Display Modes
+%Linear Mode Linear Mode
+%Hybrid Mode Switch to Hybrid Mode
+%Threaded Mode Switch to Threaded Mode
+%Rate This Thread
+%You have already rated this thread
+%Posting Rules
+%You may not post new threads
+%You may not post replies
+%You may not post attachments
+%You may not edit your posts
+%vB code is On
+%Smilies are On
+%[IMG] code is On
+%HTML code is Off
+%
+%Forum Jump
+%Please select oneUser Control PanelPrivate MessagesSubscriptionsWho's OnlineSearch ForumsForums Home-------------------- International Chat: General Topics    Newbie Forum    Music Download, Peer to Peer (P2P) & Legal Issues    CD Freaks Living Room        Rylex Blindwrite Comics            Rylex Blindwrite Comics - Archive                Rylex Blindwrite Comics - 2004                Rylex Blindwrite Comics - 2003                Rylex Blindwrite Comics - 2005        Game's Up        CD Freaks Distributed Computing Team Forum        Entertainment Talk        News    CD Freaks Bargain Basement International Chat: Software related    General Software    CD & DVD Copy Protection        Copy Protection List        CD Backup Guides and Tutorials    CD and DVD Burning Software        Clone CD        FreeBSD, Linux Burning        Alcohol        VSO Software        Nero & InCD            Nero Linux        MovieJack/GameJack/DCS    Copy DVD Movie        DVDFab / DVD Region+CSS Free        CloneDVD        1ClickDVDCopy        DvdReMake        ratDVD Forum        Video DRM Forum        DVD neXt COPY         DVD2One        Nero Recode        AnyDVD        Reading & Playing Software        Guides and Tutorials    Video Edit Software        Guides and Tutorials        ImToo Video Conversion and Burning Software Forum    Audio        Guides and Tutorials        Audio DRM Forum        Tunebite, Radiotracker - Rapidsolution Software    Nero SDK Discussion Forum International Chat: Hardware related    General Hardware Forum    Blu-ray and HD-DVD    CD and DVD Burners        DVD Burner User Reviews and Comments        External Enclosures        BenQ DVD Burner / Philips DVD Burner        BTC DVD Burner / Emprex DVD Burner        LG DVD Burner        LiteOn DVD Burner / Sony DVD Burner        NEC DVD Burner / Optiarc DVD Burner        Asus DVD Burner / Pioneer DVD Burner        Plextor DVD Burner        Samsung DVD Burner    Hard Drive    DVD Recorder & Home Entertainment        Console Forum        DVD+RW Video Recorders        Lite-On DVD Recorder and Player Forum        Panasonic DVD Recorder and Player Forum        Philips DVD Recorder and Player Forum        Pioneer DVD Recorder and Player Forum    Satellite and HD-TV Forum    Blank Media        Media Testing/Identifying Software        Blank DVD Media Tests        Blank CD-R(W) Media tests    Firmware    Optical Storage Technical Discussions    CD & DVD Printing and Labeling    Flash Memory Language Dependant    Dutch: De Woonkamer    Italian: Chat        Italian: Optical Drives and Media        Italian: Guides and Documentation    German: General Chat CD Freaks    Bug Reports Mainpage    CD Freaks Forum Talk
+%
+%
+%
+%All times are GMT +2. The time now is 22:19.
+%
+%Contact Us - CDFreaks.com - Archive - Top
+%
+%Powered by: vBulletin Version 3.0.13
+%Copyright {\copyright}2000 - 2007, Jelsoft Enterprises Ltd.
+%(c) CD Freaks.com 1997 - 2007
+%
+%DVD Burner - AnyDVD - AVI to DVD - Burn DVD - Burn DVD Movies
+%Other sponsors: CD DVD Duplicator, CD DVD Duplication
+%Copy DVD Movie Software
+%
+%Archive: Copy DVD Movie Archived post, old 1, 3, 7, 12, 15, 16, 18, 19, 32, 33, 36, 43, 44, 48, 52, 57, 58, 59, 61, 62, 64, 65, 66, 70,
+%71, 72, 73, 74, 76, 77, 78 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 94, 96, 98, 99, 102, 103, 104, 105, 106
+%
+%Sections: CD Freaks Home | Club CD Freaks Archive | CD Freaks Shop
+%
+%Navigate to: Privacy Policy | Reaction Policy | Mailinglist | FAQ | Servers | About | Advertise | Contact
+%Contentlink
+%    What's this? Close
+%System at Shopping.com!
+%    Save on PC Desktops Compare products, prices & stores.
+%www.Shopping.com
+    moreinfo
