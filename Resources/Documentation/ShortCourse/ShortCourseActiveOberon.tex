@@ -334,28 +334,28 @@ We will introduce the basic and composite types in more details in sections \ref
 
 \subsection{Variable and Parameter Declarations}
 In Active Oberon, variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope. Parameters are variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
- 
+
 Parameters can be {\em value parameters}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
 
-We illustrate the concepts in the following example. 
+We illustrate the concepts in the following example.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Variables and Parameters}]
-MODULE Variables; 
+MODULE Variables;
 TYPE
-    (* variables in a record *) 
-    Pair=RECORD x,y: REAL END; 
-    PairPointer = POINTER TO Pair; 
-    
-VAR (* global variables *) 
-    a: LONGINT; 
+    (* variables in a record *)
+    Pair=RECORD x,y: REAL END;
+    PairPointer = POINTER TO Pair;
+
+VAR (* global variables *)
+    a: LONGINT;
     b: Pair;
-    c: PairPointer; 
+    c: PairPointer;
 
 PROCEDURE Square(x: REAL): REAL;
 BEGIN x := x*x; RETURN x
-END Square; 
+END Square;
 
-PROCEDURE SetValues(VAR p:Pair; x,y: REAL);  
+PROCEDURE SetValues(VAR p:Pair; x,y: REAL);
 BEGIN p.x := x; p.y := y
 END SetValues;
 
@@ -363,38 +363,38 @@ PROCEDURE SetValuesP(p:PairPointer; x,y: REAL);
 BEGIN p.x := x; p.y := y
 END SetValuesP;
 
-BEGIN 
-    a := 10; 
-    SetValues(b,a,Square(a)); 
-    NEW(c); 
+BEGIN
+    a := 10;
+    SetValues(b,a,Square(a));
+    NEW(c);
     SetValues(c^,a,Square(a));
-    SetValuesP(c,a,Square(a)); 
-END Variables; 
+    SetValuesP(c,a,Square(a));
+END Variables;
 \end{lstlisting}
 
 \subsection{Procedure Declarations}
 Procedures can be declared in a module scope, within procedure scopes (`nested procedures') and in object scopes:
 \begin{lstlisting}[language=Oberon,frame=none,caption={Procedures}]
-MODULE Procedures; 
+MODULE Procedures;
 
-TYPE 
+TYPE
     O = OBJECT
-    
-    PROCEDURE Method; 
+
+    PROCEDURE Method;
         PROCEDURE NestedProcedure;
-        BEGIN 
+        BEGIN
         END NestedProcedure;
-    BEGIN 
-    END Method; 
-    
-    END O; 
+    BEGIN
+    END Method;
 
-PROCEDURE GlobalProcedure; 
-    PROCEDURE NestedProcedure; 
-    BEGIN END NestedProcedure; 
-END GlobalProcedure; 
+    END O;
 
-END Procedures; 
+PROCEDURE GlobalProcedure;
+    PROCEDURE NestedProcedure;
+    BEGIN END NestedProcedure;
+END GlobalProcedure;
+
+END Procedures;
 \end{lstlisting}
 
 \section{Basic Types}\label{section:BasicTypes}
@@ -447,61 +447,68 @@ The set representing the type CHAR is ordered and each character has a fixed pos
 
 \section{Composite Types}\label{section:CompositeTypes}
 
-In Active Oberon, there are three composite types available. Arrays, Records and Pointers. 
+In Active Oberon, there are three composite types available. Arrays, Records and Pointers.
 
 \subsection{Arrays}
 Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows expressions like ARRAY 12 OF ARRAY 13 OF ARRAY 11 OF REAL. Arrays can be declared open only in a parameter section. Open arrays are declared as ARRAY OF ...  Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime. They are declared as POINTER TO ARRAY OF ...
 \begin{lstlisting}[language=Oberon,frame=none]
-VAR 
+VAR
 a: ARRAY 32 OF ARRAY 20 OF INTEGER; (* static *)
 b: POINTER TO ARRAY OF ARRAY OF REAL; (* dynamic *)
-    
-PROCEDURE Print(x: ARRAY OF CHAR); (* open *) 
-END Print; 
-\end{lstlisting}   
+
+PROCEDURE Print(x: ARRAY OF CHAR); (* open *)
+END Print;
+\end{lstlisting}
 
 \subsection{Records}
 Records are containers of data. Records are value types and are declared as RECORD (variables) END. Records can also be declared as reference types using POINTER TO. Record data are referred to via recordName.variableName.
 \begin{lstlisting}[language=Oberon,frame=none]
 VAR
-a: RECORD x,y: LONGINT END; 
-p: POINTER TO RECORD a,b: REAL END; 
+a: RECORD x,y: LONGINT END;
+p: POINTER TO RECORD a,b: REAL END;
 ...
-BEGIN 
+BEGIN
 ...
-NEW(p); 
+NEW(p);
 p.x := a.x;
 ....
-\end{lstlisting}    
+\end{lstlisting}
 
 \subsection{Objects}
-Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
-\begin{lstlisting}[language=Oberon,frame=none]
-TYPE 
-MyObject = OBJECT (* class *) 
-VAR x,y: REAL; 
+Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier. Objects may come with at most one constructor (indicated by the ampersand character in front of the procedure name) which is executed before the
+object is accessible.
 
-PROCEDURE Equals(o: MyObject): BOOLEAN; 
-BEGIN 
+\begin{lstlisting}[language=Oberon,frame=none]
+TYPE
+MyObject = OBJECT (* class *)
+VAR x,y: REAL;
+
+PROCEDURE Equals(o: MyObject): BOOLEAN;
+BEGIN
     IF o = SELF THEN RETURN TRUE
     ELSE RETURN (o.x = x) & (o.y = y)
-    END; 
-END Equals; 
+    END;
+END Equals;
 
-END MyObject; 
+PROCEDURE &Init(x, y : REAL); (* constructor *)
+BEGIN
+    SELF.x := x; SELF.y := y;
+END Init;
 
-VAR p,q: MyObject; (* objects / instances *) 
+END MyObject;
+
+VAR p,q: MyObject; (* objects / instances *)
 ...
 
-BEGIN 
-    NEW(p); p.x := 10; p.y := 10; 
+BEGIN
+    NEW(p); p.x := 10; p.y := 10;
     ...
     IF p.Equals(q) THEN ...
-    END; 
+    END;
 \end{lstlisting}
 
 \subsection{Inheritance}
-Active Oberon is an object oriented language. For both, records and objects, inheritance is supported by Oberon. It is possible to extend records and objects and to use type checks, type guards and overloading of methods. 
+Active Oberon is an object oriented language. For both, records and objects, inheritance is supported by Oberon. It is possible to extend records and objects and to use type checks, type guards and overloading of methods.
 Record and object extension is declared as in the following example:
 
 \begin{lstlisting}[language=Oberon,frame=none]
@@ -516,28 +523,125 @@ FilledRectangle= RECORD(Rectangle)
 END;
 
 Window = OBJECT
-VAR x,y,w,h: INTEGER; 
+VAR x,y,w,h: INTEGER;
 
-    PROCEDURE Print; 
-    BEGIN 
-        (* draw frame *) 
-    END Print; 
-END Window; 
+    PROCEDURE Print;
+    BEGIN
+        (* draw frame *)
+    END Print;
+END Window;
 
-FilledWindow = OBJECT (Window) 
-VAR color: INTEGER; 
-    
-    PROCEDURE Print; (* overwrites Window.Print *) 
-    BEGIN 
-        Print^; (* supercall *) 
-        (* fill *) 
-    END Print; 
-END FilledWindow; 
+FilledWindow = OBJECT (Window)
+VAR color: INTEGER;
+
+    PROCEDURE Print; (* overwrites Window.Print *)
+    BEGIN
+        Print^; (* supercall *)
+        (* fill *)
+    END Print;
+END FilledWindow;
 
 \end{lstlisting}
 
 
+
+\section{Concurrency Support}
+Active Oberon provides built-in concurrency support. Threads are represented as active objects and language constructs for ensuring mutual exclusion and thread synchronization are provided.
+
 \section{Active Objects}
+The declaration of an object type may include an \emph{object body}. The body is the object's activity, to be executed whenever an object instance is allocated after the constructor (if any) completed execution.
+
+\begin{lstlisting}[language=Oberon,frame=none]
+TYPE
+    ActiveObject = OBJECT
+    BEGIN {ACTIVE}
+        (* do some useful work *)
+    END ActiveObject;
+\end{lstlisting}
+
+\subsection{Mutual Exclusion}
+Code blocks can be tagged with {EXCLUSIVE} to indicate the need that at most one thread may execute the block at once.
+Behind the scenes, a monitor lock must be acquired by the thread that wants to enter the critical section. If the lock is held by another threads, the thread that wants to enter is suspended until the lock becomes free.
+It is important to know that for each module and each object instance, such a monitor lock exists. This means that at
+most one thread at once can execute any critical section in the whole module or object instance.
+Please note that these locks are not re-entrant, i.e. a thread that already holds a lock of a specific module or object instance cannot acquire a lock of the same module or object instance. Trying to do so will lead to a runtime exception.
+
+\begin{lstlisting}[language=Oberon,frame=none]
+MODULE Demo;
+
+TYPE
+    SomeObject = OBJECT
+
+        PROCEDURE O1;
+        BEGIN {EXCLUSIVE}
+            (* critical section o1 *)
+        END O1;
+
+        PROCEDURE O2;
+        BEGIN
+            (* non-critical section *)
+            BEGIN {EXCLUSIVE} (* critical section o2 *) END;
+            (* non-critical section *)
+        END O2;
+
+    END SomeObject;
+
+PROCEDURE P1;
+BEGIN {EXCLUSIVE}
+    (* critical section p1 *)
+END P1;
+
+PROCEDURE P2;
+BEGIN
+    (* non-critical section *)
+    BEGIN {EXCLUSIVE} (* critial section p2 *) END;
+    (* non-critical section *)
+END P2;
+
+END Demo.
+\end{lstlisting}
+
+\subsection{The AWAIT statement}
+
+
+\begin{lstlisting}[language=Oberon,frame=none]
+
+\end{lstlisting}
+
+\subsection{Example}
+The following example shows the implementation of a bounded-buffer.
+
+\begin{lstlisting}[language=Oberon,frame=none]
+TYPE
+  Item* = OBJECT END Item;
+	
+  Buffer* = OBJECT
+  VAR head, num: LONGINT; buffer: POINTER TO ARRAY OF Item;
+		
+    PROCEDURE Append*(x: Item);
+    BEGIN {EXCLUSIVE}
+      AWAIT(num # LEN(buffer));
+      buffer[(head+num) MOD LEN(buffer)] := x;
+      INC(num)
+    END Append;
+
+    PROCEDURE Remove*(): Item;
+    VAR x: Item;
+    BEGIN {EXCLUSIVE}
+      AWAIT(num # 0);
+      x := buffer[head];
+      head := (head+1) MOD LEN(buffer);
+      DEC(num);
+      RETURN x
+    END Remove;
+
+    PROCEDURE &Init*(n: LONGINT);
+    BEGIN
+      head := 0; num := 0; NEW(buffer, n)
+    END Init;
+  END Buffer;
+
+\end{lstlisting}
 
 \section{In- and Output}
 
