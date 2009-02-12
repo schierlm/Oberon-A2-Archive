@@ -1,3 +1,4 @@
+
 \documentclass[a4paper,11pt]{article}
 \usepackage{color}
 \usepackage{longtable}
@@ -475,8 +476,8 @@ p.x := a.x;
 \end{lstlisting}
 
 \subsection{Objects}
-Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier. Objects may come with at most one constructor (indicated by the ampersand character in front of the procedure name) which is executed before the
-object is accessible.
+Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
+A method tagged with an ampersand character is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
 \begin{lstlisting}[language=Oberon,frame=none]
 TYPE
@@ -490,7 +491,7 @@ BEGIN
     END;
 END Equals;
 
-PROCEDURE &Init(x, y : REAL); (* constructor *)
+PROCEDURE &Init(x, y : REAL); (* initializer *)
 BEGIN
     SELF.x := x; SELF.y := y;
 END Init;
@@ -501,7 +502,7 @@ VAR p,q: MyObject; (* objects / instances *)
 ...
 
 BEGIN
-    NEW(p); p.x := 10; p.y := 10;
+    NEW(p, 1.0, 9.99); (* instantiate object p with x and y parameters for initializer *)
     ...
     IF p.Equals(q) THEN ...
     END;
@@ -543,28 +544,34 @@ END FilledWindow;
 
 \end{lstlisting}
 
-
-
 \section{Concurrency Support}
 Active Oberon provides built-in concurrency support. Threads are represented as active objects and language constructs for ensuring mutual exclusion and thread synchronization are provided.
 
-\section{Active Objects}
-The declaration of an object type may include an \emph{object body}. The body is the object's activity, to be executed whenever an object instance is allocated after the constructor (if any) completed execution.
+\subsection{Active Objects}
+The declaration of an object type may include an \emph{object body}. The body is the object's activity, to be executed whenever an object instance is allocated after the initializer (if any) completed execution. The object body is annotated with the \emph{ACTIVE} modifier. At allocation, a new process is allocated to execute the body concurrently.
+If the ACTIVE modifier is not present, the body is executed synchronously, i.e. NEW returns only after the body has terminated execution.
+The active object activity terminates whenever the body execution terminates. As long as the body executes, the object is kept alive (i.e. cannot be garbage collected). After that, the object becomes a passive one, and will be collected according to the usual rules.
 
 \begin{lstlisting}[language=Oberon,frame=none]
 TYPE
-    ActiveObject = OBJECT
-    BEGIN {ACTIVE}
-        (* do some useful work *)
-    END ActiveObject;
+   ActiveObject = OBJECT
+   BEGIN {ACTIVE}
+       (* do some useful work *)
+   END ActiveObject;
+
+VAR
+   o : ActiveObject
+
+BEGIN
+   NEW(o); (* instantiate object o and create new process that executes the object body *)
 \end{lstlisting}
 
-\subsection{Mutual Exclusion}
-Code blocks can be tagged with {EXCLUSIVE} to indicate the need that at most one thread may execute the block at once.
-Behind the scenes, a monitor lock must be acquired by the thread that wants to enter the critical section. If the lock is held by another threads, the thread that wants to enter is suspended until the lock becomes free.
-It is important to know that for each module and each object instance, such a monitor lock exists. This means that at
-most one thread at once can execute any critical section in the whole module or object instance.
-Please note that these locks are not re-entrant, i.e. a thread that already holds a lock of a specific module or object instance cannot acquire a lock of the same module or object instance. Trying to do so will lead to a runtime exception.
+\subsection{Protection}
+A Statement Block is a sequence of statements delimited by BEGIN and END. It can be used anywhere like a simple statement. It is most useful when used with the EXCLUSIVE modifier to create a critical region to protect the statements against concurrent execution. Our protection model is an instance-based monitor.
+Every object instance is protected and the protection granularity is any statement block inside the object’s method, ranging from a single statement to a whole method.
+A statement block can be protected against concurrent access by annotating it with the modifier EXCLUSIVE. Upon entering an exclusive block, an activity is preempted as long as another activity stands in an exclusive block
+of the same object instance. An activity cannot take an object’s lock more than once, re-entrance is not allowed.
+Every module is considered to be an object type with a singleton instance, thus its procedures can also be protected. The scope of protection is the whole module, like in a monitor.
 
 \begin{lstlisting}[language=Oberon,frame=none]
 MODULE Demo;
@@ -594,21 +601,41 @@ END P1;
 PROCEDURE P2;
 BEGIN
     (* non-critical section *)
-    BEGIN {EXCLUSIVE} (* critial section p2 *) END;
+    BEGIN {EXCLUSIVE} (* critical section p2 *) END;
     (* non-critical section *)
 END P2;
 
 END Demo.
 \end{lstlisting}
 
-\subsection{The AWAIT statement}
+In this example, at most one thread can be in the critical section \emph{p1} and \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
 
+\subsection{Synchronization}
+The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when condition is true. While the condition is not established, the activity remains suspended. If inside a protected block, the lock on the protected object is released, as long as the activity remains suspended
+(to allow other activities to change the state of the object and thus establish the condition). The activity is restarted only if the lock can be taken. The system is responsible for evaluating the conditions and for resuming suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
+This implies that changing the state of an object outside a protected block won’t have the conditions re-evaluated.
+When several activities compete for the same object lock, the activities whose conditions are true are scheduled before those that only want to enter a protected region.
 
 \begin{lstlisting}[language=Oberon,frame=none]
-
+TYPE
+    Synchronizer = OBJECT
+    VAR awake : BOOLEAN;
+    
+        PROCEDURE Wait;
+        BEGIN {EXCLUSIVE}
+           AWAIT(awake); (* suspend caller until awake = TRUE *)
+           awake := FALSE;
+        END Wait;
+        
+        PROCEDURE Wakeup;
+        BEGIN {EXCLUSIVE}
+           awake := TRUE;
+        END Wakeup;
+        
+    END Synchronizer
 \end{lstlisting}
 
-\subsection{Example}
+\subsection{Examples}
 The following example shows the implementation of a bounded-buffer.
 
 \begin{lstlisting}[language=Oberon,frame=none]
@@ -640,12 +667,57 @@ TYPE
       head := 0; num := 0; NEW(buffer, n)
     END Init;
   END Buffer;
-
 \end{lstlisting}
 
 \section{In- and Output}
+This section gives a brief overview of the most used I/O facilities.
+
+\subsection{Streams}
+Streams provide an abstraction to ressources that are accessed byte-wise. 
+
+\subsection{Files}
+The module Files is the interface implemented by file system drivers and the same time the A2 Files API.
+
+The most useful operations are
+
+Files.Old(filename : ARRAY OF CHAR) : File;
+Files.New(filename : ARRAY OF CHAR) : File;
+Files.Register(file);
+
+The actual access to files can be achieved using either the low-level File object or by opening Streams on the file.
+
+Files.OpenReader(VAR r: Files.Reader; f : File; position : LONGINT);
+Files.OpenWriter(VAR w : Files.Writer; f : File; position : LONGINT);
 
 \section{The module System}
+The module SYSTEM contains definitions that are necessary to program low-level operations referring directly to resources particular to a given computer and/or implementation. These include, for example, facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module expose the complete memory, and allow unsafe type-casts to be made. They should be used with care, because if misused they can easily crash the whole system. It is a bit like programming in C. It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable, but easily recognized due to the identifier SYSTEM appearing in their import list.
+The subsequent definitions are applicable to the A2 operating system for which SYSTEM is implemented directly in the compiler.
+
+\begin{center}
+    \begin{table}
+    \begin{tabular}{|l|l|}
+        \hline
+        Name & Function \\
+        \hline
+        PUT(adr : ADDRESS; x : Type) & Mem[adr] := x whereas the size of type x is 8, 16, 32 or 64 bits \\
+        \hline
+        PUT8(adr: ADDRESS; x: SHORTINT) & Mem[adr] := x \\
+        PUT16(adr: ADRESS; x: INTEGER) & \\
+        PUT32(adr: ADDRESS; x: LONGINT) & \\
+        PUT64(adr: ADDRESS; x: HUGEINT) & \\
+        \hline
+        GET(adr : ADDRESS) : Type & RETURN Mem[adr] whereas the size of type x is 8, 16, 32 or 64 bits \\
+        \hline
+        GET8(adr: ADDRESS): SHORTINT & RETURN Mem[adr] \\
+        GET16(adr: ADDRESS): INTEGER & \\
+        GET32(adr: ADDRESS): LONGINT & \\
+        GET64(adr: ADDRESS): HUGEINT & \\
+        \hline
+        
+    \end{tabular}
+    \caption{IA-32 Version Functions}
+    \end{table}
+\end{center}
 
 \section{Active Oberon EBNF}
 
