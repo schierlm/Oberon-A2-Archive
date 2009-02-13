@@ -767,8 +767,7 @@ As we have seen in ..., there are two kinds of commands
 
 \begin{lstlisting}[language=Oberon,frame=none]
 PROCEDURE ProcedureName* BEGIN END ProcedureName;
-PROCEDURE ProcedureName*(context : Commands.Context);
-\end{lstlisting}
+PROCEDURE ProcedureName*(context : Commands.Context); BEGIN END ProcedureName; \end{lstlisting}
 
 \begin{lstlisting}[language=Oberon,frame=none]
 TYPE
@@ -781,6 +780,7 @@ TYPE
 \end{lstlisting}
 
 Command line arguments can be accessed using the \emph{arg} stream. in \emph{is} the command input stream. For output, the streams \emph{out} and \emph{error} are used.
+The caller field optionally contains a reference to an object that is responsible for the command invocation.
 
 As a simple in- and output example,...
 
@@ -846,6 +846,10 @@ BEGIN
 \end{lstlisting}
 
 In this example, executing CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
+
+\subsection{String Manipulation}
+The module Utilities provides procedures for string manipulation.
+
 
 \section{The module System}
 The module SYSTEM contains definitions that are necessary to program low-level operations referring directly to resources particular to a given computer and/or implementation. These include, for example, facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module expose the complete memory, and allow unsafe type-casts to be made. They should be used with care, because if misused they can easily crash the whole system. It is a bit like programming in C. It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable, but easily recognized due to the identifier SYSTEM appearing in their import list.
