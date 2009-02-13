@@ -673,7 +673,130 @@ TYPE
 This section gives a brief overview of the most often used I/O facilities.
 
 \subsection{Streams}
-Streams provide an abstraction to ressources that are accessed byte-wise.
+Streams provide an abstraction for easily accessing various resources that can be accessed byte-wise. Streams can be opened on files, network connections, serial port connection, memory and many other resources. Streams are always buffered and therefore have to be flushed explicitly by the programmer.
+Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Note that streams maintain a stream position that is adapted automatically whenever a read or write is performed. Stream may support setting the position explicitly, depending on the underlying resource.
+
+
+\begin{center}
+    \begin{table}
+    \begin{tabular}{|l|l|}
+    \hline
+    Method & Description \\
+    \hline
+    CanSetPos() : BOOLEAN & Returns TRUE if the stream supports random access, FALSE otherwise \\
+    SetPos(pos : LONGINT) & Set current position to "pos" \\
+    Pos() : LONGINT & Get current position \\
+    \hline
+    Available() : LONGINT & Returns bytes currently available in the input buffer \\
+    \hline
+    Char(VAR x : CHAR) & Read one byte \\
+    Get() : CHAR & Like Char but return result \\
+    Peek() : CHAR & Like Get but leave byte in the input buffer \\
+    Bytes(VAR x : ARRAY OF CHAR; ofs, size : LONGINT; VAR len : LONGINT) & Read "size" bytes into x, starting at offset "ofs" \\
+    SkipBytes(n : LONGINT) & Skip "n" bytes on the reader \\
+    \hline
+    \end{tabular}
+    \caption{Basic Reader Interface}
+    \end{table}
+\end{center}
+
+\begin{center}
+    \begin{table}
+    \begin{tabular}{|l|l|}
+    \hline
+    Method & Description \\
+    \hline
+    CanSetPos() : BOOLEAN & Returns TRUE if the stream supports random access, FALSE otherwise \\
+    SetPos(pos : LONGINT) & Set current position to "pos" \\
+    Pos() : LONGINT & Get current position \\
+    \hline
+    Update() : LONGINT & Write bytes in output buffer to resource \\
+    \hline
+    Char(x : CHAR) & Write one byte \\
+    Bytes(CONST x : ARRAY OF CHAR; ofs, size : LONGINT) & Write "size" bytes into x, starting at offset
+    "ofs" \\
+    SkipBytes(n : LONGINT) & Skip "n" bytes on the reader \\
+    \hline
+    \end{tabular}
+    \caption{Basic Writer Interface}
+    \end{table}
+\end{center}
+
+\begin{center}
+    \begin{table}
+    \begin{tabular}{|l|l|}
+    \hline
+    Method & Description \\
+    \hline
+    Int(VAR x : LONGINT; hex : BOOLEAN) & Read a decimal or hexdecimal number from stream \\
+    EOLN() : BOOLEAN & Return TRUE if at the end of a line (or file) \\
+    Ln(VAR x : ARRAY OF CHAR) & Read all characters until the end of the line (inclusive) \\
+    SkipLn() & Skip over all characters until the end of the line (inclusive) \\
+    SkipSpaces() & Skip over space and TAB characters \\
+    SkipWhitespace() & Skip over space, TAB and EOLN characters \\
+    Token(VAR token : ARRAY OF CHAR) & Read a token, consisting of any string characters terminated by space, TAB or EOLN \\
+    String(VAR string : ARRAY OF CHAR) & Read an optionally "" or '' enquoted string \\
+    \hline
+    GetString(VAR string : ARRAY OF CHAR) & Equivalent to SkipWhitespace; String(string) \\
+    GetInteger(VAR integer : LONGINT; hex : BOOLEAN) & Equivalent to SkipWhitespace; Int(integer, hex) \\
+    GetChar(VAR ch : CHAR) & Equivalent to SkipWhitespace; Char(ch) \\
+    \hline
+    \end{tabular}
+    \caption{Extended Reader Interface}
+    \end{table}
+\end{center}
+
+\begin{center}
+    \begin{table}
+    \begin{tabular}{|l|l|}
+    \hline
+    Method & Description \\
+    \hline
+    Ln() & Write an ASCII end-of-line <CR><LF> \\
+    String(CONST string : ARRAY OF CHAR) & Write an 0X-terminated string (excluding 0X) \\
+    Int(x, w : LONGINT) & Write an integer in decimal right-justified in a field of at least w characters \\
+    Hex(x : HUGEINT; w : LONGINT) & Wirte an integer in hexadecimal right-justified in a field of at least w characters \\
+    \hline
+    \end{tabular}
+    \caption{Extended Writer Interface}
+    \end{table}
+\end{center}
+
+\subsection{Commands}
+As we have seen in ..., there are two kinds of commands
+
+\begin{lstlisting}[language=Oberon,frame=none]
+PROCEDURE ProcedureName* BEGIN END ProcedureName;
+PROCEDURE ProcedureName*(context : Commands.Context);
+\end{lstlisting}
+
+\begin{lstlisting}[language=Oberon,frame=none]
+TYPE
+    Context* = OBJECT
+    VAR
+        in-, arg- : Streams.Reader;
+        out-, error- : Streams.Writer;
+        caller- : OBJECT;
+    END Context;
+\end{lstlisting}
+
+Command line arguments can be accessed using the \emph{arg} stream. in \emph{is} the command input stream. For output, the streams \emph{out} and \emph{error} are used.
+
+As a simple in- and output example,...
+
+\begin{lstlisting}
+PROCEDURE Add*(context : Commands.Context)
+VAR a, b : LONGINT;
+BEGIN
+    context.arg.GetInteger(a, FALSE);
+    context.arg.GetInteger(b, FALSE);
+    context.out.Int(a, 0); context.out.String(" + "); context.out.Int(b, 0);
+    context.out.String(" = "); context.out.Int(a + b, 0);
+    context.out.Ln;
+END Add;
+\end{lstlisting}
+
+Note that both output stream buffer (out and error) are flushed automatically by the command interpreter after the PROCEDURE Add returns.
 
 \subsection{Files}
 The module Files is the interface implemented by file system drivers and the same time the A2 Files API.
@@ -686,8 +809,43 @@ Files.Register(file);
 
 The actual access to files can be achieved using either the low-level File object or by opening Streams on the file.
 
+\subsubsection{File Interface}
+The low-level file interface uses so-called riders as context for accessing files. Multiple riders can be positioned independently on a given file. Essentially, riders are used for tracking the position in a file and store the result of the last operation on the file. As when using streams, read and write operations automatically update the current position.
+
+File.Set(VAR r : Rider; position : LONGINT)
+File.Pos(VAR r : Rider) : LONGINT;
+
+File.Read(VAR r : Rider; VAR x : Char);
+File.ReadBytes(VAR r : Rider; x : ARRAY OF CHAR; offset, length : LONGINT);
+
+File.Write(VAR r : Rider; x : CHAR);
+File.WriteBytes(VAR r : Rider; CONST x : ARRAY OF CHAR; offset, length : LONGINT);
+
+File.Update;
+
+\subsubsection{Using Streams On Files}
+
 Files.OpenReader(VAR r: Files.Reader; f : File; position : LONGINT);
 Files.OpenWriter(VAR w : Files.Writer; f : File; position : LONGINT);
+
+\begin{lstlisting}
+PROCEDURE CreateFile*(context : Commands.Context);
+VAR file : Files.File; filename : Files.FileName; writer : Files.Writer; ch : CHAR;
+BEGIN
+   context.arg.GetString(filename);
+   file := Files.New(filename);
+   IF (file # NIL) THEN
+      Files.Register(file);
+      Files.OpenWriter(writer, file, 0);
+      context.arg.Char(ch);
+      WHILE (context.arg.res = Streams.Ok) DO
+         writer.Char(ch);
+         context.arg.Char(ch);
+      END;
+   END; END CreateFile;
+\end{lstlisting}
+
+In this example, executing CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
 
 \section{The module System}
 The module SYSTEM contains definitions that are necessary to program low-level operations referring directly to resources particular to a given computer and/or implementation. These include, for example, facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module expose the complete memory, and allow unsafe type-casts to be made. They should be used with care, because if misused they can easily crash the whole system. It is a bit like programming in C. It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable, but easily recognized due to the identifier SYSTEM appearing in their import list.
@@ -704,12 +862,12 @@ The subsequent definitions are applicable to the A2 operating system for which S
     ROT(x : IntValue; n : LONGINT) : IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
     \hline
     \end{tabular}
-    \caption{BIT Manipulation}   
-    \end{table}              
+    \caption{BIT Manipulation}
+    \end{table}
 \end{center}
-              
+
 \begin{center}
-    \begin{table}         
+    \begin{table}
     \begin{tabular}{|l|l|}
     \hline
     Type & Description \\
@@ -725,19 +883,19 @@ The subsequent definitions are applicable to the A2 operating system for which S
 \end{center}
 
 \begin{center}
-    \begin{table}         
+    \begin{table}
     \begin{tabular}{|l|l|}
     \hline
-    ADR(VAR v : ANY) : ADDRESS & Returns the address of v \\                      
+    ADR(VAR v : ANY) : ADDRESS & Returns the address of v \\
     \hline
-    SIZEOF(v : ANY) : SIZE & Returns the size of type v \\                      
+    SIZEOF(v : ANY) : SIZE & Returns the size of type v \\
     \hline
     VAL(T : AlmostAnyType; x : ANY) : Type & Unsafe type cast. Returns x interpreted as type T with no conversion \\
     \hline
     \end{tabular}
-    \caption{Addresses, Sizes and Unsafe Typecasts}            
-    \end{table}           
-\end{center}             
+    \caption{Addresses, Sizes and Unsafe Typecasts}
+    \end{table}
+\end{center}
 \begin{center}
     \begin{table}
     \begin{tabular}{|l|l|}
@@ -765,7 +923,7 @@ The subsequent definitions are applicable to the A2 operating system for which S
 \end{center}
 
 \begin{center}
-    \begin{table}         
+    \begin{table}
     \begin{tabular}{|l|l|} \hline
     PORTIN(adr : LONGINT; VAR x : Type) & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
     PORTOUT(adr : LONGINT; x : Type) & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
@@ -782,11 +940,11 @@ The subsequent definitions are applicable to the A2 operating system for which S
     \hline
     \end{tabular}
     \caption{IA-32 Specific Functions}
-    \end{table}                   
+    \end{table}
 \end{center}
 
 \section{Active Oberon EBNF}
-                             
+
 % --------------------------------------- examples -------------------------------
 \newpage {\Huge EXAMPLES}
 \section{Section}
