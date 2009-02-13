@@ -356,19 +356,30 @@ END Procedures;
 \end{lstlisting}
 
 \subsection{Basic Types}\label{section:BasicTypes}
-There are nine predeclared basic types in Active Oberon. Their names and valid values are the following:
+There are nine predeclared basic types in Active Oberon. Their names and valid values are shown in table \ref{table:BasicTypes}.
 
-\begin{itemize}
-\item BOOLEAN the truth values TRUE and FALSE.
-\item CHAR the characters of the extended ASCII set (0X ... 0FFX).
-\item SHORTINT the integers between MIN(SHORTINT) and MAX(SHORTINT).
-\item INTEGER the integers between MIN(INTEGER) and MAX(INTEGER).
-\item LONGINT the integers between MIN(LONGINT) and MAX(LONGINT).
-\item HUGEINT the integers between MIN(HUGEINT) and MAX(HUGEINT).
-\item REAL real numbers between MIN(REAL) and MAX(REAL).
-\item LONGREAL real numbers between MIN(LONGREAL) and MAX(LONGREAL).
-\item SET the sets of integers between 0 and MAX(SET).
-\end{itemize}
+\begin{table}
+\begin{tabular}{|l|l|l|}
+\hline
+Type name & Size & Valid values \\
+\hline\hline
+\verb+BOOLEAN+ & 1 byte & \verb+TRUE+ or \verb+FALSE+ \\
+\hline
+\verb+CHAR+ & 1 byte & characters of the extended ASCII set (\verb+0X+ \ldots \verb+0FFX+) \\
+\hline
+\verb+SHORTINT+ & 1 byte & integers between $-2^{7}$ and $2^{7}-1$ \\
+\verb+INTEGER+ & 2 bytes & integers between $-2^{15}$ and $2^{15}-1$ \\
+\verb+LONGINT+ & 4 bytes & integers between $-2^{31}$ and $2^{31}-1$ \\
+\verb+HUGEINT+ & 8 bytes & integers between $-2^{63}$ and $2^{63}-1$ \\
+\hline
+\verb+REAL+ & 4 bytes & floating point value between $-3.4028^{38}$ and $+3.4028^{38}$ \\
+\verb+LONGREAL+ & 8 bytes & floating point value between $-1.7976^{308}$ and $+1.7976^{308}$ \\
+\hline
+\verb+SET+ & 4 bytes & any set combination of the integer values between 0 and 31 \\
+\hline
+\end{tabular}
+\caption{Predeclared basic types}\label{table:BasicTypes}
+\end{table}
 
 \subsubsection{The types SHORTINT, INTEGER, LONGINT and HUGEINT}\label{section:IntegerTypes}
 These four types comprise the {\em integer types}. They represent the integer numbers and differ by the cardinality of the set of random numbers represented by each type. The need for different types arises from the architecture of machines which - for reasons of efficiency - provide various word formats with corresponding machine instructions.
