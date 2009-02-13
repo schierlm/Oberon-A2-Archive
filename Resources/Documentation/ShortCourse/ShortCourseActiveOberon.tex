@@ -620,18 +620,18 @@ When several activities compete for the same object lock, the activities whose c
 TYPE
     Synchronizer = OBJECT
     VAR awake : BOOLEAN;
-    
+
         PROCEDURE Wait;
         BEGIN {EXCLUSIVE}
            AWAIT(awake); (* suspend caller until awake = TRUE *)
            awake := FALSE;
         END Wait;
-        
+
         PROCEDURE Wakeup;
         BEGIN {EXCLUSIVE}
            awake := TRUE;
         END Wakeup;
-        
+
     END Synchronizer
 \end{lstlisting}
 
@@ -670,10 +670,10 @@ TYPE
 \end{lstlisting}
 
 \section{In- and Output}
-This section gives a brief overview of the most used I/O facilities.
+This section gives a brief overview of the most often used I/O facilities.
 
 \subsection{Streams}
-Streams provide an abstraction to ressources that are accessed byte-wise. 
+Streams provide an abstraction to ressources that are accessed byte-wise.
 
 \subsection{Files}
 The module Files is the interface implemented by file system drivers and the same time the A2 Files API.
@@ -696,6 +696,51 @@ The subsequent definitions are applicable to the A2 operating system for which S
 \begin{center}
     \begin{table}
     \begin{tabular}{|l|l|}
+    \hline
+    Function & Description \\
+    \hline
+    BIT(adr : ADDRESS; n : LONGINT) : BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
+    LSH(x : IntValue; n : LONGINT) : IntValue & Returns value x logically shifted left n bits (shifts right for n < 0) \\
+    ROT(x : IntValue; n : LONGINT) : IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
+    \hline
+    \end{tabular}
+    \caption{BIT Manipulation}   
+    \end{table}              
+\end{center}
+              
+\begin{center}
+    \begin{table}         
+    \begin{tabular}{|l|l|}
+    \hline
+    Type & Description \\
+    \hline
+    ADDRESS & Representation of memory addresses. Currently, this is an alias to either LONGINT or HUGEINT \\
+    SIZE & \\
+    \hline
+    BYTE & \\
+    \hline
+    \end{tabular}
+    \caption{SYSTEM Types}
+    \end{table}
+\end{center}
+
+\begin{center}
+    \begin{table}         
+    \begin{tabular}{|l|l|}
+    \hline
+    ADR(VAR v : ANY) : ADDRESS & Returns the address of v \\                      
+    \hline
+    SIZEOF(v : ANY) : SIZE & Returns the size of type v \\                      
+    \hline
+    VAL(T : AlmostAnyType; x : ANY) : Type & Unsafe type cast. Returns x interpreted as type T with no conversion \\
+    \hline
+    \end{tabular}
+    \caption{Addresses, Sizes and Unsafe Typecasts}            
+    \end{table}           
+\end{center}             
+\begin{center}
+    \begin{table}
+    \begin{tabular}{|l|l|}
         \hline
         Name & Function \\
         \hline
@@ -706,23 +751,42 @@ The subsequent definitions are applicable to the A2 operating system for which S
         PUT32(adr: ADDRESS; x: LONGINT) & \\
         PUT64(adr: ADDRESS; x: HUGEINT) & \\
         \hline
-        GET(adr : ADDRESS) : Type & RETURN Mem[adr] whereas the size of type x is 8, 16, 32 or 64 bits \\
+        GET(adr : ADDRESS; VAR x : Type) & x := Mem[adr] whereas the size of type x is 8, 16, 32 or 64 bits \\
         \hline
         GET8(adr: ADDRESS): SHORTINT & RETURN Mem[adr] \\
         GET16(adr: ADDRESS): INTEGER & \\
         GET32(adr: ADDRESS): LONGINT & \\
         GET64(adr: ADDRESS): HUGEINT & \\
         \hline
-        
-    \end{tabular}
-    \caption{IA-32 Version Functions}
+        MOVE(src, dst : ADDRESS; n : SIZE) & Copy "n" bytes from address "src" to address "dst" \\
+        \hline \end{tabular}
+    \caption{Direct Memory Access Functions}
     \end{table}
 \end{center}
 
+\begin{center}
+    \begin{table}         
+    \begin{tabular}{|l|l|} \hline
+    PORTIN(adr : LONGINT; VAR x : Type) & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+    PORTOUT(adr : LONGINT; x : Type) & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+    \hline
+    CLI() & Disable interrupts on the current processor \\
+    STI() & Enable interrupts on the current processor \\
+    \hline
+    GETREG(reg : LONGINT; VAR x : Type) & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
+    PUTREG(reg : LONGINT; x : Type) & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
+    \hline
+    EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI & 32 bit registers \\
+    AX, CX, DX, BX, SP, BP, SI, DI & 16 bit registers \\
+    AL, CL, DL, BL, AH, CH, DH, BH & 8 bit registers \\
+    \hline
+    \end{tabular}
+    \caption{IA-32 Specific Functions}
+    \end{table}                   
+\end{center}
+
 \section{Active Oberon EBNF}
-
-
-
+                             
 % --------------------------------------- examples -------------------------------
 \newpage {\Huge EXAMPLES}
 \section{Section}
