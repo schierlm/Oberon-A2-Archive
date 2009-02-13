@@ -1,10 +1,5 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage{color}
-\usepackage{longtable}
-\usepackage{amssymb,amsmath,graphicx}
-\usepackage{nonfloat}
-\usepackage{colortbl}
-\usepackage{fancybox}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{xspace}
@@ -47,6 +42,9 @@ comment=[l]{//},
 comment=[s]{(*}{*)},
 morestring=[b]',
 morestring=[b]",
+basicstyle=\scriptsize\changefont{pcr}{m}{n},
+stringstyle=\changefont{pcr}{b}{n},
+columns = fixed
 }
 \lstdefinelanguage{Oberon}[]{Pascal}%
   {morekeywords={len,module,import},%
@@ -71,8 +69,6 @@ xleftmargin=2mm,xrightmargin=2mm,
 
 This is a small introduction to the programming language Oberon and the operating / runtime system \AZ. This introduction does not replace a language report, neither is it an introduction to programming. It rather should provide a fast access to the used operating system and programming language by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
 
-
-
 \tableofcontents
 
 
@@ -87,19 +83,19 @@ MODULE Hello;
 
 IMPORT Commands, KernelLog;
 
-    (* a command taking a context parameter *) 
+    (* a command taking a context parameter *)
     PROCEDURE World*(context: Commands.Context);
     BEGIN
         context.out.String("Hello World");
         context.out.Ln
     END World;
-    
-    (* a command without context *) 
+
+    (* a command without context *)
     PROCEDURE InnerWorld*;
-    BEGIN 
-        KernelLog.String("Hello Kernel World"); 
-        KernelLog.Ln; 
-    END InnerWorld; 
+    BEGIN
+        KernelLog.String("Hello Kernel World");
+        KernelLog.Ln;
+    END InnerWorld;
 
 END Hello.
 \end{lstlisting}
@@ -132,16 +128,16 @@ END Hello.
 
 The module body will be executed once after the module has been loaded but prior to any of its commands. Thus, a first call of \verb+Hello.World+ will result in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded.
 
-Modules can be unloaded explicitly with the command 
+Modules can be unloaded explicitly with the command
 \begin{center}
-\verb+SystemTools.Free ModuleNames ~+ 
+\verb+SystemTools.Free ModuleNames ~+
 \end{center}
 where \verb+ModuleNames+ is a white space separated list of module names and `\verb+~+' indicates the end of the list. Note that a module \verb+A+ can only be unloaded if no other currently loaded module imports \verb+A+.
 
 \section{The Language Active Oberon}
 
 \subsection{Parts of a Module}
-An Active Oberon Module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optionally. In this Section, we describe these parts 
+An Active Oberon Module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optionally. In this Section, we describe these parts
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={A useless module containing constants, types, variables and procedures}]
 MODULE Simple;
@@ -294,7 +290,7 @@ AnotherAlias = MyAlias; (* same as MyAlias and MyRecord *)
 We will introduce the basic and composite types in more details in sections \ref{section:BasicTypes} and \ref{section:CompositeTypes}
 
 \subsubsection{Variable Declaration Section}\label{section:VariableDeclarationSection}
-In Active Oberon, variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope. 
+In Active Oberon, variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Variables and Parameters}]
 MODULE Variables;
@@ -307,7 +303,7 @@ VAR (* global variables *)
     a: LONGINT;
     b: Pair;
     c: PairPointer;
-    
+
 END Variables;
 \end{lstlisting}
 
@@ -340,16 +336,16 @@ TYPE
     BEGIN x := x*x; RETURN x
     END Square;
 
-    PROCEDURE Inc(VAR i: INTEGER); 
-    BEGIN i := i+1 
+    PROCEDURE Inc(VAR i: INTEGER);
+    BEGIN i := i+1
     END Inc;
 
     PROCEDURE Test*;
-    VAR x,sq: REAL; i: INTEGER; 
+    VAR x,sq: REAL; i: INTEGER;
     BEGIN
-        x := 10; i := 0; 
+        x := 10; i := 0;
         sq := x;
-        Inc(i);  
+        Inc(i);
     END Test;
 
 END Procedures;
@@ -358,7 +354,7 @@ END Procedures;
 \subsection{Basic Types}\label{section:BasicTypes}
 There are nine predeclared basic types in Active Oberon. Their names and valid values are shown in table \ref{table:BasicTypes}.
 
-\begin{table}
+\begin{table}[h!]
 \begin{tabular}{|l|l|l|}
 \hline
 Type name & Size & Valid values \\
@@ -378,6 +374,7 @@ Type name & Size & Valid values \\
 \verb+SET+ & 4 bytes & any set combination of the integer values between 0 and 31 \\
 \hline
 \end{tabular}
+
 \caption{Predeclared basic types}\label{table:BasicTypes}
 \end{table}
 
@@ -648,7 +645,7 @@ Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or
 
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     Method & Description \\
@@ -671,7 +668,7 @@ Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or
 \end{center}
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     Method & Description \\
@@ -693,7 +690,7 @@ Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or
 \end{center}
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     Method & Description \\
@@ -717,7 +714,7 @@ Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or
 \end{center}
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     Method & Description \\
@@ -735,7 +732,7 @@ Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or
 \subsubsection{Commands}
 As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported and it provides no return parameter and it provides at most one input parameter of type \verb+Commands.Context+ and it is declared in the immediate module scope.
 
-The following example module contains examples of procedures that can or cannot act as commands. 
+The following example module contains examples of procedures that can or cannot act as commands.
 \begin{lstlisting}[language=Oberon,frame=none,caption=Procedures and Commands]
 MODULE Sample;
 
@@ -869,7 +866,7 @@ The module SYSTEM contains definitions that are necessary to program low-level o
 The subsequent definitions are applicable to the \AZ operating system for which SYSTEM is implemented directly in the compiler.
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     Function & Description \\
@@ -884,7 +881,7 @@ The subsequent definitions are applicable to the \AZ operating system for which 
 \end{center}
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     Type & Description \\
@@ -900,7 +897,7 @@ The subsequent definitions are applicable to the \AZ operating system for which 
 \end{center}
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
     \hline
     ADR(VAR v : ANY) : ADDRESS & Returns the address of v \\
@@ -914,7 +911,7 @@ The subsequent definitions are applicable to the \AZ operating system for which 
     \end{table}
 \end{center}
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|}
         \hline
         Name & Function \\
@@ -940,7 +937,7 @@ The subsequent definitions are applicable to the \AZ operating system for which 
 \end{center}
 
 \begin{center}
-    \begin{table}
+    \begin{table}[h!]
     \begin{tabular}{|l|l|} \hline
     PORTIN(adr : LONGINT; VAR x : Type) & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
     PORTOUT(adr : LONGINT; x : Type) & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
@@ -961,5 +958,169 @@ The subsequent definitions are applicable to the \AZ operating system for which 
 \end{center}
 
 \subsection{Active Oberon EBNF}
+We display the syntax of Active Oberon in the Extended Backus Naur Form (EBNF). We present productions (syntactic equations) as equations with a single equal sign \verb~=~. On the left hand side of a production stands the defined nonterminal symbol, the right hand side contains the substitution rule and is terminated by a period. Terminal symbols are embraced by single or double quotes (for example \verb~':='~, \verb~"'"~ and \verb~'begin'~). An alternative in a production is denoted by a vertical bar \verb~|~. Brackets \verb~[~ and \verb~]~ denote optionality of the enclosed expression, while braces \verb~{~ and \verb~}~ denote its repetition (possibly 0 times). Additionally, parentheses \verb~(~ and \verb~)~ are used to enclose expressions and thereby control additional precedence.
+
+\begin{lstlisting}[language = EBNF, frame=none,xleftmargin=0mm]
+Module               = 'MODULE' Identifier ['IN' Identifier]';' 
+                        [ImportList] DeclarationSequence [Body]
+                       'END' Identifier '.'.
+
+ImportList           = 'IMPORT' Import { ',' Import } ';'.
+
+Import               = Identifier [':=' Identifier] ['IN' Identifier].
+
+DeclarationSequence  =  { 'CONST' [ConstDeclaration] {';' [ConstDeclaration]}
+                         |'TYPE'  [TypeDeclaration] {';' [TypeDeclaration]}
+                         |'VAR'   [VariableDeclaration] {';' [VariableDeclaration]}
+                        }
+                        [ProcedureDeclaration | OperatorDeclaration]
+                        {';' [ProcedureDeclaration | OperatorDeclaration] }.
+
+ConstDeclaration     = IdentifierDefinition '=' Expression.
+
+TypeDeclaration      = IdentifierDefinition '=' Type.
+
+VariableDeclaration  = VariableNameList ':' Type.
+
+ProcedureDeclaration = 'PROCEDURE' ['&'|'-'|SystemFlag] IdentifierDefinition [FormalParameters]';'
+                       DeclarationSequence  [Body] 'END' Identifier.
+
+OperatorDeclaration  = 'OPERATOR' String ['*'|'-'] FormalParameters ';'
+                       DeclarationSequence [Body] 'END' String.
+
+SystemFlag           = '{' Identifier '}'.
+
+IdentifierDefinition = Identifier ['*'|'-'].
+
+FormalParameters     = '('[ParameterDeclaration {';' ParameterDeclaration}]')' [':' Type].
+
+ParameterDeclaration = ['VAR'|'CONST'] Identifier {',' Identifier}':' Type.
+
+Type                 = ArrayType | RecordType | PointerType | ObjectType | ProcedureType
+                       | QualifiedIdentifier.
+
+ArrayType            = 'ARRAY' [Expression {',' Expression}
+                       | '[' MathArraySize {',' MathArraySize} ']' ] 'OF' Type.
+
+MathArraySize        = Expression | '*' | '?'.
+
+RecordType           = 'RECORD' ['(' QualifiedIdentifier ')']
+                       [VariableDeclaration {';' VariableDeclaration}] 'END'.
+
+PointerType          = 'POINTER' 'TO' Type.
+
+ObjectType           = 'OBJECT' ['(' QualifiedIdentifier ')'] DeclarationSequence [Body]
+                       'END' [Identifier]
+                     | 'OBJECT'.
+
+ProcedureType        = 'PROCEDURE' [SystemFlag] [FormalParameters].
+
+Body                 = 'BEGIN' ['{' BlockModifiers '}'] StatementSequence 
+                       ['FINALLY' StatementSequence]
+                     | 'CODE' {any}.
+
+BlockModifiers       = [Identifier ['(' Expression ')'] {',' Identifier ['(' Expression ')'] }]
+
+StatementSequence    = Statement {';' Statement}.
+
+Statement            =
+                     [
+                     Designator [':=' Expression]
+                     | 'IF' Expression 'THEN' StatementSequence
+                        {'ELSIF' Expression 'THEN' StatementSequence} 'END'
+                     | 'WITH' Identifier ':' QualifiedIdentifier 'DO'
+                         StatementSequence 'END'
+                     | 'CASE' Expression 'OF' ['|'] Case 
+                        {'|' Case} ['ELSE' StatementSequence] 'END'
+                     | 'WHILE' Expression 'DO' StatementSequence 'END'
+                     | 'REPEAT' StatementSequence 'UNTIL' Expression
+                     | 'FOR' Identifier ':=' Expression 'TO' Expression ['BY' Expression] 'DO'
+                         StatementSequence 'END'
+                     | 'LOOP' StatementSequence 'END'
+                     | 'EXIT'
+                     | 'RETURN' [Expression]
+                     | 'AWAIT' Expression
+                     | 'BEGIN' StatementBlock 'END'
+                     ].
+
+StatementBlock       = ['{' BlockModifiers '}'] StatementSequence.
+
+Case                 = Element {',' Element} ':' StatementSequence.
+
+Expression           = SimpleExpression [RelationOp SimpleExpression].
+
+RelationOp           = '=' | '.=' | '#' | '.#'
+                     | '<' | '.<' | '<=' | '.<=' | '>' | '.>' | '>=' | '.>='
+                     | 'in' | 'is'
+
+SimpleExpression     = ['+'|'-'] Term {AddOp Term}.
+
+AddOp                = '+' | '-' | 'OR'.
+
+Term                 = Factor {MulOp Factor}.
+
+MulOp                = '*' | '**' | '.*' | '+*' | '/' | './' | 'DIV' | 'MOD' | '&'.
+
+Factor               = Number | Character | String | 'NIL' | 'TRUE' | 'FALSE' | Set
+                     | '(' Expression ')' | '~' Factor | Factor '`' | Designator 
+                     | MathArrayExpression.
+
+MathArrayExpression  = '[' Expression {',' Expression} ']'.
+
+Set                  = '{' [Element {',' Element}] '}'.
+
+Element              = Expression ['..' Expression].
+
+Designator           = ('SELF' | Identifier)
+                       {'.' Identifier|'[' RangeList ']' | '('[ExpressionList]')' | '^'}.
+
+RangeList            = Range {',' Range}.
+
+Range                = Expression | [Expression] '..' [Expression] ['by' Expression] | '?' | '*'.
+
+ExpressionList       = Expression {','Expression}.
+
+VariableNameList     = IdentifierDefinition [SystemFlag] {',' IdentifierDefinition [SystemFlag]}.
+
+IdentifierDefinition = Identifier [ '*' | '-' ].
+
+QualifiedIdentifier  = Identifier ['.' Identifier].
+
+
+Identifier           = Letter {Letter | Digit | '_'}.
+
+Letter               = 'A' | 'B' | .. | 'Z' | 'a' | 'b' | .. | 'z'.
+
+String               = '"' {Character} '"' | "'" {Character} "'".
+
+Number               = Integer | Real.
+
+Integer              = Digit {Digit} | Digit {HexDigit} 'H'.
+
+Real                 = Digit {Digit} '.' {Digit} [ScaleFactor].
+
+ScaleFactor          = ('E' | 'D') ['+' | '-'] digit {digit}.
+
+HexDigit             = Digit | 'A' | 'B' | 'C' | 'D' | 'E' | 'F'.
+
+Digit                = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' .
+
+\end{lstlisting}
+
+System procedures: get, put, getreg, putreg, move (3 params!), new
+
+System functions: adr, but, get32, get16, get8, lsh, rot, val
+
+System types: address, size, byte
+
+%string               = '"' {symbol | escapeSequence} '"'.
+%
+%character            = "'" (symbol | escapeSequence) "'" | digit {hexDigit} 'X'.
+%
+%symbol               = (* any character excluding control characters *)
+%
+%escapeSequence       = '\n' | '\"' | '\\' | "\'"
+
 
 \end{document}
+
