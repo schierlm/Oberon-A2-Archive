@@ -467,7 +467,8 @@ VAR p,q: MyObject; (* objects / instances *)
 ...
 
 BEGIN
-    NEW(p, 1.0, 9.99); (* instantiate object p with x and y parameters for initializer *)
+    (* instantiate object p with x and y parameters for initializer *)
+    NEW(p, 1.0, 9.99);
     ...
     IF p.Equals(q) THEN ...
     END;
@@ -528,7 +529,8 @@ VAR
    o : ActiveObject
 
 BEGIN
-   NEW(o); (* instantiate object o and create new process that executes the object body *)
+   (* instantiate active object o *)
+   NEW(o);
 \end{lstlisting}
 
 \subsubsection{Protection}
@@ -645,7 +647,8 @@ Streams maintain an internal position that is updated automatically whenever a r
 \begin{lstlisting}[language=Oberon,frame=none,caption={Basic Stream Interface}]
 Stream* = OBJECT
 VAR
-  res*: LONGINT;   (** result of last input operation *)		
+  (** result of last input operation *)
+  res*: LONGINT;
 
   (** Current read/write position. *)
   PROCEDURE Pos*( ): LONGINT;
@@ -660,7 +663,8 @@ END Stream;
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Reader Interface}]
 	
-(** A reader buffers input received from a Receiver. Must not be shared between processes. *)
+(** A reader buffers input received from a Receiver.
+    Must not be shared between processes. *)
 Reader* = OBJECT
 
   (** Return bytes currently available in input buffer. *)
@@ -672,7 +676,8 @@ Reader* = OBJECT
   (** Like Get, but leave the byte in the input buffer. *)
   PROCEDURE Peek*( ): CHAR;
 	
-  (** Read size bytes into x, starting at ofs.  The len parameter returns the number of bytes that were actually read. *)
+  (** Read size bytes into x, starting at ofs.
+      The len parameter returns the number of bytes that were actually read. *)
   PROCEDURE Bytes*( VAR x: ARRAY OF CHAR;  ofs, size: LONGINT;  VAR len: LONGINT );
 	
   (** Skip n bytes on the reader. *)
@@ -680,10 +685,13 @@ Reader* = OBJECT
 			
   (** -- Read formatted data (uses Peek for one character lookahead) -- *)
 		
-  (** Read an integer value in decimal or hexadecimal.  If hex = TRUE, recognize the "H" postfix for hexadecimal numbers. *)
+  (** Read an integer value in decimal or hexadecimal.
+      If hex = TRUE, recognize the "H" postfix for hexadecimal numbers. *)
   PROCEDURE Int*( VAR x: LONGINT;  hex: BOOLEAN );
 	
-  (** Read all characters until the end of the line (inclusive).  If the input string is larger than x, read the full string and assign the truncated 0X-terminated value to x. *)
+  (** Read all characters until the end of the line (inclusive).
+      If the input string is larger than x, read the full string and 
+      assign the truncated 0X-terminated value to x. *)
   PROCEDURE Ln*( VAR x: ARRAY OF CHAR );
 		
   (** Skip over all characters until the end of the line (inclusive). *)
@@ -692,7 +700,8 @@ Reader* = OBJECT
   (** Skip over space, TAB and EOLN characters. *)
   PROCEDURE SkipWhitespace*;
 	
-  (** Read an optionally "" or '' enquoted string.  Will not read past the end of a line. *)
+  (** Read an optionally "" or '' enquoted string.
+      Will not read past the end of a line. *)
   PROCEDURE String*( VAR string: ARRAY OF CHAR );
 		
   (** First skip whitespace, then read string *)
@@ -724,13 +733,12 @@ Writer* = OBJECT
   (** Write a 0X-terminated string, excluding the 0X terminator. *)
   PROCEDURE String*(CONST x: ARRAY OF CHAR );
 	
-  (** Write an integer in decimal right-justified in a field of at least w characters. *)
+  (** Write an integer in decimal 
+      right-justified in a field of at least w characters. *)
   PROCEDURE Int*( x, w: LONGINT );
 	
-  (**
-	Write an integer in hexadecimal right-justified in a field of at least ABS(w) characters.
-	If w < 0 THEN w least significant hex digits of x are written (possibly including leading zeros)
-  *)
+  (** Write an integer in hexadecimal 
+      right-justified in a field of at least ABS(w) characters. *)
   PROCEDURE Hex*(x: HUGEINT; w: LONGINT );
   
 END Writer;
@@ -787,7 +795,7 @@ The module Files is the interface implemented by file system drivers and the sam
 
 The most useful operations are
 
-\begin{lstlisting}[language=Oberon,frame=none,caption={Files API}]
+\begin{lstlisting}[language=Oberon,frame=none,caption={Basic Files API}]
 MODULE Files;
 TYPE
   File* = OBJECT;
@@ -801,39 +809,50 @@ TYPE
   (** Register a new file (create entry in file system directory) *)
   Register*(f : File);
 END Files;
+\end{lstlisting}
 
 The actual access to files can be achieved using either the low-level File object or by opening Streams on the file.
 
 \paragraph{File Interface}
 The low-level file interface uses so-called riders as context for accessing files. Multiple riders can be positioned independently on a given file. Essentially, riders are used for tracking the position in a file and store the result of the last operation on the file. As when using streams, read and write operations automatically update the current position.
 
-\begin{lstlisting}[language=Oberon,frame=none]
-(** A rider points to some location in a file, where reading and writing will be done. *)
+\begin{lstlisting}[language=Oberon,frame=none,caption={Low-level Files API}]
+(** A rider points to some location in a file,
+    where reading and writing will be done. *)
 Rider* = RECORD	(** not shareable between multiple processes *)
-  eof*: BOOLEAN;	(** has end of file been passed *)
-  res*: LONGINT;	(** leftover byte count for ReadBytes/WriteBytes *)
+  (** has end of file been passed *)
+  eof*: BOOLEAN;
+
+  (** leftover byte count for ReadBytes/WriteBytes *)
+  res*: LONGINT;	
 END;
 
 File* = OBJECT	(** sharable *)
 
-  (** Position a Rider at a certain position in a file. Multiple Riders can be positioned at different locations in a file. A Rider cannot be positioned beyond the end of a file. *)
-		
+  (** Position a Rider at a certain position in a file. 
+      Multiple Riders can be positioned at different locations in a file.
+      A Rider cannot be positioned beyond the end of a file. *)
   PROCEDURE Set*(VAR r: Rider; pos: LONGINT);
 
   (** Return the offset of a Rider positioned on a file. *)
   PROCEDURE Pos*(VAR r: Rider): LONGINT;
 
-  (** Read a byte from a file, advancing the Rider one byte further.  R.eof indicates if the end of the file has been passed. *)
+  (** Read a byte from a file, advancing the Rider one byte further.
+      R.eof indicates if the end of the file has been passed. *)
   PROCEDURE Read*(VAR r: Rider; VAR x: CHAR);
 
-  (** Read a sequence of len bytes into the buffer x at offset ofs, advancing the Rider. Less bytes will be read when reading over the end of the file. r.res indicates the number of unread bytes. x must be big enough to hold all the bytes. *)
+  (** Read a sequence of len bytes into the buffer x at offset ofs,
+      advancing the Rider. Less bytes will be read when reading over the
+      end of the file. r.res indicates the number of unread bytes. *)
 
   PROCEDURE ReadBytes*(VAR r: Rider; VAR x: ARRAY OF CHAR; ofs, len: LONGINT);
 
-  (** Write a byte into the file at the Rider position, advancing the Rider by one. *)
+  (** Write a byte into the file at the Rider position,
+      advancing the Rider by one. *)
   PROCEDURE Write*(VAR r: Rider; x: CHAR);
 
-  (** Write the buffer x containing len bytes (starting at offset ofs) into a file at the Rider position. *)
+  (** Write the buffer x containing len bytes (starting at offset ofs)
+      into a file at the Rider position. *)
   PROCEDURE WriteBytes*(VAR r: Rider; CONST x: ARRAY OF CHAR; ofs, len: LONGINT);
 
   (** Return the current length of a file. *)
@@ -847,7 +866,7 @@ END File;
 
 \paragraph{Using Streams On Files}
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption={Using Streams On Files}]
 MODULE Files;
 
 TYPE
@@ -860,9 +879,15 @@ TYPE
 END Files.
 \end{lstlisting}
 
-\begin{lstlisting}
+\begin{lstlisting}[language=Oberon,frame=none,caption={Example: Create A New File}]
+MODULE Example;
+IMPORT Commands, Files;
+
 PROCEDURE CreateFile*(context : Commands.Context);
-VAR file : Files.File; filename : Files.FileName; writer : Files.Writer; ch : CHAR;
+VAR
+  filename : Files.FileName;
+  file : Files.File;  writer : Files.Writer;
+  ch : CHAR;
 BEGIN
    context.arg.GetString(filename);
    file := Files.New(filename);
@@ -874,10 +899,13 @@ BEGIN
          writer.Char(ch);
          context.arg.Char(ch);
       END;
-   END; END CreateFile;
+   END;
+END CreateFile;
+
+END Example;
 \end{lstlisting}
 
-In this example, executing CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
+In this example, executing Example.CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
 
 \subsection{String Manipulation}
 The module Utilities provides procedures for string manipulation.
