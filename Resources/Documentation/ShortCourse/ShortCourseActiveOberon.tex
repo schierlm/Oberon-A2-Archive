@@ -603,7 +603,7 @@ TYPE
 \subsubsection{Examples}
 The following example shows the implementation of a bounded-buffer.
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption={Bounded-buffer}]
 TYPE
   Item* = OBJECT END Item;
 
@@ -634,149 +634,121 @@ TYPE
   END Buffer;
 \end{lstlisting}
 
-\section{Application Programming Interface}
+\section{Application Programming Interfaces}
+This section gives a brief overview of often used application programming interfaces.
 
-\subsection{In- and Output}
-This section gives a brief overview of the most often used I/O facilities.
+\subsection{Streams}
+Streams provide an abstraction for easily accessing various resources that can be accessed byte-wise. Streams can be opened on files, network connections, serial port connections, strings, memory and many other resources.
+Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer. For writers, the output buffer has to be flushed explicitly by the programmer.
+Streams maintain an internal position that is updated automatically whenever a read or write is performed. Stream may support random access, depending on the underlying resource.
 
-\subsubsection{Streams}
-Streams provide an abstraction for easily accessing various resources that can be accessed byte-wise. Streams can be opened on files, network connections, serial port connection, memory and many other resources. Streams are always buffered and therefore have to be flushed explicitly by the programmer.
-Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Note that streams maintain a stream position that is adapted automatically whenever a read or write is performed. Stream may support setting the position explicitly, depending on the underlying resource.
+\begin{lstlisting}[language=Oberon,frame=none,caption={Basic Stream Interface}]
+Stream* = OBJECT
+VAR
+  res*: LONGINT;   (** result of last input operation *)		
 
+  (** Current read/write position. *)
+  PROCEDURE Pos*( ): LONGINT;
 
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    Method & Description \\
-    \hline
-    CanSetPos() : BOOLEAN & Returns TRUE if the stream supports random access, FALSE otherwise \\
-    SetPos(pos : LONGINT) & Set current position to "pos" \\
-    Pos() : LONGINT & Get current position \\
-    \hline
-    Available() : LONGINT & Returns bytes currently available in the input buffer \\
-    \hline
-    Char(VAR x : CHAR) & Read one byte \\
-    Get() : CHAR & Like Char but return result \\
-    Peek() : CHAR & Like Get but leave byte in the input buffer \\
-    Bytes(VAR x : ARRAY OF CHAR; ofs, size : LONGINT; VAR len : LONGINT) & Read "size" bytes into x, starting at offset "ofs" \\
-    SkipBytes(n : LONGINT) & Skip "n" bytes on the reader \\
-    \hline
-    \end{tabular}
-    \caption{Basic Reader Interface}
-    \end{table}
-\end{center}
+  (** Returns TRUE if this stream supports random access *)
+  PROCEDURE CanSetPos*( ): BOOLEAN;
 
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    Method & Description \\
-    \hline
-    CanSetPos() : BOOLEAN & Returns TRUE if the stream supports random access, FALSE otherwise \\
-    SetPos(pos : LONGINT) & Set current position to "pos" \\
-    Pos() : LONGINT & Get current position \\
-    \hline
-    Update() : LONGINT & Write bytes in output buffer to resource \\
-    \hline
-    Char(x : CHAR) & Write one byte \\
-    Bytes(CONST x : ARRAY OF CHAR; ofs, size : LONGINT) & Write "size" bytes into x, starting at offset
-    "ofs" \\
-    SkipBytes(n : LONGINT) & Skip "n" bytes on the reader \\
-    \hline
-    \end{tabular}
-    \caption{Basic Writer Interface}
-    \end{table}
-\end{center}
-
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    Method & Description \\
-    \hline
-    Int(VAR x : LONGINT; hex : BOOLEAN) & Read a decimal or hexdecimal number from stream \\
-    EOLN() : BOOLEAN & Return TRUE if at the end of a line (or file) \\
-    Ln(VAR x : ARRAY OF CHAR) & Read all characters until the end of the line (inclusive) \\
-    SkipLn() & Skip over all characters until the end of the line (inclusive) \\
-    SkipSpaces() & Skip over space and TAB characters \\
-    SkipWhitespace() & Skip over space, TAB and EOLN characters \\
-    Token(VAR token : ARRAY OF CHAR) & Read a token, consisting of any string characters terminated by space, TAB or EOLN \\
-    String(VAR string : ARRAY OF CHAR) & Read an optionally "" or '' enquoted string \\
-    \hline
-    GetString(VAR string : ARRAY OF CHAR) & Equivalent to SkipWhitespace; String(string) \\
-    GetInteger(VAR integer : LONGINT; hex : BOOLEAN) & Equivalent to SkipWhitespace; Int(integer, hex) \\
-    GetChar(VAR ch : CHAR) & Equivalent to SkipWhitespace; Char(ch) \\
-    \hline
-    \end{tabular}
-    \caption{Extended Reader Interface}
-    \end{table}
-\end{center}
-
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    Method & Description \\
-    \hline
-    Ln() & Write an ASCII end-of-line <CR><LF> \\
-    String(CONST string : ARRAY OF CHAR) & Write an 0X-terminated string (excluding 0X) \\
-    Int(x, w : LONGINT) & Write an integer in decimal right-justified in a field of at least w characters \\
-    Hex(x : HUGEINT; w : LONGINT) & Wirte an integer in hexadecimal right-justified in a field of at least w characters \\
-    \hline
-    \end{tabular}
-    \caption{Extended Writer Interface}
-    \end{table}
-\end{center}
-
-\subsubsection{Commands}
-As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported and it provides no return parameter and it provides at most one input parameter of type \verb+Commands.Context+ and it is declared in the immediate module scope.
-
-The following example module contains examples of procedures that can or cannot act as commands.
-\begin{lstlisting}[language=Oberon,frame=none,caption=Procedures and Commands]
-MODULE Sample;
-
-IMPORT Commands, KernelLog;
-
-    (* Simple is a command, "*" indicates that Simple is exported *)
-    PROCEDURE Simple*;
-    BEGIN KernelLog.String("SimpleOutput called"); KernelLog.Ln;
-    END Simple;
-
-    (* Internal is not a command: it is not marked exported *)
-    PROCEDURE Internal;
-    BEGIN KernelLog.String("InternalOutput called"); KernelLog.Ln;
-    END Internal;
-
-    (* WithContext is a valid command *)
-    PROCEDURE WithContext*(context: Commands.Context);
-    BEGIN
-        context.out.String("this is written to the standard output stream");
-        context.out.Ln;
-    END WithContext;
-
-    (* WithOther is not a command: parameter type is not Commands.Context *)
-    PROCEDURE WithOther*(VAR x: REAL);
-    BEGIN x := 2*x
-    END WithOther
-
-    (* WithReturn is not a command as it provides a return value *)
-    PROCEDURE WithReturn*(): LONGINT;
-    BEGIN RETURN 10
-    END WithReturn;
-
-END Sample.
+  (** Set position to <pos> (only if resource supports random access) *)
+  PROCEDURE SetPos*( pos: LONGINT );
+END Stream;
 \end{lstlisting}
 
-After compilation of the module \verb+Sample+, the commands \verb+Sample.Simple+ and \verb+Sample.WithContext+ can be activated. The attempt to activate \verb+Sample.Internal+, \verb+Sample.WithOther+ or \verb+Sample.WithReturn+ will fail with a short error message on the kernel log.
+\begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Reader Interface}]
+	
+(** A reader buffers input received from a Receiver. Must not be shared between processes. *)
+Reader* = OBJECT
 
-As we have seen in ..., there are two kinds of commands
+  (** Return bytes currently available in input buffer. *)
+  PROCEDURE Available*( ): LONGINT;
+		
+  (** Read one byte. x=0X if no success (e.g. file ended) *)
+  PROCEDURE Char*( VAR x: CHAR );
+	
+  (** Like Get, but leave the byte in the input buffer. *)
+  PROCEDURE Peek*( ): CHAR;
+	
+  (** Read size bytes into x, starting at ofs.  The len parameter returns the number of bytes that were actually read. *)
+  PROCEDURE Bytes*( VAR x: ARRAY OF CHAR;  ofs, size: LONGINT;  VAR len: LONGINT );
+	
+  (** Skip n bytes on the reader. *)
+  PROCEDURE SkipBytes*( n: LONGINT );
+			
+  (** -- Read formatted data (uses Peek for one character lookahead) -- *)
+		
+  (** Read an integer value in decimal or hexadecimal.  If hex = TRUE, recognize the "H" postfix for hexadecimal numbers. *)
+  PROCEDURE Int*( VAR x: LONGINT;  hex: BOOLEAN );
+	
+  (** Read all characters until the end of the line (inclusive).  If the input string is larger than x, read the full string and assign the truncated 0X-terminated value to x. *)
+  PROCEDURE Ln*( VAR x: ARRAY OF CHAR );
+		
+  (** Skip over all characters until the end of the line (inclusive). *)
+  PROCEDURE SkipLn*;
+	
+  (** Skip over space, TAB and EOLN characters. *)
+  PROCEDURE SkipWhitespace*;
+	
+  (** Read an optionally "" or '' enquoted string.  Will not read past the end of a line. *)
+  PROCEDURE String*( VAR string: ARRAY OF CHAR );
+		
+  (** First skip whitespace, then read string *)
+  PROCEDURE GetString*(VAR string : ARRAY OF CHAR);
+		
+  (** First skip whitespace, then read integer *)
+  PROCEDURE GetInteger*(VAR integer : LONGINT; isHexadecimal : BOOLEAN);
 
-\begin{lstlisting}[language=Oberon,frame=none]
-PROCEDURE ProcedureName* BEGIN END ProcedureName;
-PROCEDURE ProcedureName*(context : Commands.Context); BEGIN END ProcedureName; \end{lstlisting}
+END Reader;
+\end{lstlisting}
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Writer Interface}]
+Writer* = OBJECT
+
+  (** Flush output buffer *)	
+  PROCEDURE Update*;
+		
+  (** Write one byte. *)
+  PROCEDURE Char*( x: CHAR );
+
+  (** Write len bytes from x, starting at ofs. *)
+  PROCEDURE Bytes*(CONST x: ARRAY OF CHAR;  ofs, len: LONGINT );
+		
+  (** -- Write formatted data -- *)
+  
+  (** Write an ASCII end-of-line (CR/LF). *)
+  PROCEDURE Ln*;
+	
+  (** Write a 0X-terminated string, excluding the 0X terminator. *)
+  PROCEDURE String*(CONST x: ARRAY OF CHAR );
+	
+  (** Write an integer in decimal right-justified in a field of at least w characters. *)
+  PROCEDURE Int*( x, w: LONGINT );
+	
+  (**
+	Write an integer in hexadecimal right-justified in a field of at least ABS(w) characters.
+	If w < 0 THEN w least significant hex digits of x are written (possibly including leading zeros)
+  *)
+  PROCEDURE Hex*(x: HUGEINT; w: LONGINT );
+  
+END Writer;
+\end{lstlisting}
+
+\subsection{Commands}
+Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, declared in the module scope (static code) and has a command signature.
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={Command Signatures}]
+(** Command with no arguments *)
+PROCEDURE ProcedureName*;
+
+(** Command with arguments and output stream *)
+PROCEDURE ProcedureName*(context : Commands.Context);
+\end{lstlisting}
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={Command Context}]
+MODULE Commands;
 TYPE
     Context* = OBJECT
     VAR
@@ -784,56 +756,109 @@ TYPE
         out-, error- : Streams.Writer;
         caller- : OBJECT;
     END Context;
+END Command;
 \end{lstlisting}
 
 Command line arguments can be accessed using the \emph{arg} stream. in \emph{is} the command input stream. For output, the streams \emph{out} and \emph{error} are used.
 The caller field optionally contains a reference to an object that is responsible for the command invocation.
+Note that both output stream buffer (out and error) are flushed automatically by the command interpreter after the PROCEDURE Add returns.
 
-As a simple in- and output example,...
+\begin{lstlisting}[language=Oberon,frame=none,caption={Command Example}]
+MODULE Example;
+IMPORT Commands;
 
-\begin{lstlisting}
-PROCEDURE Add*(context : Commands.Context)
-VAR a, b : LONGINT;
-BEGIN
+  PROCEDURE Add*(context : Commands.Context)
+  VAR a, b : LONGINT;
+  BEGIN
     context.arg.GetInteger(a, FALSE);
     context.arg.GetInteger(b, FALSE);
     context.out.Int(a, 0); context.out.String(" + "); context.out.Int(b, 0);
     context.out.String(" = "); context.out.Int(a + b, 0);
     context.out.Ln;
-END Add;
+  END Add;
+END Example;
 \end{lstlisting}
 
-Note that both output stream buffer (out and error) are flushed automatically by the command interpreter after the PROCEDURE Add returns.
+The compilation of the module Example results in an object file Example. The command interpreter is able to process the command Example.Add 3 5 ~.
+Note that the tilde character indicates the end of the command line arguments.
 
-\subsubsection{Files}
+\subsection{Files}
 The module Files is the interface implemented by file system drivers and the same time the \AZ Files API.
 
 The most useful operations are
 
-Files.Old(filename : ARRAY OF CHAR) : File;
-Files.New(filename : ARRAY OF CHAR) : File;
-Files.Register(file);
+\begin{lstlisting}[language=Oberon,frame=none,caption={Files API}]
+MODULE Files;
+TYPE
+  File* = OBJECT;
+
+  (** Open file <filename>. Returns NIL if file cannot be opened *)
+  Old*(filename : ARRAY OF CHAR) : File;
+  
+  (** Create file <filename>. Returns NIL if file cannot be created *)
+  New*(filename : ARRAY OF CHAR) : File;
+  
+  (** Register a new file (create entry in file system directory) *)
+  Register*(f : File);
+END Files;
 
 The actual access to files can be achieved using either the low-level File object or by opening Streams on the file.
 
 \paragraph{File Interface}
 The low-level file interface uses so-called riders as context for accessing files. Multiple riders can be positioned independently on a given file. Essentially, riders are used for tracking the position in a file and store the result of the last operation on the file. As when using streams, read and write operations automatically update the current position.
 
-File.Set(VAR r : Rider; position : LONGINT)
-File.Pos(VAR r : Rider) : LONGINT;
+\begin{lstlisting}[language=Oberon,frame=none]
+(** A rider points to some location in a file, where reading and writing will be done. *)
+Rider* = RECORD	(** not shareable between multiple processes *)
+  eof*: BOOLEAN;	(** has end of file been passed *)
+  res*: LONGINT;	(** leftover byte count for ReadBytes/WriteBytes *)
+END;
 
-File.Read(VAR r : Rider; VAR x : Char);
-File.ReadBytes(VAR r : Rider; x : ARRAY OF CHAR; offset, length : LONGINT);
+File* = OBJECT	(** sharable *)
 
-File.Write(VAR r : Rider; x : CHAR);
-File.WriteBytes(VAR r : Rider; CONST x : ARRAY OF CHAR; offset, length : LONGINT);
+  (** Position a Rider at a certain position in a file. Multiple Riders can be positioned at different locations in a file. A Rider cannot be positioned beyond the end of a file. *)
+		
+  PROCEDURE Set*(VAR r: Rider; pos: LONGINT);
 
-File.Update;
+  (** Return the offset of a Rider positioned on a file. *)
+  PROCEDURE Pos*(VAR r: Rider): LONGINT;
+
+  (** Read a byte from a file, advancing the Rider one byte further.  R.eof indicates if the end of the file has been passed. *)
+  PROCEDURE Read*(VAR r: Rider; VAR x: CHAR);
+
+  (** Read a sequence of len bytes into the buffer x at offset ofs, advancing the Rider. Less bytes will be read when reading over the end of the file. r.res indicates the number of unread bytes. x must be big enough to hold all the bytes. *)
+
+  PROCEDURE ReadBytes*(VAR r: Rider; VAR x: ARRAY OF CHAR; ofs, len: LONGINT);
+
+  (** Write a byte into the file at the Rider position, advancing the Rider by one. *)
+  PROCEDURE Write*(VAR r: Rider; x: CHAR);
+
+  (** Write the buffer x containing len bytes (starting at offset ofs) into a file at the Rider position. *)
+  PROCEDURE WriteBytes*(VAR r: Rider; CONST x: ARRAY OF CHAR; ofs, len: LONGINT);
+
+  (** Return the current length of a file. *)
+  PROCEDURE Length*(): LONGINT;
+		
+  (** Flush the changes made to a file from its buffers. *)
+  PROCEDURE Update*;
+
+END File;
+\end{lstlisting}
 
 \paragraph{Using Streams On Files}
 
-Files.OpenReader(VAR r: Files.Reader; f : File; position : LONGINT);
-Files.OpenWriter(VAR w : Files.Writer; f : File; position : LONGINT);
+\begin{lstlisting}[language=Oberon,frame=none]
+MODULE Files;
+
+TYPE
+  File* = OBJECT; (* as described in last section *)
+  Reader* = OBJECT (Streams.Reader);
+  Writer* = OBJECT (Streams.Writer);
+  
+  OpenReader*(VAR r: Reader; f : File; position : LONGINT);
+  OpenWriter*(VAR w : Writer; f : File; position : LONGINT);
+END Files.
+\end{lstlisting}
 
 \begin{lstlisting}
 PROCEDURE CreateFile*(context : Commands.Context);
@@ -854,7 +879,7 @@ BEGIN
 
 In this example, executing CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
 
-\subsubsection{String Manipulation}
+\subsection{String Manipulation}
 The module Utilities provides procedures for string manipulation.
 
 
@@ -961,7 +986,7 @@ The subsequent definitions are applicable to the \AZ operating system for which 
 We display the syntax of Active Oberon in the Extended Backus Naur Form (EBNF). We present productions (syntactic equations) as equations with a single equal sign \verb~=~. On the left hand side of a production stands the defined nonterminal symbol, the right hand side contains the substitution rule and is terminated by a period. Terminal symbols are embraced by single or double quotes (for example \verb~':='~, \verb~"'"~ and \verb~'begin'~). An alternative in a production is denoted by a vertical bar \verb~|~. Brackets \verb~[~ and \verb~]~ denote optionality of the enclosed expression, while braces \verb~{~ and \verb~}~ denote its repetition (possibly 0 times). Additionally, parentheses \verb~(~ and \verb~)~ are used to enclose expressions and thereby control additional precedence.
 
 \begin{lstlisting}[language = EBNF, frame=none,xleftmargin=0mm]
-Module               = 'MODULE' Identifier ['IN' Identifier]';' 
+Module               = 'MODULE' Identifier ['IN' Identifier]';'
                         [ImportList] DeclarationSequence [Body]
                        'END' Identifier '.'.
 
@@ -1015,7 +1040,7 @@ ObjectType           = 'OBJECT' ['(' QualifiedIdentifier ')'] DeclarationSequenc
 
 ProcedureType        = 'PROCEDURE' [SystemFlag] [FormalParameters].
 
-Body                 = 'BEGIN' ['{' BlockModifiers '}'] StatementSequence 
+Body                 = 'BEGIN' ['{' BlockModifiers '}'] StatementSequence
                        ['FINALLY' StatementSequence]
                      | 'CODE' {any}.
 
@@ -1030,7 +1055,7 @@ Statement            =
                         {'ELSIF' Expression 'THEN' StatementSequence} 'END'
                      | 'WITH' Identifier ':' QualifiedIdentifier 'DO'
                          StatementSequence 'END'
-                     | 'CASE' Expression 'OF' ['|'] Case 
+                     | 'CASE' Expression 'OF' ['|'] Case
                         {'|' Case} ['ELSE' StatementSequence] 'END'
                      | 'WHILE' Expression 'DO' StatementSequence 'END'
                      | 'REPEAT' StatementSequence 'UNTIL' Expression
@@ -1062,7 +1087,7 @@ Term                 = Factor {MulOp Factor}.
 MulOp                = '*' | '**' | '.*' | '+*' | '/' | './' | 'DIV' | 'MOD' | '&'.
 
 Factor               = Number | Character | String | 'NIL' | 'TRUE' | 'FALSE' | Set
-                     | '(' Expression ')' | '~' Factor | Factor '`' | Designator 
+                     | '(' Expression ')' | '~' Factor | Factor '`' | Designator
                      | MathArrayExpression.
 
 MathArrayExpression  = '[' Expression {',' Expression} ']'.
