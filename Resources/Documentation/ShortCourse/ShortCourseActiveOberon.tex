@@ -109,7 +109,7 @@ Note that a module name has nothing to do with the name of the file that contain
 When a module is compiled, an {\em object file} is generated and is made persistent in a file. It is not immediately loaded.
 Basically, a module \verb+M+ is loaded when a command of the form \verb+M.CommandName+ is activated. Additionally, a module X is automatically loaded by the system when a module Y is loaded that imports X (cf.~ Paragraph \ref{section:ImportList}).
 
-Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call. 
+Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call.
 
 Modules can be unloaded explicitly with the command
 \begin{center}
@@ -846,101 +846,98 @@ The module Utilities provides procedures for string manipulation.
 \appendix
 \section{Appendix}
 
-\subsection{The module System}
+\subsection{The Module System}
 The module SYSTEM contains definitions that are necessary to program low-level operations referring directly to resources particular to a given computer and/or implementation. These include, for example, facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module expose the complete memory, and allow unsafe type-casts to be made. They should be used with care, because if misused they can easily crash the whole system. It is a bit like programming in C. It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable, but easily recognized due to the identifier SYSTEM appearing in their import list.
 The subsequent definitions are applicable to the \AZ operating system for which SYSTEM is implemented directly in the compiler.
 
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    Function & Description \\
-    \hline
-    BIT(adr : ADDRESS; n : LONGINT) : BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
-    LSH(x : IntValue; n : LONGINT) : IntValue & Returns value x logically shifted left n bits (shifts right for n < 0) \\
-    ROT(x : IntValue; n : LONGINT) : IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
-    \hline
-    \end{tabular}
-    \caption{BIT Manipulation}
-    \end{table}
-\end{center}
+\begin{table}[h!]
+\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\hline
+Function & Argument Types & Result Type & Description \\
+\hline
+BIT(adr,n) & adr: ADDRESS; n: LONGINT & BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
+LSH(x,n) & x: IntValue; n: LONGINT & IntValue & Returns value x logically shifted left n bits (shifts right for n < 0) \\
+ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
+\hline
+\end{tabular}
+\caption{BIT Manipulation}
+\end{table}
 
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    Type & Description \\
-    \hline
-    ADDRESS & Representation of memory addresses. Currently, this is an alias to either LONGINT or HUGEINT \\
-    SIZE & \\
-    \hline
-    BYTE & \\
-    \hline
-    \end{tabular}
-    \caption{SYSTEM Types}
-    \end{table}
-\end{center}
+\begin{table}[h!]
+\begin{tabular}{|p{3cm}|p{12cm}|}
+\hline
+Type & Description \\
+\hline
+ADDRESS & Representation of memory addresses. Currently, this is an alias to either LONGINT or HUGEINT \\
+SIZE & Representation of results of arithmetic operations on memory addresses.\\
+\hline
+BYTE & Representation of a single byte.\\
+\hline
+\end{tabular}
+\caption{SYSTEM Types}
+\end{table}
 
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-    \hline
-    ADR(VAR v : ANY) : ADDRESS & Returns the address of v \\
-    \hline
-    SIZEOF(v : ANY) : SIZE & Returns the size of type v \\
-    \hline
-    VAL(T : AlmostAnyType; x : ANY) : Type & Unsafe type cast. Returns x interpreted as type T with no conversion \\
-    \hline
-    \end{tabular}
-    \caption{Addresses, Sizes and Unsafe Typecasts}
-    \end{table}
-\end{center}
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|}
-        \hline
-        Name & Function \\
-        \hline
-        PUT(adr : ADDRESS; x : Type) & Mem[adr] := x whereas the size of type x is 8, 16, 32 or 64 bits \\
-        \hline
-        PUT8(adr: ADDRESS; x: SHORTINT) & Mem[adr] := x \\
-        PUT16(adr: ADRESS; x: INTEGER) & \\
-        PUT32(adr: ADDRESS; x: LONGINT) & \\
-        PUT64(adr: ADDRESS; x: HUGEINT) & \\
-        \hline
-        GET(adr : ADDRESS; VAR x : Type) & x := Mem[adr] whereas the size of type x is 8, 16, 32 or 64 bits \\
-        \hline
-        GET8(adr: ADDRESS): SHORTINT & RETURN Mem[adr] \\
-        GET16(adr: ADDRESS): INTEGER & \\
-        GET32(adr: ADDRESS): LONGINT & \\
-        GET64(adr: ADDRESS): HUGEINT & \\
-        \hline
-        MOVE(src, dst : ADDRESS; n : SIZE) & Copy "n" bytes from address "src" to address "dst" \\
-        \hline \end{tabular}
-    \caption{Direct Memory Access Functions}
-    \end{table}
-\end{center}
+\begin{table}[h!]
+\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\hline
+Function & Argument Types & Result Type & Description \\
+\hline
+ADR(v) & v : ANY & ADDRESS & Returns the address of v \\
+\hline
+SIZEOF(v) & v : ANY & SIZE & Returns the size of type v \\
+\hline
+VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type T with no conversion \\
+\hline
+\end{tabular}
+\caption{Addresses, Sizes and Unsafe Typecasts}
+\end{table}
 
-\begin{center}
-    \begin{table}[h!]
-    \begin{tabular}{|l|l|} \hline
-    PORTIN(adr : LONGINT; VAR x : Type) & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
-    PORTOUT(adr : LONGINT; x : Type) & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
-    \hline
-    CLI() & Disable interrupts on the current processor \\
-    STI() & Enable interrupts on the current processor \\
-    \hline
-    GETREG(reg : LONGINT; VAR x : Type) & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
-    PUTREG(reg : LONGINT; x : Type) & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
-    \hline
-    EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI & 32 bit registers \\
-    AX, CX, DX, BX, SP, BP, SI, DI & 16 bit registers \\
-    AL, CL, DL, BL, AH, CH, DH, BH & 8 bit registers \\
-    \hline
-    \end{tabular}
-    \caption{IA-32 Specific Functions}
-    \end{table}
-\end{center}
+\begin{table}[h!]
+\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\hline
+Function & Argument Types & Result Type & Description \\
+\hline
+PUT(adr,x) & adr: ADDRESS; x: Type & & Mem[adr] := x where the size of type x is 8, 16, 32 or 64 bits \\
+\hline
+PUT8(adr,x) & adr: ADDRESS; x: SHORTINT & & Mem[adr] := x \\
+PUT16(adr,x) & adr: ADRESS; x: INTEGER && \\
+PUT32(adr,x) & adr: ADDRESS; x: LONGINT && \\
+PUT64(adr,x) & adr: ADDRESS; x: HUGEINT && \\
+\hline
+GET(adr,x) & adr: ADDRESS; VAR x : Type & & x := Mem[adr] where the size of type x is 8, 16, 32 or 64 bits \\
+\hline
+GET8(adr) & adr : ADDRESS & SHORTINT & RETURN Mem[adr] \\
+GET16(adr) & adr: ADDRESS & INTEGER &\\
+GET32(adr) & adr: ADDRESS & LONGINT & \\
+GET64(adr) & adr: ADDRESS & HUGEINT & \\
+\hline
+MOVE(src, dst,n) & dst : ADDRESS; n : SIZE & & Copy "n" bytes from address "src" to address "dst" \\
+\hline \end{tabular}
+\caption{Direct Memory Access Functions}
+\end{table}
+
+\begin{table}[h!]
+\begin{tabular}{|p{3cm}|p{3cm}|p{8cm}|} \hline
+\hline
+Function & Argument Types & Description \\
+\hline
+PORTIN(adr,x) & adr : LONGINT; VAR x : Type & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+PORTOUT(adr,x) & adr : LONGINT; x : Type & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+\hline
+CLI() && Disable interrupts on the current processor \\
+STI() && Enable interrupts on the current processor \\
+\hline
+GETREG(reg,x) & reg: LONGINT; VAR x : Type & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
+PUTREG(reg,x) & reg: LONGINT; x : Type & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
+\hline
+EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI && 32 bit registers \\
+AX, CX, DX, BX, SP, BP, SI, DI && 16 bit registers \\
+AL, CL, DL, BL, AH, CH, DH, BH && 8 bit registers \\
+\hline
+\end{tabular}
+\caption{IA-32 Specific Functions}
+\end{table}
+
 
 \subsection{Active Oberon EBNF}
 We display the syntax of Active Oberon in the Extended Backus Naur Form (EBNF). We present productions (syntactic equations) as equations with a single equal sign \verb~=~. On the left hand side of a production stands the defined nonterminal symbol, the right hand side contains the substitution rule and is terminated by a period. Terminal symbols are embraced by single or double quotes (for example \verb~':='~, \verb~"'"~ and \verb~'begin'~). An alternative in a production is denoted by a vertical bar \verb~|~. Brackets \verb~[~ and \verb~]~ denote optionality of the enclosed expression, while braces \verb~{~ and \verb~}~ denote its repetition (possibly 0 times). Additionally, parentheses \verb~(~ and \verb~)~ are used to enclose expressions and thereby control additional precedence.
