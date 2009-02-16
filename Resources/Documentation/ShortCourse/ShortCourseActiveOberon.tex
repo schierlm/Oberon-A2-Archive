@@ -237,26 +237,8 @@ END A.
 \end{lstlisting}
 
 \subsubsection{Type Declaration Section}\label{section:TypeDeclarationSection}
-Type declarations bind an identifier to a type. On the one hand, a type declaration can provide an alias to another type including built-in (basic) types, such as integer, real, character etc. On the other hand, a type declaration can provide a {\em binding of an identifier to a custom form of representation} (usually a composite type). However, type declarations go beyond a mere convenience: in Active Oberon two variables are not necessarily of the same type, if their representation coincide. Before we provide the syntax of type declaration, have a short glance at the following example:
-\begin{lstlisting}[language=Oberon,frame=none,caption={Incompatible types}]
-MODULE Test;
-VAR
-    x: RECORD a,b: INTEGER END;
-    y: RECORD a,b: INTEGER END;
-BEGIN
-    x := y; (* THIS WILL NOT COMPILE *)
-END Test;
-\end{lstlisting}
-Although in the previous example the variables \verb+x+ and \verb+y+ are declared as types with a compatible structure, they are not allowed to be assigned as their types are not the same. The following example will provide a solution of this `dilemma':
-\begin{lstlisting}[language=Oberon,frame=none,caption={Same Types}]
-MODULE Test;
-VAR
-    x,y: RECORD a,b: INTEGER END;
-BEGIN
-    x := y; (* x and y are of the same type, thus assignment compatible *)
-END Test;
-\end{lstlisting}
-Now, assume that variables \verb+x+ and \verb+y+ were declared in different scopes, then such a solution would not be possible any more and then type declarations are a must. In the following example, a type declaration is used instead of an immediate formulation in the variable declaration:
+Type declarations bind an identifier to a type which can be used in variable declarations to name the type of the variables (see section \ref{section:VariableDeclarationSection}). Type declarations are used to provide synonyms for user-defined composite types or already existing types like for example all predeclared basic types (see sections \ref{section:CompositeTypes} and \ref{section:BasicTypes} respectively). The following example uses a type declaration to assign a new name to a composite record type.
+
 \begin{lstlisting}[language=Oberon,frame=none,caption={Using type declarations}]
 MODULE Test;
 TYPE
@@ -274,20 +256,8 @@ BEGIN
     Print(x)
 END Test;
 \end{lstlisting}
-Note that the call of procedure \verb+Print+ with variable \verb+x+ requires that \verb+x+ is assignment compatible to the respective parameter (which is the case, as \verb+x+ and \verb+m+ are of the same type).
 
-Two types are of the same type, if they are provided by the same qualified identifier, or if one is an (immediate or indirect) alias of the other. Examples:
-\begin{lstlisting}[language=Oberon,frame=none,caption={Same and different types}]
-TYPE
-Number=REAL; (* same type as REAL and Float *)
-Float =REAL; (* same type as REAL and Number *)
-MyRecord = RECORD a,b: INTEGER END;  (* same as MyAlias and AnotherAlias *)
-AnotherRecord = RECORD a,b: INTEGER END; (* no same type available *)
-MyAlias = MyRecord; (* same as MyRecord and AnotherAlias *)
-AnotherAlias = MyAlias; (* same as MyAlias and MyRecord *)
-\end{lstlisting}
-
-We will introduce the basic and composite types in more details in sections \ref{section:BasicTypes} and \ref{section:CompositeTypes}
+Note that the call of procedure \verb+Print+ with variable \verb+x+ requires that \verb+x+ is assignment compatible to the respective parameter. This is guaranteed by using the name of a type declaration which by definition always refers to the same type.
 
 \subsubsection{Variable Declaration Section}\label{section:VariableDeclarationSection}
 In Active Oberon, variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope.
