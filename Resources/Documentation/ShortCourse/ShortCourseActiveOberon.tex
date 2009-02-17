@@ -77,7 +77,7 @@ This is a brief introduction to the programming language Active Oberon and the o
 \AZ is a modern, multi-processor operating system in the tradition of the ETH operating systems Medos, Oberon and Aos. It is written in Active Oberon with only very few exceptions: little parts of the kernel and some low-level optimized routines are implemented in assembler. \AZ is composed of light-weight processes that are supported by {\em Active Objects} in the language Active Oberon. Active Oberon is a highly readable, abstract programming language with built-in concurrency support. Its abstraction protects programmers from artificial technical complexities while system-near programming is still possible by ways of a special module named `SYSTEM'.
 
 \subsection{Modules and Commands}\label{section:ModulesAndCommands}
-Active Oberon is a modular programming language that is supported by a dynamic loading concept in the operating system \AZ. The role of programs and applications is played by {\em modules}. Instead of loading and executing a `program', {\em modules} are loaded and {\em commands} are executed. Once a module is loaded, it stays loaded until it is explicitly unloaded or until the system goes down. Before we give more details on modules and commands, we show an example of a very simple module. 
+Active Oberon is a modular programming language that is supported by a dynamic loading concept in the operating system \AZ. The role of programs and applications is played by {\em modules}. Instead of loading and executing a `program', {\em modules} are loaded and {\em commands} are executed. Once a module is loaded, it stays loaded until it is explicitly unloaded or until the system goes down. Before we give more details on modules and commands, we show an example of a very simple module.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=A Simple Oberon Module]
 MODULE Hello;
@@ -206,21 +206,21 @@ TYPE
     (* variables in a record *)
     Pair=RECORD x,y: REAL END;
     PairPointer = POINTER TO Pair;
-    ExampleObject = OBJECT 
-        (* object variables *) 
-        VAR x,y: REAL; 
-        END ExampleObject; 
+    ExampleObject = OBJECT
+        (* object variables *)
+        VAR x,y: REAL;
+        END ExampleObject;
 
 VAR (* global variables *)
     a: LONGINT;
     b: Pair;
     c: PairPointer;
-    
+
     PROCEDURE Example;
-    (* local variables *) 
+    (* local variables *)
     VAR a,b: REAL
-    BEGIN 
-    END Example; 
+    BEGIN
+    END Example;
 
 END Variables;
 \end{lstlisting}
@@ -356,7 +356,7 @@ The set representing the type CHAR is ordered and each character has a fixed pos
 In Active Oberon, there are three composite types available. Arrays, Records and Pointers.
 
 \subsubsection{Arrays}
-Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows the declaration of multi-dimensional arrays. Arrays can be declared open only in a parameter section. Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime. 
+Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows the declaration of multi-dimensional arrays. Arrays can be declared open only in a parameter section. Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime.
 
 \begin{lstlisting}[language=Oberon,frame=none]
 VAR
@@ -365,20 +365,20 @@ b: POINTER TO ARRAY OF INTEGER; (* dynamic *)
 
 PROCEDURE Print(x: ARRAY OF INTEGER); (* open *)
 VAR i: INTEGER;
-BEGIN 
-    i := 0; 
-    WHILE i<LEN(x) DO 
-        (* Printout x[i] *) 
-        INC(i); 
-    END; 
+BEGIN
+    i := 0;
+    WHILE i<LEN(x) DO
+        (* Printout x[i] *)
+        INC(i);
+    END;
 END Print;
 
 PROCEDURE Example;
-BEGIN 
-    NEW(b,100); (* allocate array *) 
+BEGIN
+    NEW(b,100); (* allocate array *)
     (* ... *)
-    Print(b); 
-END Example; 
+    Print(b);
+END Example;
 
 \end{lstlisting}
 
@@ -401,7 +401,7 @@ Objects are basically reference records that can additionally be equipped with p
 A method tagged with an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
 \begin{lstlisting}[language=Oberon,frame=none]
-MODULE ExampleModule; 
+MODULE ExampleModule;
 TYPE
 MyObject = OBJECT (* class *)
     VAR x,y: REAL;
@@ -428,7 +428,7 @@ BEGIN
     ...
     IF p.Equals(q) THEN ...
     END;
-END ExampleModule; 
+END ExampleModule;
 \end{lstlisting}
 
 \subsubsection{Inheritance}
@@ -878,6 +878,7 @@ The module SYSTEM contains definitions that are necessary to program low-level o
 The subsequent definitions are applicable to the \AZ operating system for which SYSTEM is implemented directly in the compiler.
 
 %\begin{table}[h!]
+\subsubsection*{BIT Manipulation}
 \begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
@@ -887,10 +888,11 @@ LSH(x,n) & x: IntValue; n: LONGINT & IntValue & Returns value x logically shifte
 ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
 \hline
 \end{tabular}
-\caption{BIT Manipulation}
+%\caption{BIT Manipulation}
 %\end{table}
 
 %\begin{table}[h!]
+\subsubsection*{SYSTEM Types}
 \begin{tabular}{|p{3cm}|p{12cm}|}
 \hline
 Type & Description \\
@@ -901,9 +903,10 @@ SIZE & Representation of results of arithmetic operations on memory addresses.\\
 BYTE & Representation of a single byte.\\
 \hline
 \end{tabular}
-\caption{SYSTEM Types}
+%\caption{SYSTEM Types}
 %\end{table}
 
+\subsubsection*{Addresses, Sizes and Unsafe Typecasts}
 %\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
@@ -916,9 +919,10 @@ SIZEOF(v) & v : ANY & SIZE & Returns the size of type v \\
 VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type T with no conversion \\
 \hline
 \end{tabular}
-\caption{Addresses, Sizes and Unsafe Typecasts}
+%\caption{Addresses, Sizes and Unsafe Typecasts}
 %\end{table}
 
+\subsubsection*{Direct Memory Access Functions}
 %\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
@@ -940,9 +944,10 @@ GET64(adr) & adr: ADDRESS & HUGEINT & \\
 \hline
 MOVE(src, dst,n) & dst : ADDRESS; n : SIZE & & Copy "n" bytes from address "src" to address "dst" \\
 \hline \end{tabular}
-\caption{Direct Memory Access Functions}
+%\caption{Direct Memory Access Functions}
 %\end{table}
 
+\subsubsection*{IA-32 Specific Functions}
 %\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{8cm}|} \hline
 \hline
@@ -962,7 +967,7 @@ AX, CX, DX, BX, SP, BP, SI, DI && 16 bit registers \\
 AL, CL, DL, BL, AH, CH, DH, BH && 8 bit registers \\
 \hline
 \end{tabular}
-\caption{IA-32 Specific Functions}
+%\caption{IA-32 Specific Functions}
 %\end{table}
 
 
