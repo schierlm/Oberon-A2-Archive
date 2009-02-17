@@ -68,18 +68,18 @@ xleftmargin=2mm,xrightmargin=2mm,
 \author{Felix Friedrich, Ulrike Glavitsch, Florian Negele, Sven Stauber}
 \maketitle
 
-This is a small introduction to the programming language Active Oberon and the operating / runtime system \AZ. This introduction does not replace a language report, neither is it an introduction to programming. It rather should provide a fast access to the used operating system and programming language by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
+This is a brief introduction to the programming language Active Oberon and the operating system \AZ. This introduction does neither replace a language report nor is it an introduction to programming. It rather should provide a fast access to the \AZ system by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
 
 \tableofcontents
 
 
-\section{The Operating System \AZ}\label{section:TheOperatingSystemA2}
-\AZ is a modern, multi-threaded operating system in the tradition of the ETH operating systems Medos, Oberon and Aos. It is completely written in Active Oberon with only very few exceptions: little parts of the kernel and some low-level optimized routines are implemented in in-line assembler. \AZ is composed of light-weight processes that are supported by {\em Active Objects} in the language Active Oberon. Active Oberon is a highly readable, abstract programming language. Its abstraction protects programmers from artificial technical complexities while system-near programming is still possible by ways of a special module with name `system'. The interplay of an abstract language and efficient runtime accounts for the special flavor of \AZ.
+\section{The \AZ Operating System}\label{section:TheOperatingSystemA2}
+\AZ is a modern, multi-processor operating system in the tradition of the ETH operating systems Medos, Oberon and Aos. It is written in Active Oberon with only very few exceptions: little parts of the kernel and some low-level optimized routines are implemented in assembler. \AZ is composed of light-weight processes that are supported by {\em Active Objects} in the language Active Oberon. Active Oberon is a highly readable, abstract programming language with built-in concurrency support. Its abstraction protects programmers from artificial technical complexities while system-near programming is still possible by ways of a special module named `SYSTEM'.
 
 \subsection{Modules and Commands}\label{section:ModulesAndCommands}
-Oberon is a modular programming language that is supported by a dynamic loading concept in the operating system \AZ. The role of programs and applications is played by {\em modules}. Instead of loading and executing a `program', {\em modules} are loaded and {\em commands} are executed. Once a module is loaded, it stays loaded until it is explicitly unloaded or until the system goes down. Before we give more details on modules and commands, we show an example of a very simple module. Note that comments are embraced by \verb+(*+ and \verb+*)+.
+Active Oberon is a modular programming language that is supported by a dynamic loading concept in the operating system \AZ. The role of programs and applications is played by {\em modules}. Instead of loading and executing a `program', {\em modules} are loaded and {\em commands} are executed. Once a module is loaded, it stays loaded until it is explicitly unloaded or until the system goes down. Before we give more details on modules and commands, we show an example of a very simple module. 
 
-\begin{lstlisting}[language=Oberon,frame=none,caption=A simple Oberon Module]
+\begin{lstlisting}[language=Oberon,frame=none,caption=A Simple Oberon Module]
 MODULE Hello;
 
 IMPORT Commands, KernelLog;
@@ -91,7 +91,7 @@ IMPORT Commands, KernelLog;
         context.out.Ln
     END World;
 
-    (* a command without context *)
+    (* a command without parameters *)
     PROCEDURE InnerWorld*;
     BEGIN
         KernelLog.String("Hello Kernel World");
@@ -101,7 +101,7 @@ IMPORT Commands, KernelLog;
 END Hello.
 \end{lstlisting}
 
-Commands are executed by activating a command string of the form \verb+ModuleName.CommandName+ within any text displayed on the screen. In the simple example above, this would be \verb+Hello.World+ and \verb+Hello.InnerWorld+. A command is usually activated by a middle-mouse click or by selecting the command string and using the key-combination \verb|Ctrl+Return|. When a command is activated, the module with name \verb+ModuleName+ is dynamically loaded on demand and the program counter is set to the loaded procedure named \verb+CommandName+ in module \verb+ModuleName+.
+Commands are executed by activating a command string of the form \verb+ModuleName.CommandName+ within any text displayed on the screen. In the simple example above, this would be \verb+Hello.World+ and \verb+Hello.InnerWorld+. A command is usually activated by a middle-mouse click or by selecting the command string and using the key-combination \verb|Ctrl+Return|. When a command is activated, the module with name \verb+ModuleName+ is dynamically loaded on demand and the procedure named \verb+CommandName+ in module \verb+ModuleName+ is executed.
 
 Note that a module name has nothing to do with the name of the file that contains the source code of the module. It is pure convention that source code files are usually denominated as \verb+ModuleName.Mod+.
 
@@ -119,24 +119,24 @@ where \verb+ModuleNames+ is a white space separated list of module names and `\v
 
 \section{The Language Active Oberon}\label{section:TheLanguageActiveOberon}
 
-\subsection{Parts of a Module}
-An Active Oberon Module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optionally. In this Section, we describe these parts.
+\subsection{Module Structure}
+An Active Oberon module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optionally. In this Section, we describe these parts.
 
-\subsubsection{Import List} \label{section:ImportList}
+\subsubsection{Import Section} \label{section:ImportList}
 The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden. This is checked by the compiler.
 
 Symbols in one module that are to be used in any other module must be exported. A symbol is exported by suffixing the name with an asterisk `\verb+*+'. It is exported read only by suffixing with a minus symbol `\verb+-+'. We provide a little example of a module \verb+A+ being imported by a module \verb+B+.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={B imports A}]
 MODULE A;
-    CONST exportedConst*=100;
+    CONST ExportedConst*=100;
 END A.
 
 MODULE B;
     IMPORT A;
     VAR c-: LONGINT;
 BEGIN
-    c := A.exportedConst;
+    c := A.ExportedConst;
 END B.
 \end{lstlisting}
 
@@ -148,31 +148,31 @@ MODULE Random;
 
 CONST
     (* ------ global constants -------- *)
-    max       = 2147483647;
-    allbits   = 7FFFFFFFH; (* hex number *)
+    Max       = 2147483647;
+    Allbits   = 7FFFFFFFH; (* hex number *)
 
 VAR
     (* ------ global variable --------- *)
-    Z: LONGINT;
+    z: LONGINT;
 
     PROCEDURE Rand*(): LONGINT;
     (* constants can also be declared in procedure scope: *)
-    CONST a = 16807; q = 127773; r = 2836;
+    CONST A = 16807; Q = 127773; R = 2836;
     VAR t: LONGINT;
     BEGIN
-        t := a * (Z MOD q) - r * (Z DIV q);
-        IF t > 0 THEN Z := t ELSE Z := t + max END;
-        RETURN Z;
+        t := A * (z MOD Q) - R * (z DIV Q);
+        IF t > 0 THEN z := t ELSE z := t + Max END;
+        RETURN z;
     END Rand;
 BEGIN
-    Z := allbits;
+    z := Allbits;
 END Random.
 \end{lstlisting}
 
 \subsubsection{Type Declaration Section}\label{section:TypeDeclarationSection}
 Type declarations bind an identifier to a type which can be used in variable declarations to name the type of the variables (see section \ref{section:VariableDeclarationSection}). Type declarations are used to provide synonyms for user-defined composite types or already existing types like for example all predeclared basic types (see sections \ref{section:CompositeTypes} and \ref{section:BasicTypes} respectively). The following example uses a type declaration to assign a new name to a composite record type.
 
-\begin{lstlisting}[language=Oberon,frame=none,caption={Using type declarations}]
+\begin{lstlisting}[language=Oberon,frame=none,caption={Using Type Declarations}]
 MODULE Test;
 
 TYPE
@@ -206,19 +206,29 @@ TYPE
     (* variables in a record *)
     Pair=RECORD x,y: REAL END;
     PairPointer = POINTER TO Pair;
+    ExampleObject = OBJECT 
+        (* object variables *) 
+        VAR x,y: REAL; 
+        END ExampleObject; 
 
 VAR (* global variables *)
     a: LONGINT;
     b: Pair;
     c: PairPointer;
+    
+    PROCEDURE Example;
+    (* local variables *) 
+    VAR a,b: REAL
+    BEGIN 
+    END Example; 
 
 END Variables;
 \end{lstlisting}
 
 \subsubsection{Procedure Declaration Section}\label{section:ProcedureDeclarationSection}
-Procedures contain the executable code of a module. They can be declared in a modules scope, within procedure scopes (`nested procedures') or in object scopes. Procedures can be called in executable code and variables can be passed to them. Parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
+Procedures contain the executable code of a module. They can be declared in a modules scope, within procedure scopes (`nested procedures') or in object scopes. Procedure parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
 
-Parameters can be {\em value parameters}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
+Parameters can be {\em value parameters}\footnote{Value parameters are passed over the stack.}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}\footnote{Variable parameters are references being passed over the stack.}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Procedures}]
 MODULE Procedures;
@@ -305,13 +315,13 @@ Type name & Size & Valid values \\
 \hline
 \end{tabular}
 
-\caption{Predeclared basic types}\label{table:BasicTypes}
+\caption{Predeclared Basic Types}\label{table:BasicTypes}
 \end{table}
 
-\subsubsection{The types SHORTINT, INTEGER, LONGINT and HUGEINT}\label{section:IntegerTypes}
+\subsubsection{SHORTINT, INTEGER, LONGINT and HUGEINT}\label{section:IntegerTypes}
 These four types comprise the {\em integer types}. They represent the integer numbers and differ by the cardinality of the set of random numbers represented by each type. The need for different types arises from the architecture of machines which - for reasons of efficiency - provide various word formats with corresponding machine instructions.
 
-\subsubsection{The types REAL and LONGREAL} \label{section:RealTypes}
+\subsubsection{REAL and LONGREAL} \label{section:RealTypes}
 The real types approximate the real numbers. Each element from the set of REAL or LONGREAL is a representative of an interval of genuine real numbers. Variables of a real type are represented by pairs of integers, a {\em mantissa} and an {\em exponent}. This is called {\em floating-point} representation. The two types are distinguished by the number of digits of the mantissa (fractional part) and the exponent. As with the integer types, {\em overflow} may occur and result in termination of the program.
 
 Floating point numbers are only an approximation to the real numbers of mathematics. As a consequence computations involving floating-point values are inexact because each operation may be subject to truncation. The resulting problems are well investigated and treated in every text on numerical mathematics.
@@ -323,10 +333,10 @@ $LONGREAL \supseteq REAL \supseteq HUGEINT \supseteq LONGINT \supseteq INTEGER \
 
 The range of the larger type includes the ranges of the smaller types. For example, REAL {\em includes} HUGEINT \ldots SHORTINT. The smaller type is said to be {\em compatible} with the larger one in the sense that it can without danger of loss of leading digits be converted. In most cases, such a conversion is also exact. In assignments and in expansions the conversion of internal representations is automatic.
 
-\subsubsection{The type BOOLEAN} \label{section:BooleanType}
+\subsubsection{BOOLEAN} \label{section:BooleanType}
 A Boolean value is one of the {\em logical truth values} which are represented in Active Oberon by the standard identifiers TRUE and FALSE.
 
-\subsubsection{The type SET} \label{section:SetType}
+\subsubsection{SET} \label{section:SetType}
 The values which belong to the type SET are {\em elements of the power set of} $[0, 1, \ldots, N]$ where $N$ is equal to MAX(SET). $N$ is a constant defined by the implementation. It is typically the word length of the computer (or a small multiple of it). In fact, sets are efficiently implemented as bit operations.
 
 Examples of set constants are:
@@ -336,7 +346,7 @@ Examples of set constants are:
 
 where \verb+{}+ denotes the empty set and the subset \verb+2..4+ refers to the elements 2, 3 and 4.
 
-\subsubsection{The type CHAR}
+\subsubsection{CHAR}
 A major portion of the input and output of computers is in the form of character strings that contain values of type CHAR. The value range of the type CHAR consists of the characters of the roman alphabet and a small set of special symbols used frequently in commerce and mathematics.
 
 The set representing the type CHAR is ordered and each character has a fixed position or {\em ordinal number}. This is reflected in the notation for character constants which may be written as "a" or 61X for the letter a. The first representation denotes the value of the variable of type CHAR, the second its (hexadecimal) {\em ordinal} number.
@@ -346,14 +356,30 @@ The set representing the type CHAR is ordered and each character has a fixed pos
 In Active Oberon, there are three composite types available. Arrays, Records and Pointers.
 
 \subsubsection{Arrays}
-Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows expressions like ARRAY 12 OF ARRAY 13 OF ARRAY 11 OF REAL. Arrays can be declared open only in a parameter section. Open arrays are declared as ARRAY OF ...  Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime. They are declared as POINTER TO ARRAY OF ...
+Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows the declaration of multi-dimensional arrays. Arrays can be declared open only in a parameter section. Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime. 
+
 \begin{lstlisting}[language=Oberon,frame=none]
 VAR
-a: ARRAY 32 OF ARRAY 20 OF INTEGER; (* static *)
-b: POINTER TO ARRAY OF ARRAY OF REAL; (* dynamic *)
+a: ARRAY 32 OF ARRAY 20 OF INTEGER; (* static, two-dimensional *)
+b: POINTER TO ARRAY OF INTEGER; (* dynamic *)
 
-PROCEDURE Print(x: ARRAY OF CHAR); (* open *)
+PROCEDURE Print(x: ARRAY OF INTEGER); (* open *)
+VAR i: INTEGER;
+BEGIN 
+    i := 0; 
+    WHILE i<LEN(x) DO 
+        (* Printout x[i] *) 
+        INC(i); 
+    END; 
 END Print;
+
+PROCEDURE Example;
+BEGIN 
+    NEW(b,100); (* allocate array *) 
+    (* ... *)
+    Print(b); 
+END Example; 
+
 \end{lstlisting}
 
 \subsubsection{Records}
@@ -372,25 +398,25 @@ p.x := a.x;
 
 \subsubsection{Objects}
 Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
-A method tagged with an ampersand character is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
+A method tagged with an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
 \begin{lstlisting}[language=Oberon,frame=none]
+MODULE ExampleModule; 
 TYPE
 MyObject = OBJECT (* class *)
-VAR x,y: REAL;
+    VAR x,y: REAL;
 
-PROCEDURE Equals(o: MyObject): BOOLEAN;
-BEGIN
-    IF o = SELF THEN RETURN TRUE
-    ELSE RETURN (o.x = x) & (o.y = y)
-    END;
-END Equals;
+    PROCEDURE Equals(o: MyObject): BOOLEAN;
+    BEGIN
+        IF o = SELF THEN RETURN TRUE
+        ELSE RETURN (o.x = x) & (o.y = y)
+        END;
+    END Equals;
 
-PROCEDURE &Init(x, y : REAL); (* initializer *)
-BEGIN
-    SELF.x := x; SELF.y := y;
-END Init;
-
+    PROCEDURE &Init(x, y : REAL); (* initializer *)
+    BEGIN
+        SELF.x := x; SELF.y := y;
+    END Init;
 END MyObject;
 
 VAR p,q: MyObject; (* objects / instances *)
@@ -402,6 +428,7 @@ BEGIN
     ...
     IF p.Equals(q) THEN ...
     END;
+END ExampleModule; 
 \end{lstlisting}
 
 \subsubsection{Inheritance}
@@ -469,8 +496,8 @@ END Example.
 A Statement Block is a sequence of statements delimited by BEGIN and END. It can be used anywhere like a simple statement. It is most useful when used with the EXCLUSIVE modifier to create a critical region to protect the statements against concurrent execution. Our protection model is an instance-based monitor.
 Every object instance is protected and the protection granularity is any statement block inside the object’s method, ranging from a single statement to a whole method.
 A statement block can be protected against concurrent access by annotating it with the modifier EXCLUSIVE. Upon entering an exclusive block, an activity is preempted as long as another activity stands in an exclusive block
-of the same object instance. An activity cannot take an object’s lock more than once, re-entrance is not allowed.
-Every module is considered to be an object type with a singleton instance, thus its procedures can also be protected. The scope of protection is the whole module, like in a monitor.
+of the same object instance. An activity cannot take an object’s lock more than once (re-entrance is not allowed).
+Every module is considered to be an object type with a singleton instance, thus its procedures can also be protected. In this case the scope of protection is the whole module.
 
 \begin{lstlisting}[language=Oberon,frame=none]
 MODULE Demo;
@@ -507,10 +534,10 @@ END P2;
 END Demo.
 \end{lstlisting}
 
-In this example, at most one thread can be in the critical section \emph{p1} and \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
+In this example, at most one thread can be in the critical section of the module \emph{p1} and \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
 
 \subsubsection{Synchronization}
-The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when condition is true. While the condition is not established, the activity remains suspended. If inside a protected block, the lock on the protected object is released, as long as the activity remains suspended
+The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when condition is true. While the condition is not established, the activity remains suspended. The lock on the protected object is released, as long as the activity remains suspended
 (to allow other activities to change the state of the object and thus establish the condition). The activity is restarted only if the lock can be taken. The system is responsible for evaluating the conditions and for resuming suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
 This implies that changing the state of an object outside a protected block won’t have the conditions re-evaluated.
 When several activities compete for the same object lock, the activities whose conditions are true are scheduled before those that only want to enter a protected region.
@@ -605,7 +632,7 @@ Reader* = OBJECT
   (** Read one byte. x=0X if no success (e.g. file ended) *)
   PROCEDURE Char*( VAR x: CHAR );
 
-  (** Like Get, but leave the byte in the input buffer. *)
+  (** Read one byte but leave the byte in the input buffer. *)
   PROCEDURE Peek*( ): CHAR;
 
   (** Read size bytes into x, starting at ofs.
@@ -640,7 +667,7 @@ Reader* = OBJECT
   PROCEDURE GetString*(VAR string : ARRAY OF CHAR);
 
   (** First skip whitespace, then read integer *)
-  PROCEDURE GetInteger*(VAR integer : LONGINT; isHexadecimal : BOOLEAN);
+  PROCEDURE GetInteger*(VAR integer : LONGINT; hex : BOOLEAN);
 
 END Reader;
 \end{lstlisting}
@@ -677,7 +704,7 @@ END Writer;
 \end{lstlisting}
 
 \subsection{Commands}
-Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, declared in the module scope (static code) and has a command signature.
+Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, if it is declared in the module scope and if it has a command signature.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Command Signatures}]
 (** Command with no arguments *)
@@ -839,18 +866,18 @@ END Example;
 
 In this example, executing Example.CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
 
-\subsection{String Manipulation}
+\subsection{Strings}
 The module Utilities provides procedures for string manipulation.
 
 
 \appendix
 \section{Appendix}
 
-\subsection{The Module System}
+\subsection{The Module SYSTEM}
 The module SYSTEM contains definitions that are necessary to program low-level operations referring directly to resources particular to a given computer and/or implementation. These include, for example, facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module expose the complete memory, and allow unsafe type-casts to be made. They should be used with care, because if misused they can easily crash the whole system. It is a bit like programming in C. It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable, but easily recognized due to the identifier SYSTEM appearing in their import list.
 The subsequent definitions are applicable to the \AZ operating system for which SYSTEM is implemented directly in the compiler.
 
-\begin{table}[h!]
+%\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
@@ -861,9 +888,9 @@ ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by
 \hline
 \end{tabular}
 \caption{BIT Manipulation}
-\end{table}
+%\end{table}
 
-\begin{table}[h!]
+%\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{12cm}|}
 \hline
 Type & Description \\
@@ -875,9 +902,9 @@ BYTE & Representation of a single byte.\\
 \hline
 \end{tabular}
 \caption{SYSTEM Types}
-\end{table}
+%\end{table}
 
-\begin{table}[h!]
+%\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
@@ -890,9 +917,9 @@ VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type
 \hline
 \end{tabular}
 \caption{Addresses, Sizes and Unsafe Typecasts}
-\end{table}
+%\end{table}
 
-\begin{table}[h!]
+%\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
@@ -914,9 +941,9 @@ GET64(adr) & adr: ADDRESS & HUGEINT & \\
 MOVE(src, dst,n) & dst : ADDRESS; n : SIZE & & Copy "n" bytes from address "src" to address "dst" \\
 \hline \end{tabular}
 \caption{Direct Memory Access Functions}
-\end{table}
+%\end{table}
 
-\begin{table}[h!]
+%\begin{table}[h!]
 \begin{tabular}{|p{3cm}|p{3cm}|p{8cm}|} \hline
 \hline
 Function & Argument Types & Description \\
@@ -936,7 +963,7 @@ AL, CL, DL, BL, AH, CH, DH, BH && 8 bit registers \\
 \hline
 \end{tabular}
 \caption{IA-32 Specific Functions}
-\end{table}
+%\end{table}
 
 
 \subsection{Active Oberon EBNF}
