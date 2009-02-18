@@ -68,10 +68,9 @@ xleftmargin=2mm,xrightmargin=2mm,
 \author{Felix Friedrich, Ulrike Glavitsch, Florian Negele, Sven Stauber}
 \maketitle
 
-This is a brief introduction to the programming language Active Oberon and the operating system \AZ. This introduction does neither replace a language report nor is it an introduction to programming. It rather should provide a fast access to the \AZ system by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
+This is a brief introduction to the programming language Active Oberon and the operating system \AZ. This introduction does neither replace a language report nor is it an introduction to programming. It rather should provide a quick access to the \AZ system by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
 
 \tableofcontents
-
 
 \section{The \AZ Operating System}\label{section:TheOperatingSystemA2}
 \AZ is a modern, multi-processor operating system in the tradition of the ETH operating systems Medos, Oberon and Aos. It is written in Active Oberon with only very few exceptions: little parts of the kernel and some low-level optimized routines are implemented in assembler. \AZ is composed of light-weight processes that are supported by {\em Active Objects} in the language Active Oberon. Active Oberon is a highly readable, abstract programming language with built-in concurrency support. Its abstraction protects programmers from artificial technical complexities while system-near programming is still possible by ways of a special module named `SYSTEM'.
@@ -101,26 +100,24 @@ IMPORT Commands, KernelLog;
 END Hello.
 \end{lstlisting}
 
-Commands are executed by activating a command string of the form \verb+ModuleName.CommandName+ within any text displayed on the screen. In the simple example above, this would be \verb+Hello.World+ and \verb+Hello.InnerWorld+. A command is usually activated by a middle-mouse click or by selecting the command string and using the key-combination \verb|Ctrl+Return|. When a command is activated, the module with name \verb+ModuleName+ is dynamically loaded on demand and the procedure named \verb+CommandName+ in module \verb+ModuleName+ is executed.
+Commands are executed by activating a command string of the form \verb+ModuleName.CommandName+ within any text displayed on the screen. In the simple example above, this would be the strings \verb+Hello.World+ and \verb+Hello.InnerWorld+. A command is usually activated by a middle-mouse click or by selecting the command string and using the key-combination \verb|Ctrl+Return|. When a command is activated, the module with name \verb+ModuleName+ is dynamically loaded on demand and the procedure named \verb+CommandName+ in module \verb+ModuleName+ is executed.
 
 Note that a module name has nothing to do with the name of the file that contains the source code of the module. It is pure convention that source code files are usually denominated as \verb+ModuleName.Mod+.
 
 \subsection{Loading and Unloading Modules}\label{section:LoadingAndUnloadingModules}
 When a module is compiled, an {\em object file} is generated and is made persistent in a file. It is not immediately loaded.
-Basically, a module \verb+M+ is loaded when a command of the form \verb+M.CommandName+ is activated. Additionally, a module X is automatically loaded by the system when a module Y is loaded that imports X (cf.~ Paragraph \ref{section:ImportList}).
+Basically, a module \verb+M+ is loaded when a command of the form \verb+M.CommandName+ is activated. A module X is also automatically loaded when any module importing X is loaded (cf.~ Paragraph \ref{section:ImportList}).
 
-Once a module \verb+A+ has been loaded, any call of a valid command \verb+A.C+ will execute the loaded code and will not result in re-loading \verb+A+. The reason is clear: other modules may rely on information being provided globally in module \verb+A+ or \verb+A+ may contain state information that should not be removed after one call.
-
-Modules can be unloaded explicitly with the command
+A module stays loaded until it is unloaded explicitly. Modules can be unloaded with the command
 \begin{center}
-\verb+SystemTools.Free ModuleNames ~+
+\verb+SystemTools.Free ModuleName1 ModuleName2 ... ~+
 \end{center}
-where \verb+ModuleNames+ is a white space separated list of module names and `\verb+~+' indicates the end of the list. Note that a module \verb+A+ can only be unloaded if no other currently loaded module imports \verb+A+.
+where the tilde `\verb+~+' indicates the end of the list. Note that a module \verb+A+ can only be unloaded if no other currently loaded module imports \verb+A+.
 
 \section{The Language Active Oberon}\label{section:TheLanguageActiveOberon}
 
 \subsection{Module Structure}
-An Active Oberon module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optionally. In this Section, we describe these parts.
+A module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optional. In this Section, we describe these parts.
 
 \subsubsection{Import Section} \label{section:ImportList}
 The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden. This is checked by the compiler.
@@ -141,7 +138,7 @@ END B.
 \end{lstlisting}
 
 \subsubsection{Constant Declaration Section}\label{section:ConstantDeclarationSection}
-Static values can be used directly in expressions as, for example, in \verb~a := 3+b~. To support better maintainable and readable code, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. In Active Oberon, only values of basic type and strings can be declared as constant\footnote{There are exceptions: special mathematical arrays can also be declared as constants but this goes beyond the scope of this short reference.}. The following module contains some examples.
+Although static values can be used in expressions, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. Only values of basic type and strings\footnote{In Active Oberon, strings are array of characters, cf. Section \ref{section:Arrays}} can be declared as constant\footnote{There are exceptions: special mathematical arrays can also be declared as constants but this goes beyond the scope of this short reference.}. The following module contains some examples.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Declaration and Usage of Constants}]
 MODULE Random;
@@ -170,7 +167,7 @@ END Random.
 \end{lstlisting}
 
 \subsubsection{Type Declaration Section}\label{section:TypeDeclarationSection}
-Type declarations bind an identifier to a type which can be used in variable declarations to name the type of the variables (see section \ref{section:VariableDeclarationSection}). Type declarations are used to provide synonyms for user-defined composite types or already existing types like for example all predeclared basic types (see sections \ref{section:CompositeTypes} and \ref{section:BasicTypes} respectively). The following example uses a type declaration to assign a new name to a composite record type.
+Type declarations bind an identifier to a type that can be used in variable declarations to name the type of the variables (see section \ref{section:VariableDeclarationSection}). Type declarations are used to provide synonyms for user-defined composite types or existing types such as all predeclared basic types (see sections \ref{section:CompositeTypes} and \ref{section:BasicTypes} respectively). The following example uses a type declaration to assign a new name to a composite record type.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Using Type Declarations}]
 MODULE Test;
@@ -192,13 +189,13 @@ BEGIN
     (* ... *)
     Multiply(res,a,b);
     (* ... *)
-END Test;
+END Test.
 \end{lstlisting}
 
 Note that the call of procedure \verb+Multiply+ with variables \verb+res+, \verb+a+ and \verb+b+ requires that the variables are assignment compatible to the respective parameters. This is guaranteed by using the name of a type declaration which by definition always refers to the same type.
 
 \subsubsection{Variable Declaration Section}\label{section:VariableDeclarationSection}
-In Active Oberon, variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope.
+Variables have to be declared before use in a variable declaration section. A variable declaration consists of an identifier and a type. Variables can be declared globally, in a procedure scope, in an object or in a record scope.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Variables and Parameters}]
 MODULE Variables;
@@ -218,15 +215,15 @@ VAR (* global variables *)
 
     PROCEDURE Example;
     (* local variables *)
-    VAR a,b: REAL
+    VAR a,b: REAL;
     BEGIN
     END Example;
 
-END Variables;
+END Variables.
 \end{lstlisting}
 
 \subsubsection{Procedure Declaration Section}\label{section:ProcedureDeclarationSection}
-Procedures contain the executable code of a module. They can be declared in a modules scope, within procedure scopes (`nested procedures') or in object scopes. Procedure parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
+Procedures contain the executable code of a module. They can be declared in a modules scope, within procedure scopes (`nested procedures') or in object scopes (`methods'). Parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
 
 Parameters can be {\em value parameters}\footnote{Value parameters are passed over the stack.}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}\footnote{Variable parameters are references being passed over the stack.}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
 
@@ -266,7 +263,7 @@ TYPE
         Inc(i);
     END Test;
 
-END Procedures;
+END Procedures.
 \end{lstlisting}
 
 \subsubsection{Body}
@@ -284,12 +281,12 @@ IMPORT KernelLog;
 
 BEGIN
     (* this is a special `procedure': the module body
-    it is executed once a module has been freshly loaded *)
+    it is executed if and only if a module has been freshly loaded *)
     KernelLog.String("Hello has been loaded"); KernelLog.Ln;
 END Hello.
 \end{lstlisting}
 
-A first call of \verb+Hello.World+ will result in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded. (cf.~Section \ref{section:LoadingAndUnloadingModules}).
+A first call of \verb+Hello.World+ results in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded. (cf.~Section \ref{section:LoadingAndUnloadingModules}).
 
 \subsection{Basic Types}\label{section:BasicTypes}
 There are nine predeclared basic types in Active Oberon. Their names and valid values are shown in table \ref{table:BasicTypes}.
@@ -318,20 +315,12 @@ Type name & Size & Valid values \\
 \caption{Predeclared Basic Types}\label{table:BasicTypes}
 \end{table}
 
-\subsubsection{SHORTINT, INTEGER, LONGINT and HUGEINT}\label{section:IntegerTypes}
-These four types comprise the {\em integer types}. They represent the integer numbers and differ by the cardinality of the set of random numbers represented by each type. The need for different types arises from the architecture of machines which - for reasons of efficiency - provide various word formats with corresponding machine instructions.
-
-\subsubsection{REAL and LONGREAL} \label{section:RealTypes}
-The real types approximate the real numbers. Each element from the set of REAL or LONGREAL is a representative of an interval of genuine real numbers. Variables of a real type are represented by pairs of integers, a {\em mantissa} and an {\em exponent}. This is called {\em floating-point} representation. The two types are distinguished by the number of digits of the mantissa (fractional part) and the exponent. As with the integer types, {\em overflow} may occur and result in termination of the program.
-
-Floating point numbers are only an approximation to the real numbers of mathematics. As a consequence computations involving floating-point values are inexact because each operation may be subject to truncation. The resulting problems are well investigated and treated in every text on numerical mathematics.
-
-\subsubsection{Hierarchy of the numeric types} \label{section:HierarchyNumericTypes}
+\subsubsection{Numeric types} \label{section:HierarchyNumericTypes}
 The {\em numeric types} are comprised of the integer and real types and form a set hierarchy
 
 $LONGREAL \supseteq REAL \supseteq HUGEINT \supseteq LONGINT \supseteq INTEGER \supseteq SHORTINT$
 
-The range of the larger type includes the ranges of the smaller types. For example, REAL {\em includes} HUGEINT \ldots SHORTINT. The smaller type is said to be {\em compatible} with the larger one in the sense that it can without danger of loss of leading digits be converted. In most cases, such a conversion is also exact. In assignments and in expansions the conversion of internal representations is automatic.
+The range of the larger type includes the ranges of the smaller types. The smaller type is said to be {\em compatible} with the larger one in the sense that it can without danger of loss of leading digits be converted. In assignments and in expansions the conversion of internal representations is automatic.
 
 \subsubsection{BOOLEAN} \label{section:BooleanType}
 A Boolean value is one of the {\em logical truth values} which are represented in Active Oberon by the standard identifiers TRUE and FALSE.
@@ -353,9 +342,9 @@ The set representing the type CHAR is ordered and each character has a fixed pos
 
 \subsection{Composite Types}\label{section:CompositeTypes}
 
-In Active Oberon, there are three composite types available. Arrays, Records and Pointers.
+In Active Oberon, there are basically three composite types available. Arrays, Records and Objects.
 
-\subsubsection{Arrays}
+\subsubsection{Arrays}\label{section:Arrays}
 Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows the declaration of multi-dimensional arrays. Arrays can be declared open only in a parameter section. Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime.
 
 \begin{lstlisting}[language=Oberon,frame=none]
@@ -382,8 +371,8 @@ END Example;
 
 \end{lstlisting}
 
-\subsubsection{Records}
-Records are containers of data. Records are value types and are declared as RECORD (variables) END. Records can also be declared as reference types using POINTER TO. Record data are referred to via recordName.variableName.
+\subsubsection{Records}\label{section:Records}
+Records are containers of data. Records are value types and are declared as RECORD (variables) END. Records can also be declared as reference types using POINTER TO. Record fields are referred to via recordName.variableName.
 \begin{lstlisting}[language=Oberon,frame=none]
 VAR
 a: RECORD x,y: LONGINT END;
@@ -396,7 +385,7 @@ p.x := a.x;
 ....
 \end{lstlisting}
 
-\subsubsection{Objects}
+\subsubsection{Objects}\label{section:Objects}
 Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
 A method tagged with an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
