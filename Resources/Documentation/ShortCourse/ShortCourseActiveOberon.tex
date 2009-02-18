@@ -3,7 +3,7 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{xspace}
-
+\usepackage{longtable}
 % --------------------------------- page layout --------------------------------------
 \pagestyle{headings}
 % other font styles:
@@ -421,7 +421,7 @@ END ExampleModule;
 \end{lstlisting}
 
 \subsubsection{Inheritance}
-Active Oberon is an object oriented language. For both, records and objects, inheritance is supported by Oberon. It is possible to extend records and objects and to use type checks, type guards and overloading of methods.
+Active Oberon is an object oriented language. For both, records and objects, inheritance is supported by Oberon. It is possible to extend records and objects and to use type checks, type guards and overriding of methods.
 Record and object extension is declared as in the following example:
 
 \begin{lstlisting}[language=Oberon,frame=none]
@@ -447,7 +447,7 @@ END Window;
 FilledWindow = OBJECT (Window)
 VAR color: INTEGER;
 
-    PROCEDURE Print; (* overwrites Window.Print *)
+    PROCEDURE Print; (* overrides Window.Print *)
     BEGIN
         Print^; (* supercall *)
         (* fill *)
@@ -462,7 +462,7 @@ Active Oberon provides built-in concurrency support. Threads are represented as 
 \subsubsection{Active Objects}
 The declaration of an object type may include an \emph{object body}. The body is the object's activity, to be executed whenever an object instance is allocated after the initializer (if any) completed execution. The object body is annotated with the \emph{ACTIVE} modifier. At allocation, a new process is allocated to execute the body concurrently.
 If the ACTIVE modifier is not present, the body is executed synchronously, i.e. NEW returns only after the body has terminated execution.
-The active object activity terminates whenever the body execution terminates. As long as the body executes, the object is kept alive (i.e. cannot be garbage collected). After that, the object becomes a passive one, and will be collected according to the usual rules.
+The active object activity terminates whenever the body execution terminates. As long as the body executes, the object is kept alive (in particular it cannot be garbage collected). 
 
 \begin{lstlisting}[language=Oberon,frame=none]
 MODULE Example;
@@ -482,11 +482,11 @@ END Example.
 \end{lstlisting}
 
 \subsubsection{Protection}
-A Statement Block is a sequence of statements delimited by BEGIN and END. It can be used anywhere like a simple statement. It is most useful when used with the EXCLUSIVE modifier to create a critical region to protect the statements against concurrent execution. Our protection model is an instance-based monitor.
-Every object instance is protected and the protection granularity is any statement block inside the object’s method, ranging from a single statement to a whole method.
-A statement block can be protected against concurrent access by annotating it with the modifier EXCLUSIVE. Upon entering an exclusive block, an activity is preempted as long as another activity stands in an exclusive block
+Like a (procedure-, module- or object-) body, a Statement Block is a sequence of statements delimited by BEGIN and END. It can be used anywhere like a simple statement. An {\em EXCLUSIVE} modifier turns a statement block (or body) into a critical region to protect the statements against concurrent execution. Our protection model is an instance-based monitor: Every object instance is protected and the protection granularity is any statement block inside the object’s method, ranging from a single statement to a whole method.
+
+Upon entering an exclusive block, an activity is preempted as long as another activity stands in an exclusive block
 of the same object instance. An activity cannot take an object’s lock more than once (re-entrance is not allowed).
-Every module is considered to be an object type with a singleton instance, thus its procedures can also be protected. In this case the scope of protection is the whole module.
+Modules are considered singleton objects, thus procedures in a module can also be protected. In this case the scope of protection is the whole module.
 
 \begin{lstlisting}[language=Oberon,frame=none]
 MODULE Demo;
@@ -526,12 +526,13 @@ END Demo.
 In this example, at most one thread can be in the critical section of the module \emph{p1} and \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
 
 \subsubsection{Synchronization}
-The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when condition is true. While the condition is not established, the activity remains suspended. The lock on the protected object is released, as long as the activity remains suspended
-(to allow other activities to change the state of the object and thus establish the condition). The activity is restarted only if the lock can be taken. The system is responsible for evaluating the conditions and for resuming suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
+The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when the condition is true. While the condition is not established, the activity remains suspended. The lock on the protected object is released, as long as the activity remains suspended\footnote{Releasing the lock upon waiting allows other activities to change the state of the object and thus establish the condition}. The activity is resumed if and only if the lock can be taken. The system is responsible for evaluating the conditions and for restarting suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
 This implies that changing the state of an object outside a protected block won’t have the conditions re-evaluated.
 When several activities compete for the same object lock, the activities whose conditions are true are scheduled before those that only want to enter a protected region.
 
 \begin{lstlisting}[language=Oberon,frame=none]
+MODULE Example;
+
 TYPE
     Synchronizer = OBJECT
     VAR awake : BOOLEAN;
@@ -547,13 +548,17 @@ TYPE
            awake := TRUE;
         END Wakeup;
 
-    END Synchronizer
+    END Synchronizer;
+
+END Example. 
 \end{lstlisting}
 
 \subsubsection{Examples}
 The following example shows the implementation of a bounded-buffer.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Bounded-buffer}]
+MODULE Example;
+
 TYPE
   Item* = OBJECT END Item;
 
@@ -582,6 +587,8 @@ TYPE
       head := 0; num := 0; NEW(buffer, n)
     END Init;
   END Buffer;
+
+END Example.
 \end{lstlisting}
 
 \section{Application Programming Interfaces}
@@ -589,8 +596,8 @@ This section gives a brief overview of often used application programming interf
 
 \subsection{Streams}
 Streams provide an abstraction for easily accessing various resources that can be accessed byte-wise. Streams can be opened on files, network connections, serial port connections, strings, memory and many other resources.
-Streams are unidirectional, i.e. either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer. For writers, the output buffer has to be flushed explicitly by the programmer.
-Streams maintain an internal position that is updated automatically whenever a read or write is performed. Stream may support random access, depending on the underlying resource.
+Streams are unidirectional, i.e.\ either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer. For writers, the output buffer has to be flushed explicitly by the programmer.
+Streams maintain an internal position that is updated automatically whenever a read or write is performed. Streams may support random access, depending on the underlying resource.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Basic Stream Interface}]
 Stream* = OBJECT
@@ -613,7 +620,7 @@ END Stream;
 
 (** A reader buffers input received from a Receiver.
     Must not be shared between processes. *)
-Reader* = OBJECT
+Reader* = OBJECT (Stream)
 
   (** Return bytes currently available in input buffer. *)
   PROCEDURE Available*( ): LONGINT;
@@ -662,7 +669,7 @@ END Reader;
 \end{lstlisting}
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Writer Interface}]
-Writer* = OBJECT
+Writer* = OBJECT (Stream)
 
   (** Flush output buffer *)
   PROCEDURE Update*;
@@ -693,8 +700,7 @@ END Writer;
 \end{lstlisting}
 
 \subsection{Commands}
-Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, if it is declared in the module scope and if it has a command signature.
-
+Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, if it is declared in the module scope and if it has a command signature:
 \begin{lstlisting}[language=Oberon,frame=none,caption={Command Signatures}]
 (** Command with no arguments *)
 PROCEDURE ProcedureName*;
@@ -703,6 +709,7 @@ PROCEDURE ProcedureName*;
 PROCEDURE ProcedureName*(context : Commands.Context);
 \end{lstlisting}
 
+An excerpt of the Commands module interface reads as follows:
 \begin{lstlisting}[language=Oberon,frame=none,caption={Command Context}]
 MODULE Commands;
 TYPE
@@ -715,15 +722,14 @@ TYPE
 END Command;
 \end{lstlisting}
 
-Command line arguments can be accessed using the \emph{arg} stream. in \emph{is} the command input stream. For output, the streams \emph{out} and \emph{error} are used.
-The caller field optionally contains a reference to an object that is responsible for the command invocation.
-Note that both output stream buffer (out and error) are flushed automatically by the command interpreter after the PROCEDURE Add returns.
+Command line arguments can be accessed using the \emph{arg} stream. \emph{in} is the command input stream. For output, the streams \emph{out} and \emph{error} are used.
+The caller field optionally contains a reference to an object that is responsible for the command invocation. Note that both output stream buffers (out and error) are flushed automatically by the command interpreter.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Command Example}]
 MODULE Example;
 IMPORT Commands;
 
-  PROCEDURE Add*(context : Commands.Context)
+  PROCEDURE Add*(context : Commands.Context);
   VAR a, b : LONGINT;
   BEGIN
     context.arg.GetInteger(a, FALSE);
@@ -732,17 +738,17 @@ IMPORT Commands;
     context.out.String(" = "); context.out.Int(a + b, 0);
     context.out.Ln;
   END Add;
-END Example;
+END Example.
 \end{lstlisting}
 
-The compilation of the module Example results in an object file Example. The command interpreter is able to process the command Example.Add 3 5 ~.
+After compilation of module Example, the command interpreter is able to process the command 
+\verb+Example.Add 3 5 ~+.
 Note that the tilde character indicates the end of the command line arguments.
 
 \subsection{Files}
-The module Files is the interface implemented by file system drivers and the same time the \AZ Files API.
+Module Files provides both the interface to be implemented by file system drivers and \AZ file API.
 
 The most useful operations are
-
 \begin{lstlisting}[language=Oberon,frame=none,caption={Basic Files API}]
 MODULE Files;
 TYPE
@@ -759,10 +765,9 @@ TYPE
 END Files;
 \end{lstlisting}
 
-The actual access to files can be achieved using either the low-level File object or by opening Streams on the file.
-
+The actual access to files is achieved by using the low-level file riders or by using streams on a file. We describe both methods in the subsequent sections. 
 \paragraph{File Interface}
-The low-level file interface uses so-called riders as context for accessing files. Multiple riders can be positioned independently on a given file. Essentially, riders are used for tracking the position in a file and store the result of the last operation on the file. As when using streams, read and write operations automatically update the current position.
+The low-level file interface uses so-called riders as context for accessing files. Multiple riders can be positioned independently on a given file. Essentially, riders are used for tracking the position in a file and store the result of the last operation on the file. As for streams, read and write operations automatically update the current position.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Low-level Files API}]
 (** A rider points to some location in a file,
@@ -776,7 +781,8 @@ Rider* = RECORD (** not shareable between multiple processes *)
 END;
 
 File* = OBJECT  (** sharable *)
-
+  (* ... *) 
+  
   (** Position a Rider at a certain position in a file.
       Multiple Riders can be positioned at different locations in a file.
       A Rider cannot be positioned beyond the end of a file. *)
@@ -814,6 +820,7 @@ END File;
 
 \paragraph{Using Streams On Files}
 
+First we display a part of the Files interface:
 \begin{lstlisting}[language=Oberon,frame=none,caption={Using Streams On Files}]
 MODULE Files;
 
@@ -827,6 +834,7 @@ TYPE
 END Files.
 \end{lstlisting}
 
+Next we provide an example of how to use streams on files.
 \begin{lstlisting}[language=Oberon,frame=none,caption={Example: Create A New File}]
 MODULE Example;
 IMPORT Commands, Files;
@@ -856,19 +864,51 @@ END Example;
 In this example, executing Example.CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
 
 \subsection{Strings}
-The module Utilities provides procedures for string manipulation.
+The module Strings provides procedures for string manipulation.
 
 
 \appendix
 \section{Appendix}
 
-\subsection{The Module SYSTEM}
-The module SYSTEM contains definitions that are necessary to program low-level operations referring directly to resources particular to a given computer and/or implementation. These include, for example, facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module expose the complete memory, and allow unsafe type-casts to be made. They should be used with care, because if misused they can easily crash the whole system. It is a bit like programming in C. It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable, but easily recognized due to the identifier SYSTEM appearing in their import list.
-The subsequent definitions are applicable to the \AZ operating system for which SYSTEM is implemented directly in the compiler.
+\subsection{Built-in Functions}
+There are some built-in procedures and functions in Active Oberon. We give a short overview in the following table. Note that Integer stands for SHORTINT, INTEGER, LONGINT and HUGEINT and Number stands for integers plus REAL and LONGREAL. 
+\begin{longtable}{|p{2cm}|p{4.5cm}|p{2cm}|p{6cm}|}
+\hline
+Function & Argument Types & Result Type & Description \\
+\hline
+INC(x) & x: Integer &  & increment x by 1 \\
+DEC(x) & x: Integer &  & decrement x by 1 \\
+INC(x,n) & x:Integer; n: Integer &  & increment x by n \\
+DEC(x,n) & x:Integer; n: Integer &  & decrement x by n \\
+ASSERT(x) & x: BOOLEAN & & assert trap, if x not true \\
+COPY(x,y) & x,y: ARRAY OF CHAR& & 0X-terminated copy of x to y \\
+INCL(s,e) & s: SET, e: Integer & & include element e in set s \\
+EXCL(s,e) & s: SET, e: Integer & & exclude element e from set s \\
+HALT(n) & n: Integer & & generate a trap with number n \\
+NEW(x,...) & x: Object or Pointer & & allocate x\\
+ABS(x) & x: Number & Number & return absolute value of x\\
+ASH(x,y) & x,y: Integer & Integer & return arithmetic shift of x by y bits\\
+CAP(x) & x: CHAR & CHAR & return capital letter of x\\
+CHR(x) & x: Integer & CHAR & return character with ascii-number x\\
+ENTIER(x) & x: REAL or LONGREAL & LONGINT & return largest integer not smaller than x\\
+LEN(x) & x: ARRAY OF CHAR & LONGINT & return length of x\\
+MAX(t) & t: Number or SET & Number & return maximal number of basic type t\\
+MIN(t) & t: Number or SET & Number & return minimal number of basic type t\\
+ODD(x) & x: Integer & BOOLEAN & return if x is odd\\
+ORD(x) & x: CHAR & LONGINT & return ascii-number of x\\
+SHORT(x) & x: Number & Number & number conversion down \\
+LONG(x) & x: Number & Number & number conversion up \\
+\hline
+\end{longtable}
+The number conversion routines SHORT and LONG operate with respect to the relations
+$$LONGREAL \supset REAL, HUGEINT \supset LONGINT \supset INTEGER \supset SHORTINT.$$
 
-%\begin{table}[h!]
-\subsubsection*{BIT Manipulation}
-\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\subsection{The Module SYSTEM}
+The (pseudo-)module SYSTEM contains definitions that are necessary to directly refer to resources particular to a given computer and/or implementation. These include facilities for accessing devices that are controlled by the computer, and facilities to override the data type compatibility rules otherwise imposed by the language definition. The functions and procedures exported by this module should be used with care! It is recommended to restrict their use to specific low-level modules. Such modules are inherently non-portable and easily recognized due to the identifier SYSTEM appearing in their import list.
+The subsequent definitions are applicable to the \AZ operating system.
+
+\subsubsection{BIT Manipulation}
+\begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
 \hline
@@ -876,13 +916,10 @@ BIT(adr,n) & adr: ADDRESS; n: LONGINT & BOOLEAN & Returns TRUE if bit n at adr i
 LSH(x,n) & x: IntValue; n: LONGINT & IntValue & Returns value x logically shifted left n bits (shifts right for n < 0) \\
 ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
 \hline
-\end{tabular}
-%\caption{BIT Manipulation}
-%\end{table}
+\end{longtable}
 
-%\begin{table}[h!]
-\subsubsection*{SYSTEM Types}
-\begin{tabular}{|p{3cm}|p{12cm}|}
+\subsubsection{SYSTEM Types}
+\begin{longtable}{|p{3cm}|p{12cm}|}
 \hline
 Type & Description \\
 \hline
@@ -891,13 +928,10 @@ SIZE & Representation of results of arithmetic operations on memory addresses.\\
 \hline
 BYTE & Representation of a single byte.\\
 \hline
-\end{tabular}
-%\caption{SYSTEM Types}
-%\end{table}
+\end{longtable}
 
-\subsubsection*{Addresses, Sizes and Unsafe Typecasts}
-%\begin{table}[h!]
-\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\subsubsection{Addresses, Sizes and Unsafe Typecasts}
+\begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
 \hline
@@ -907,13 +941,10 @@ SIZEOF(v) & v : ANY & SIZE & Returns the size of type v \\
 \hline
 VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type T with no conversion \\
 \hline
-\end{tabular}
-%\caption{Addresses, Sizes and Unsafe Typecasts}
-%\end{table}
+\end{longtable}
 
-\subsubsection*{Direct Memory Access Functions}
-%\begin{table}[h!]
-\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\subsubsection{Direct Memory Access Functions}
+\begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
 \hline
@@ -932,13 +963,10 @@ GET32(adr) & adr: ADDRESS & LONGINT & \\
 GET64(adr) & adr: ADDRESS & HUGEINT & \\
 \hline
 MOVE(src, dst,n) & dst : ADDRESS; n : SIZE & & Copy "n" bytes from address "src" to address "dst" \\
-\hline \end{tabular}
-%\caption{Direct Memory Access Functions}
-%\end{table}
+\hline \end{longtable}
 
-\subsubsection*{IA-32 Specific Functions}
-%\begin{table}[h!]
-\begin{tabular}{|p{3cm}|p{3cm}|p{8cm}|} \hline
+\subsubsection{IA-32 Specific Functions}
+\begin{longtable}{|p{3cm}|p{3cm}|p{8cm}|} \hline
 \hline
 Function & Argument Types & Description \\
 \hline
@@ -955,13 +983,11 @@ EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI && 32 bit registers \\
 AX, CX, DX, BX, SP, BP, SI, DI && 16 bit registers \\
 AL, CL, DL, BL, AH, CH, DH, BH && 8 bit registers \\
 \hline
-\end{tabular}
-%\caption{IA-32 Specific Functions}
-%\end{table}
+\end{longtable}
 
 
 \subsection{Active Oberon EBNF}
-We display the syntax of Active Oberon in the Extended Backus Naur Form (EBNF). We present productions (syntactic equations) as equations with a single equal sign \verb~=~. On the left hand side of a production stands the defined nonterminal symbol, the right hand side contains the substitution rule and is terminated by a period. Terminal symbols are embraced by single or double quotes (for example \verb~':='~, \verb~"'"~ and \verb~'begin'~). An alternative in a production is denoted by a vertical bar \verb~|~. Brackets \verb~[~ and \verb~]~ denote optionality of the enclosed expression, while braces \verb~{~ and \verb~}~ denote its repetition (possibly 0 times). Additionally, parentheses \verb~(~ and \verb~)~ are used to enclose expressions and thereby control additional precedence.
+We display the syntax of Active Oberon in the Extended Backus-Naur-Form (EBNF). We present productions (syntactic equations) as equations with a single equal sign \verb~=~. On the left hand side of a production stands the defined nonterminal symbol, the right hand side contains the substitution rule and is terminated by a period. Terminal symbols are embraced by single or double quotes (for example \verb~':='~, \verb~"'"~ and \verb~'begin'~). An alternative in a production is denoted by a vertical bar \verb~|~. Brackets \verb~[~ and \verb~]~ denote optionality of the enclosed expression, while braces \verb~{~ and \verb~}~ denote its repetition (possibly 0 times). Additionally, parentheses \verb~(~ and \verb~)~ are used to enclose expressions and thereby control additional precedence.
 
 \begin{lstlisting}[language = EBNF, frame=none,xleftmargin=0mm]
 Module               = 'MODULE' Identifier ['IN' Identifier]';'
@@ -1110,11 +1136,7 @@ Digit                = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
 \end{lstlisting}
 
-System procedures: get, put, getreg, putreg, move (3 params!), new
 
-System functions: adr, but, get32, get16, get8, lsh, rot, val
-
-System types: address, size, byte
 
 %string               = '"' {symbol | escapeSequence} '"'.
 %
