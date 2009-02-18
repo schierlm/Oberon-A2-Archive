@@ -1,7 +1,7 @@
 Image  License Source
 
 her_last_red_rose-other [1]  http://www.photos8.com/view/her_last_red_rose-other.html
-wintrace.bmp [2]
+spheres [2]
 
 [1] Public Domain www.photos8.com
-[2] No copyright, created by Florian Negele
+[2] Free
