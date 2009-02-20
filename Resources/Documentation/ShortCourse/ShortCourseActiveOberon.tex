@@ -462,7 +462,7 @@ Active Oberon provides built-in concurrency support. Threads are represented as 
 \subsubsection{Active Objects}
 The declaration of an object type may include an \emph{object body}. The body is the object's activity, to be executed whenever an object instance is allocated after the initializer (if any) completed execution. The object body is annotated with the \emph{ACTIVE} modifier. At allocation, a new process is allocated to execute the body concurrently.
 If the ACTIVE modifier is not present, the body is executed synchronously, i.e. NEW returns only after the body has terminated execution.
-The active object activity terminates whenever the body execution terminates. As long as the body executes, the object is kept alive (in particular it cannot be garbage collected). 
+The active object activity terminates whenever the body execution terminates. As long as the body executes, the object is kept alive (in particular it cannot be garbage collected).
 
 \begin{lstlisting}[language=Oberon,frame=none]
 MODULE Example;
@@ -550,7 +550,7 @@ TYPE
 
     END Synchronizer;
 
-END Example. 
+END Example.
 \end{lstlisting}
 
 \subsubsection{Examples}
@@ -741,7 +741,7 @@ IMPORT Commands;
 END Example.
 \end{lstlisting}
 
-After compilation of module Example, the command interpreter is able to process the command 
+After compilation of module Example, the command interpreter is able to process the command
 \verb+Example.Add 3 5 ~+.
 Note that the tilde character indicates the end of the command line arguments.
 
@@ -765,7 +765,7 @@ TYPE
 END Files;
 \end{lstlisting}
 
-The actual access to files is achieved by using the low-level file riders or by using streams on a file. We describe both methods in the subsequent sections. 
+The actual access to files is achieved by using the low-level file riders or by using streams on a file. We describe both methods in the subsequent sections.
 \paragraph{File Interface}
 The low-level file interface uses so-called riders as context for accessing files. Multiple riders can be positioned independently on a given file. Essentially, riders are used for tracking the position in a file and store the result of the last operation on the file. As for streams, read and write operations automatically update the current position.
 
@@ -781,8 +781,8 @@ Rider* = RECORD (** not shareable between multiple processes *)
 END;
 
 File* = OBJECT  (** sharable *)
-  (* ... *) 
-  
+  (* ... *)
+
   (** Position a Rider at a certain position in a file.
       Multiple Riders can be positioned at different locations in a file.
       A Rider cannot be positioned beyond the end of a file. *)
@@ -864,14 +864,36 @@ END Example;
 In this example, executing Example.CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
 
 \subsection{Strings}
-The module Strings provides procedures for string manipulation.
+The module Strings provides procedures for ASCII string manipulation.
+
+\begin{lstlisting}[language=Oberon,frame=none,caption={Strings}]
+MODULE Strings;
+
+(** returns the length of a string *)
+PROCEDURE Length* (CONST string: ARRAY OF CHAR): LONGINT;
+
+(** appends appendix to s: s := s || appendix *)
+PROCEDURE Append* (VAR s: ARRAY OF CHAR; CONST appendix: ARRAY OF CHAR);
+
+(** concatenates s1 and s2: s := s1 || s2 *)
+PROCEDURE Concat* (CONST s1, s2: ARRAY OF CHAR; VAR s: ARRAY OF CHAR);
+
+(** converts an integer value to a string *)
+PROCEDURE IntToStr*(i: LONGINT; VAR s: ARRAY OF CHAR);
+
+(** Simple pattern matching with support for "*" and "?" wildcards
+    returns TRUE if name matches mask. *)
+PROCEDURE Match*(CONST mask, name: ARRAY OF CHAR): BOOLEAN;
+
+END Strings.
+\end{lstlisting}
 
 
 \appendix
 \section{Appendix}
 
 \subsection{Built-in Functions}
-There are some built-in procedures and functions in Active Oberon. We give a short overview in the following table. Note that Integer stands for SHORTINT, INTEGER, LONGINT and HUGEINT and Number stands for integers plus REAL and LONGREAL. 
+There are some built-in procedures and functions in Active Oberon. We give a short overview in the following table. Note that Integer stands for SHORTINT, INTEGER, LONGINT and HUGEINT and Number stands for integers plus REAL and LONGREAL.
 \begin{longtable}{|p{2cm}|p{4.5cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
