@@ -68,7 +68,7 @@ xleftmargin=2mm,xrightmargin=2mm,
 \author{Felix Friedrich, Ulrike Glavitsch, Florian Negele, Sven Stauber}
 \maketitle
 
-This is a brief introduction to the programming language Active Oberon and the operating system \AZ. This introduction does neither replace a language report nor is it an introduction to programming. It rather should provide a quick access to the \AZ system by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
+This is a brief introduction to the programming language Active Oberon and the operating system \AZ. This introduction does neither replace a language report nor is it an introduction to programming. It rather should provide quick access to the \AZ system by ways of comments and examples. It has been prepared for the Operating System Course, Spring Semester 2009, at ETH Zurich as accompanying material to the practical exercises.
 
 \tableofcontents
 
@@ -138,7 +138,7 @@ END B.
 \end{lstlisting}
 
 \subsubsection{Constant Declaration Section}\label{section:ConstantDeclarationSection}
-Although static values can be used in expressions, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. Only values of basic type and strings\footnote{In Active Oberon, strings are array of characters, cf. Section \ref{section:Arrays}} can be declared as constant\footnote{There are exceptions: special mathematical arrays can also be declared as constants but this goes beyond the scope of this short reference.}. The following module contains some examples.
+Although static values can be used in expressions, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. Only values of basic type and strings\footnote{In Active Oberon, strings are array of characters, cf. Section \ref{section:Arrays}} can be declared as constants\footnote{There are exceptions: special mathematical arrays can also be declared as constants but this goes beyond the scope of this short reference.}. The following module contains some examples.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Declaration and Usage of Constants}]
 MODULE Random;
@@ -223,7 +223,7 @@ END Variables.
 \end{lstlisting}
 
 \subsubsection{Procedure Declaration Section}\label{section:ProcedureDeclarationSection}
-Procedures contain the executable code of a module. They can be declared in a modules scope, within procedure scopes (`nested procedures') or in object scopes (`methods'). Parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
+Procedures contain the executable code of a module. They can be declared in a module scope, within procedure scopes (`nested procedures') or in object scopes (`methods'). Parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
 
 Parameters can be {\em value parameters}\footnote{Value parameters are passed over the stack.}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}\footnote{Variable parameters are references being passed over the stack.}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
 
@@ -348,7 +348,7 @@ The set representing the type CHAR is ordered and each character has a fixed pos
 
 \subsection{Composite Types}\label{section:CompositeTypes}
 
-In Active Oberon, there are basically three composite types available. Arrays, Records and Objects.
+In Active Oberon, there are basically three composite types available: Arrays, Records and Objects.
 
 \subsubsection{Arrays}\label{section:Arrays}
 Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows the declaration of multi-dimensional arrays. Arrays can be declared open only in a parameter section. Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime.
@@ -605,8 +605,8 @@ This section gives a brief overview of often used application programming interf
 
 \subsection{Streams}
 Streams provide an abstraction for easily accessing various resources that can be accessed byte-wise. Streams can be opened on files, network connections, serial port connections, strings, memory and many other resources.
-Streams are unidirectional, i.e.\ either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer. For writers, the output buffer has to be flushed explicitly by the programmer.
-Streams maintain an internal position that is updated automatically whenever a read or write is performed. Streams may support random access, depending on the underlying resource.
+Streams are unidirectional, i.e.\ either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer that has to be flushed explicitly by the programmer.
+Streams maintain an internal position that is updated automatically whenever a read or write operation is performed. Streams may support random access, depending on the underlying resource.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Reader and Writer Interface}]
 MODULE Streams;
@@ -617,11 +617,20 @@ Reader* = OBJECT
 
   (** result of last input operation *)
   res*: LONGINT;
+  
+  (** Current position. *)
+  PROCEDURE Pos*( ): LONGINT;
 
-  (** Return bytes currently available in input buffer. *)
+  (** Returns TRUE if this stream supports random access *)
+  PROCEDURE CanSetPos*( ): BOOLEAN;
+
+  (** Set position to <pos> (only if resource supports random access) *)
+  PROCEDURE SetPos*( pos: LONGINT );
+
+  (** Return number of bytes currently available in input buffer. *)
   PROCEDURE Available*( ): LONGINT;
 
-  (** Read one byte. x=0X if no success (e.g. file ended) *)
+  (** Read one byte. *)
   PROCEDURE Char*( VAR x: CHAR );
 
   (** Read one byte but leave the byte in the input buffer. *)
@@ -667,6 +676,15 @@ Writer* = OBJECT
 
   (** result of last output operation *)
   res*: LONGINT;
+
+  (** Current position. *)
+  PROCEDURE Pos*( ): LONGINT;
+
+  (** Returns TRUE if this stream supports random access *)
+  PROCEDURE CanSetPos*( ): BOOLEAN;
+
+  (** Set position to <pos> (only if resource supports random access) *)
+  PROCEDURE SetPos*( pos: LONGINT );
 
   (** Flush output buffer *)
   PROCEDURE Update*;
