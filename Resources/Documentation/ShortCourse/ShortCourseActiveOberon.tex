@@ -170,7 +170,7 @@ END Random.
 Type declarations bind an identifier to a type that can be used in variable declarations to name the type of the variables (see section \ref{section:VariableDeclarationSection}). Type declarations are used to provide synonyms for user-defined composite types or existing types such as all predeclared basic types (see sections \ref{section:CompositeTypes} and \ref{section:BasicTypes} respectively). The following example uses a type declaration to assign a new name to a composite record type.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Using Type Declarations}]
-MODULE Test;
+MODULE TypeDeclarations;
 
 TYPE
     NumberType = REAL;
@@ -189,7 +189,7 @@ BEGIN
     (* ... *)
     Multiply(res,a,b);
     (* ... *)
-END Test.
+END TypeDeclarations.
 \end{lstlisting}
 
 Note that the call of procedure \verb+Multiply+ with variables \verb+res+, \verb+a+ and \verb+b+ requires that the variables are assignment compatible to the respective parameters. This is guaranteed by using the name of a type declaration which by definition always refers to the same type.
@@ -329,8 +329,14 @@ A Boolean value is one of the {\em logical truth values} which are represented i
 The values which belong to the type SET are {\em elements of the power set of} $[0, 1, \ldots, N]$ where $N$ is equal to MAX(SET). $N$ is a constant defined by the implementation. It is typically the word length of the computer (or a small multiple of it). In fact, sets are efficiently implemented as bit operations.
 
 Examples of set constants are:
-\begin{lstlisting}[language=Oberon,frame=none]
-{}, {1, 6, 10}, {0, 2..4, 8}
+\begin{lstlisting}[language=Oberon,frame=none,caption=Using set constants]
+MODULE SetConstants;
+
+CONST
+   EmptySet = {};
+   SomeElements = {1, 6, 10};
+   SomeOthers = {0, 2..4, 8};
+END SetConstants.
 \end{lstlisting}
 
 where \verb+{}+ denotes the empty set and the subset \verb+2..4+ refers to the elements 2, 3 and 4.
@@ -347,10 +353,11 @@ In Active Oberon, there are basically three composite types available. Arrays, R
 \subsubsection{Arrays}\label{section:Arrays}
 Arrays can be declared static, open or dynamic. Static arrays are declared as ARRAY number OF BaseType, where number must be constant. The BaseType can be an array, which allows the declaration of multi-dimensional arrays. Arrays can be declared open only in a parameter section. Dynamic arrays are basically references pointing to an array with lengths that may be provided during runtime.
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption=Using arrays]
+MODULE Arrays;
 VAR
 a: ARRAY 32 OF ARRAY 20 OF INTEGER; (* static, two-dimensional *)
-b: POINTER TO ARRAY OF INTEGER; (* dynamic *)
+b: POINTER TO ARRAY OF INTEGER; (* dynamic, one-dimensional *)
 
 PROCEDURE Print(x: ARRAY OF INTEGER); (* open *)
 VAR i: INTEGER;
@@ -369,28 +376,29 @@ BEGIN
     Print(b);
 END Example;
 
+END Arrays.
 \end{lstlisting}
 
 \subsubsection{Records}\label{section:Records}
 Records are containers of data. Records are value types and are declared as RECORD (variables) END. Records can also be declared as reference types using POINTER TO. Record fields are referred to via recordName.variableName.
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption=Using records]
+MODULE Records;
 VAR
-a: RECORD x,y: LONGINT END;
-p: POINTER TO RECORD a,b: REAL END;
-...
+	a: RECORD x,y: LONGINT END;
+	p: POINTER TO RECORD a,b: REAL END;
+
 BEGIN
-...
-NEW(p);
-p.x := a.x;
-....
+	NEW(p);
+	p.b := a.x;
+END Records.
 \end{lstlisting}
 
 \subsubsection{Objects}\label{section:Objects}
 Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
 A method tagged with an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
-\begin{lstlisting}[language=Oberon,frame=none]
-MODULE ExampleModule;
+\begin{lstlisting}[language=Oberon,frame=none,caption=Usage of Objects]
+MODULE Objects;
 TYPE
 MyObject = OBJECT (* class *)
     VAR x,y: REAL;
@@ -409,27 +417,27 @@ MyObject = OBJECT (* class *)
 END MyObject;
 
 VAR p,q: MyObject; (* objects / instances *)
-...
 
 BEGIN
     (* instantiate object p with x and y parameters for initializer *)
     NEW(p, 1.0, 9.99);
-    ...
-    IF p.Equals(q) THEN ...
+    (* ... *)
+    IF p.Equals(q) THEN (* ... *)
     END;
-END ExampleModule;
+END Objects.
 \end{lstlisting}
 
 \subsubsection{Inheritance}
-Active Oberon is an object oriented language. For both, records and objects, inheritance is supported by Oberon. It is possible to extend records and objects and to use type checks, type guards and overriding of methods.
+Active Oberon is an object oriented language. Inheritance is supported for records and objects. It is possible to extend records and objects and to use type checks, type guards and overriding of methods.
 Record and object extension is declared as in the following example:
 
-\begin{lstlisting}[language=Oberon,frame=none]
-TYPE
+\begin{lstlisting}[language=Oberon,frame=none,caption=Type extension of records and objects]
+MODULE Extensions;
 
+TYPE
 Rectangle = RECORD
     x,y,w,h: INTEGER
-END
+END;
 
 FilledRectangle= RECORD(Rectangle)
     color: INTEGER
@@ -454,6 +462,7 @@ VAR color: INTEGER;
     END Print;
 END FilledWindow;
 
+END Extensions.
 \end{lstlisting}
 
 \subsection{Concurrency Support}
@@ -464,7 +473,7 @@ The declaration of an object type may include an \emph{object body}. The body is
 If the ACTIVE modifier is not present, the body is executed synchronously, i.e. NEW returns only after the body has terminated execution.
 The active object activity terminates whenever the body execution terminates. As long as the body executes, the object is kept alive (in particular it cannot be garbage collected).
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption=Example of an active object]
 MODULE Example;
 TYPE
    ActiveObject = OBJECT
@@ -488,7 +497,7 @@ Upon entering an exclusive block, an activity is preempted as long as another ac
 of the same object instance. An activity cannot take an object’s lock more than once (re-entrance is not allowed).
 Modules are considered singleton objects, thus procedures in a module can also be protected. In this case the scope of protection is the whole module.
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption=Usage of exclusive blocks]
 MODULE Demo;
 
 TYPE
@@ -530,7 +539,7 @@ The built-in procedure AWAIT is used to synchronize an activity with a state of 
 This implies that changing the state of an object outside a protected block won’t have the conditions re-evaluated.
 When several activities compete for the same object lock, the activities whose conditions are true are scheduled before those that only want to enter a protected region.
 
-\begin{lstlisting}[language=Oberon,frame=none]
+\begin{lstlisting}[language=Oberon,frame=none,caption=Example of object synchronization]
 MODULE Example;
 
 TYPE
