@@ -608,28 +608,15 @@ Streams provide an abstraction for easily accessing various resources that can b
 Streams are unidirectional, i.e.\ either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer. For writers, the output buffer has to be flushed explicitly by the programmer.
 Streams maintain an internal position that is updated automatically whenever a read or write is performed. Streams may support random access, depending on the underlying resource.
 
-\begin{lstlisting}[language=Oberon,frame=none,caption={Basic Stream Interface}]
-Stream* = OBJECT
-VAR
-  (** result of last input operation *)
-  res*: LONGINT;
-
-  (** Current read/write position. *)
-  PROCEDURE Pos*( ): LONGINT;
-
-  (** Returns TRUE if this stream supports random access *)
-  PROCEDURE CanSetPos*( ): BOOLEAN;
-
-  (** Set position to <pos> (only if resource supports random access) *)
-  PROCEDURE SetPos*( pos: LONGINT );
-END Stream;
-\end{lstlisting}
-
-\begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Reader Interface}]
+\begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Reader and Writer Interface}]
+MODULE Streams;
 
 (** A reader buffers input received from a Receiver.
     Must not be shared between processes. *)
-Reader* = OBJECT (Stream)
+Reader* = OBJECT
+
+  (** result of last input operation *)
+  res*: LONGINT;
 
   (** Return bytes currently available in input buffer. *)
   PROCEDURE Available*( ): LONGINT;
@@ -675,10 +662,11 @@ Reader* = OBJECT (Stream)
   PROCEDURE GetInteger*(VAR integer : LONGINT; hex : BOOLEAN);
 
 END Reader;
-\end{lstlisting}
 
-\begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Writer Interface}]
-Writer* = OBJECT (Stream)
+Writer* = OBJECT
+
+  (** result of last output operation *)
+  res*: LONGINT;
 
   (** Flush output buffer *)
   PROCEDURE Update*;
@@ -706,6 +694,8 @@ Writer* = OBJECT (Stream)
   PROCEDURE Hex*(x: HUGEINT; w: LONGINT );
 
 END Writer;
+
+END Streams;
 \end{lstlisting}
 
 \subsection{Commands}
