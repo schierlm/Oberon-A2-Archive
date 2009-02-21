@@ -1,8 +1,10 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage{color}
 \usepackage{hyperref}
+% listings: http://mirror.switch.ch/ftp/mirror/tex/help/Catalogue/entries/listings.html
 \usepackage{listings}
 \usepackage{xspace}
+% longtable: http://mirror.switch.ch/ftp/mirror/tex/help/Catalogue/entries/longtable.html
 \usepackage{longtable}
 % --------------------------------- page layout --------------------------------------
 \pagestyle{headings}
@@ -47,18 +49,23 @@ basicstyle=\scriptsize\changefont{pcr}{m}{n},
 stringstyle=\changefont{pcr}{b}{n},
 columns = fixed
 }
-\lstdefinelanguage{Oberon}[]{Pascal}%
-  {morekeywords={len,module,import},%
-   sensitive=f,%
+\lstdefinelanguage{Oberon}[]{Oberon-2}%
+  {morekeywords={OBJECT,SELF,%
+   HUGEINT,% Basic Types
+   AWAIT},% Built in functions
+   %sensitive=f,%
+   %alsoother={},% list here in lower case if keyword some where else wrongly highlighted
     morecomment=[s][\color{red}]{(*!}{!*)}
   }[keywords]%
 \lstset{language=Oberon,
 basicstyle=\small\progfont,keywordstyle=\kwfont ,identifierstyle=\progfont,
 commentstyle=\color{darkgrey}, stringstyle=, showstringspaces=false, %keepspaces=true,
 numbers=none, numberstyle=\tiny, stepnumber=1, numbersep=5pt, captionpos=b,
-columns=flexible % flexible, fixed, fullflexible
+columns=flexible, % flexible, fixed, fullflexible
 framerule=1mm,frame=shadowbox, rulesepcolor=\color{blue}, % frame = shadowbox
 xleftmargin=2mm,xrightmargin=2mm,
+breaklines=true,				% break long lines
+breakatwhitespace=true,			% break lines only at white space
 }
 \renewcommand{\lstlistingname}{Fig.}
 
@@ -106,7 +113,7 @@ Note that a module name has nothing to do with the name of the file that contain
 
 \subsection{Loading and Unloading Modules}\label{section:LoadingAndUnloadingModules}
 When a module is compiled, an {\em object file} is generated and is made persistent in a file. It is not immediately loaded.
-Basically, a module \verb+M+ is loaded when a command of the form \verb+M.CommandName+ is activated. A module X is also automatically loaded when any module importing X is loaded (cf.~ Paragraph \ref{section:ImportList}).
+Basically, a module \verb+M+ is loaded when a command of the form \verb+M.CommandName+ is activated. A module X is also automatically loaded when any module importing X is loaded (cf.~Paragraph~\ref{section:ImportList}).
 
 A module stays loaded until it is unloaded explicitly. Modules can be unloaded with the command
 \begin{center}
@@ -138,7 +145,7 @@ END B.
 \end{lstlisting}
 
 \subsubsection{Constant Declaration Section}\label{section:ConstantDeclarationSection}
-Although static values can be used in expressions, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. Only values of basic type and strings\footnote{In Active Oberon, strings are array of characters, cf. Section \ref{section:Arrays}} can be declared as constants\footnote{There are exceptions: special mathematical arrays can also be declared as constants but this goes beyond the scope of this short reference.}. The following module contains some examples.
+Although static values can be used in expressions, it is possible to associate an identifier with a constant expression, in other words: to {\em declare a constant}. Only values of basic type and strings\footnote{In Active Oberon, strings are array of characters, cf.~Section~\ref{section:Arrays}} can be declared as constants\footnote{There are exceptions: special mathematical arrays can also be declared as constants but this goes beyond the scope of this short reference.}. The following module contains some examples.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Declaration and Usage of Constants}]
 MODULE Random;
@@ -201,7 +208,7 @@ Variables have to be declared before use in a variable declaration section. A va
 MODULE Variables;
 TYPE
     (* variables in a record *)
-    Pair=RECORD x,y: REAL END;
+    Pair = RECORD x,y: REAL END;
     PairPointer = POINTER TO Pair;
     ExampleObject = OBJECT
         (* object variables *)
@@ -226,6 +233,8 @@ END Variables.
 Procedures contain the executable code of a module. They can be declared in a module scope, within procedure scopes (`nested procedures') or in object scopes (`methods'). Parameters are special variables that refer to expressions that have been passed to the procedure from its caller. Parameters are declared in the head of the procedure declaration.
 
 Parameters can be {\em value parameters}\footnote{Value parameters are passed over the stack.}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}\footnote{Variable parameters are references being passed over the stack.}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
+
+Note: Changing a field of an object passed as value parameter will definitively change the field of that object. If the argument passed as value is a record, changes on its field are only local to the procedure.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Procedures}]
 MODULE Procedures;
@@ -259,7 +268,7 @@ TYPE
     VAR x,sq: REAL; i: INTEGER;
     BEGIN
         x := 10; i := 0;
-        sq := x;
+        sq := Square(x);
         Inc(i);
     END Test;
 
@@ -286,12 +295,13 @@ BEGIN
 END Hello.
 \end{lstlisting}
 
-A first call of \verb+Hello.World+ results in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded. (cf.~Section \ref{section:LoadingAndUnloadingModules}).
+A first call of \verb+Hello.World+ results in the output \pc{Hello has been loaded} and \pc{Hello World} in the kernel log. Each subsequent call will result in an output of \pc{Hello World}, but no further execution of the body. Only if the module has been unloaded, the body is executed again. Note that, consequently, in order to see the effects of a modification and re-compilation of a module it has to be unloaded. (cf.~Section~\ref{section:LoadingAndUnloadingModules}).
 
 \subsection{Basic Types}\label{section:BasicTypes}
-There are nine predeclared basic types in Active Oberon. Their names and valid values are shown in table \ref{table:BasicTypes}.
+There are nine predeclared basic types in Active Oberon. Their names and valid values are shown in table~\ref{table:BasicTypes}.
 
 \begin{table}[h!]
+\centering
 \begin{tabular}{|l|l|l|}
 \hline
 Type name & Size & Valid values \\
@@ -395,7 +405,7 @@ END Records.
 
 \subsubsection{Objects}\label{section:Objects}
 Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
-A method tagged with an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
+A method prefixed by an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=Usage of Objects]
 MODULE Objects;
@@ -439,7 +449,7 @@ Rectangle = RECORD
     x,y,w,h: INTEGER
 END;
 
-FilledRectangle= RECORD(Rectangle)
+FilledRectangle = RECORD(Rectangle)
     color: INTEGER
 END;
 
@@ -491,10 +501,10 @@ END Example.
 \end{lstlisting}
 
 \subsubsection{Protection}
-Like a (procedure-, module- or object-) body, a Statement Block is a sequence of statements delimited by BEGIN and END. It can be used anywhere like a simple statement. An {\em EXCLUSIVE} modifier turns a statement block (or body) into a critical region to protect the statements against concurrent execution. Our protection model is an instance-based monitor: Every object instance is protected and the protection granularity is any statement block inside the object’s method, ranging from a single statement to a whole method.
+Like a (procedure-, module- or object-) body, a Statement Block is a sequence of statements delimited by BEGIN and END. It can be used anywhere like a simple statement. An {\em EXCLUSIVE} modifier turns a statement block (or body) into a critical region to protect the statements against concurrent execution. Our protection model is an instance-based monitor: Every object instance is protected and the protection granularity is any statement block inside the object's method, ranging from a single statement to a whole method.
 
 Upon entering an exclusive block, an activity is preempted as long as another activity stands in an exclusive block
-of the same object instance. An activity cannot take an object’s lock more than once (re-entrance is not allowed).
+of the same object instance. An activity cannot take an object's lock more than once (re-entrance is not allowed).
 Modules are considered singleton objects, thus procedures in a module can also be protected. In this case the scope of protection is the whole module.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=Usage of exclusive blocks]
@@ -532,11 +542,11 @@ END P2;
 END Demo.
 \end{lstlisting}
 
-In this example, at most one thread can be in the critical section of the module \emph{p1} and \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
+In this example, at most one thread can be in one of the critical sections of the module \emph{p1} or \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
 
 \subsubsection{Synchronization}
 The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when the condition is true. While the condition is not established, the activity remains suspended. The lock on the protected object is released, as long as the activity remains suspended\footnote{Releasing the lock upon waiting allows other activities to change the state of the object and thus establish the condition}. The activity is resumed if and only if the lock can be taken. The system is responsible for evaluating the conditions and for restarting suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
-This implies that changing the state of an object outside a protected block won’t have the conditions re-evaluated.
+This implies that changing the state of an object outside a protected block won't have the conditions re-evaluated.
 When several activities compete for the same object lock, the activities whose conditions are true are scheduled before those that only want to enter a protected region.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=Example of object synchronization]
@@ -717,7 +727,7 @@ END Streams;
 \end{lstlisting}
 
 \subsection{Commands}
-Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section \ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, if it is declared in the module scope and if it has a command signature:
+Commands are procedures that can be invoked directly by the command interpreter. As has already been indicated in Section~\ref{section:ModulesAndCommands}, a procedure can act as a command if and only if it is exported, if it is declared in the module scope and if it has a command signature:
 \begin{lstlisting}[language=Oberon,frame=none,caption={Command Signatures}]
 (** Command with no arguments *)
 PROCEDURE ProcedureName*;
@@ -878,7 +888,7 @@ END CreateFile;
 END Example;
 \end{lstlisting}
 
-In this example, executing Example.CreateFile HelloWorld.txt Hello world ~ creates a new file (or overwrites an existing one) with the content "Hello World".
+In this example, executing \verb+Example.CreateFile HelloWorld.txt Hello World ~+ creates a new file (or overwrites an existing one) with the content ``Hello World''.
 
 \subsection{Strings}
 The module Strings provides procedures for ASCII string manipulation.
@@ -911,14 +921,15 @@ END Strings.
 
 \subsection{Built-in Functions}
 There are some built-in procedures and functions in Active Oberon. We give a short overview in the following table. Note that Integer stands for SHORTINT, INTEGER, LONGINT and HUGEINT and Number stands for integers plus REAL and LONGREAL.
-\begin{longtable}{|p{2cm}|p{4.5cm}|p{2cm}|p{6cm}|}
+\begin{longtable}{|p{2cm}|p{4.3cm}|p{1.95cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
-\hline
+\hline\hline
+\endhead
 INC(x) & x: Integer &  & increment x by 1 \\
 DEC(x) & x: Integer &  & decrement x by 1 \\
-INC(x,n) & x:Integer; n: Integer &  & increment x by n \\
-DEC(x,n) & x:Integer; n: Integer &  & decrement x by n \\
+INC(x,n) & x: Integer; n: Integer &  & increment x by n \\
+DEC(x,n) & x: Integer; n: Integer &  & decrement x by n \\
 ASSERT(x) & x: BOOLEAN & & assert trap, if x not true \\
 COPY(x,y) & x,y: ARRAY OF CHAR& & 0X-terminated copy of x to y \\
 INCL(s,e) & s: SET, e: Integer & & include element e in set s \\
@@ -950,7 +961,8 @@ The subsequent definitions are applicable to the \AZ operating system.
 \begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
-\hline
+\hline\hline
+\endhead
 BIT(adr,n) & adr: ADDRESS; n: LONGINT & BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
 LSH(x,n) & x: IntValue; n: LONGINT & IntValue & Returns value x logically shifted left n bits (shifts right for n < 0) \\
 ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
@@ -961,7 +973,8 @@ ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by
 \begin{longtable}{|p{3cm}|p{12cm}|}
 \hline
 Type & Description \\
-\hline
+\hline\hline
+\endhead
 ADDRESS & Representation of memory addresses. Currently, this is an alias to either LONGINT or HUGEINT \\
 SIZE & Representation of results of arithmetic operations on memory addresses.\\
 \hline
@@ -973,10 +986,11 @@ BYTE & Representation of a single byte.\\
 \begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
+\hline\hline
+\endhead
+ADR(v) & v: ANY & ADDRESS & Returns the address of v \\
 \hline
-ADR(v) & v : ANY & ADDRESS & Returns the address of v \\
-\hline
-SIZEOF(v) & v : ANY & SIZE & Returns the size of type v \\
+SIZEOF(v) & v: ANY & SIZE & Returns the size of type v \\
 \hline
 VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type T with no conversion \\
 \hline
@@ -986,7 +1000,8 @@ VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type
 \begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
-\hline
+\hline\hline
+\endhead
 PUT(adr,x) & adr: ADDRESS; x: Type & & Mem[adr] := x where the size of type x is 8, 16, 32 or 64 bits \\
 \hline
 PUT8(adr,x) & adr: ADDRESS; x: SHORTINT & & Mem[adr] := x \\
@@ -994,29 +1009,30 @@ PUT16(adr,x) & adr: ADRESS; x: INTEGER && \\
 PUT32(adr,x) & adr: ADDRESS; x: LONGINT && \\
 PUT64(adr,x) & adr: ADDRESS; x: HUGEINT && \\
 \hline
-GET(adr,x) & adr: ADDRESS; VAR x : Type & & x := Mem[adr] where the size of type x is 8, 16, 32 or 64 bits \\
+GET(adr,x) & adr: ADDRESS; VAR x: Type & & x := Mem[adr] where the size of type x is 8, 16, 32 or 64 bits \\
 \hline
-GET8(adr) & adr : ADDRESS & SHORTINT & RETURN Mem[adr] \\
+GET8(adr) & adr: ADDRESS & SHORTINT & RETURN Mem[adr] \\
 GET16(adr) & adr: ADDRESS & INTEGER &\\
 GET32(adr) & adr: ADDRESS & LONGINT & \\
 GET64(adr) & adr: ADDRESS & HUGEINT & \\
 \hline
-MOVE(src, dst,n) & dst : ADDRESS; n : SIZE & & Copy "n" bytes from address "src" to address "dst" \\
+MOVE(src, dst,n) & dst: ADDRESS; n: SIZE & & Copy "n" bytes from address "src" to address "dst" \\
 \hline \end{longtable}
 
 \subsubsection{IA-32 Specific Functions}
-\begin{longtable}{|p{3cm}|p{3cm}|p{8cm}|} \hline
+\begin{longtable}{|p{3cm}|p{3cm}|p{8cm}|}
 \hline
 Function & Argument Types & Description \\
-\hline
-PORTIN(adr,x) & adr : LONGINT; VAR x : Type & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
-PORTOUT(adr,x) & adr : LONGINT; x : Type & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+\hline\hline
+\endhead
+PORTIN(adr,x) & adr: LONGINT; VAR x: Type & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+PORTOUT(adr,x) & adr: LONGINT; x: Type & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
 \hline
 CLI() && Disable interrupts on the current processor \\
 STI() && Enable interrupts on the current processor \\
 \hline
-GETREG(reg,x) & reg: LONGINT; VAR x : Type & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
-PUTREG(reg,x) & reg: LONGINT; x : Type & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
+GETREG(reg,x) & reg: LONGINT; VAR x: Type & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
+PUTREG(reg,x) & reg: LONGINT; x: Type & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
 \hline
 EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI && 32 bit registers \\
 AX, CX, DX, BX, SP, BP, SI, DI && 16 bit registers \\
