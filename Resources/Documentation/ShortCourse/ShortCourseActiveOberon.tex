@@ -127,7 +127,7 @@ where the tilde `\verb+~+' indicates the end of the list. Note that a module \ve
 A module consists of an import list, constant declarations, type declarations, variable declarations, procedure declarations and a body, all optional. In this Section, we describe these parts.
 
 \subsubsection{Import Section} \label{section:ImportList}
-The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden. This is checked by the compiler.
+The exported symbols of a module can be made available to other modules. To make the symbols of module \verb+A+ available in module \verb+B+, module \verb+A+ has to be imported in module \verb+B+. A module import graph is a directed graph where cycles are forbidden.\footnote{Cycles in the import graph are detected by the compiler.}
 
 Symbols in one module that are to be used in any other module must be exported. A symbol is exported by suffixing the name with an asterisk `\verb+*+'. It is exported read only by suffixing with a minus symbol `\verb+-+'. We provide a little example of a module \verb+A+ being imported by a module \verb+B+.
 
@@ -234,8 +234,6 @@ Procedures contain the executable code of a module. They can be declared in a mo
 
 Parameters can be {\em value parameters}\footnote{Value parameters are passed over the stack.}, in which case they represent the actual value of an expression being passed to the respective procedure. Or parameters can be {\em variable parameters}\footnote{Variable parameters are references being passed over the stack.}, in which case they stand for the reference of a designator that has been passed to the procedure. The modification of a value parameter within a procedure does only have a temporary effect within the procedure while the modification of a variable parameter implies the modification of the passed variable.
 
-Note: Changing a field of an object passed as value parameter will definitively change the field of that object. If the argument passed as value is a record, changes on its field are only local to the procedure.
-
 \begin{lstlisting}[language=Oberon,frame=none,caption={Procedures}]
 MODULE Procedures;
 
@@ -328,7 +326,7 @@ Type name & Size & Valid values \\
 \subsubsection{Numeric types} \label{section:HierarchyNumericTypes}
 The {\em numeric types} are comprised of the integer and real types and form a set hierarchy
 
-$LONGREAL \supseteq REAL \supseteq HUGEINT \supseteq LONGINT \supseteq INTEGER \supseteq SHORTINT$
+$LONGREAL \supset REAL \supset HUGEINT \supset LONGINT \supset INTEGER \supset SHORTINT$
 
 The range of the larger type includes the ranges of the smaller types. The smaller type is said to be {\em compatible} with the larger one in the sense that it can without danger of loss of leading digits be converted. In assignments and in expansions the conversion of internal representations is automatic.
 
@@ -336,7 +334,7 @@ The range of the larger type includes the ranges of the smaller types. The small
 A Boolean value is one of the {\em logical truth values} which are represented in Active Oberon by the standard identifiers TRUE and FALSE.
 
 \subsubsection{SET} \label{section:SetType}
-The values which belong to the type SET are {\em elements of the power set of} $[0, 1, \ldots, N]$ where $N$ is equal to MAX(SET). $N$ is a constant defined by the implementation. It is typically the word length of the computer (or a small multiple of it). In fact, sets are efficiently implemented as bit operations.
+The values which belong to the type SET are {\em elements of the power set of} $\{0, 1, \ldots, N\}$ where $N$ is equal to MAX(SET), a constant defined by the implementation. It is typically the word length of the computer (or a small multiple of it). In fact, sets are efficiently implemented as bit operations.
 
 Examples of set constants are:
 \begin{lstlisting}[language=Oberon,frame=none,caption=Using set constants]
@@ -349,7 +347,7 @@ CONST
 END SetConstants.
 \end{lstlisting}
 
-where \verb+{}+ denotes the empty set and the subset \verb+2..4+ refers to the elements 2, 3 and 4.
+where \verb+{}+ denotes the empty set and the expression \verb+2..4+ refers to the elements 2, 3 and 4.
 
 \subsubsection{CHAR}
 A major portion of the input and output of computers is in the form of character strings that contain values of type CHAR. The value range of the type CHAR consists of the characters of the roman alphabet and a small set of special symbols used frequently in commerce and mathematics.
@@ -404,7 +402,7 @@ END Records.
 \end{lstlisting}
 
 \subsubsection{Objects}\label{section:Objects}
-Objects are basically reference records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object is a reference type and can be explicitly referred to in its method using the SELF identifier.
+Objects are basically {\em reference} records that can additionally be equipped with procedures. Procedures in an object are methods: they reside in the object scope and have access to the object's variables. An object can be explicitly referred to in its method using the SELF identifier.
 A method prefixed by an ampersand character $\&$ is an \emph{object initializer}. This method is automatically called when an instance of the object is created and processed before the object becomes publicly available. An object may have at most one initializer. If absent, the initializer of the base type is inherited. Initializers can be called like methods.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=Usage of Objects]
@@ -439,7 +437,7 @@ END Objects.
 
 \subsubsection{Inheritance}
 Active Oberon is an object oriented language. Inheritance is supported for records and objects. It is possible to extend records and objects and to use type checks, type guards and overriding of methods.
-Record and object extension is declared as in the following example:
+Record and object extension is explicated as in the following example:
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=Type extension of records and objects]
 MODULE Extensions;
@@ -476,7 +474,7 @@ END Extensions.
 \end{lstlisting}
 
 \subsection{Concurrency Support}
-Active Oberon provides built-in concurrency support. Threads are represented as active objects and language constructs for ensuring mutual exclusion and thread synchronization are provided.
+Active Oberon provides built-in concurrency support. Threads are represented as {\em Active Objects} and language constructs for ensuring mutual exclusion and thread synchronization are provided.
 
 \subsubsection{Active Objects}
 The declaration of an object type may include an \emph{object body}. The body is the object's activity, to be executed whenever an object instance is allocated after the initializer (if any) completed execution. The object body is annotated with the \emph{ACTIVE} modifier. At allocation, a new process is allocated to execute the body concurrently.
@@ -545,8 +543,8 @@ END Demo.
 In this example, at most one thread can be in one of the critical sections of the module \emph{p1} or \emph{p2} at any time. For each instance of SomeObject, at most one thread can be in \emph{o1} or \emph{o2} at any time. Note that there is no relation of \emph{p1}, \emph{p2} and \emph{o1}, \emph{o2} in different object instances since the protection is based on \emph{instance-based} monitors.
 
 \subsubsection{Synchronization}
-The built-in procedure AWAIT is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when the condition is true. While the condition is not established, the activity remains suspended. The lock on the protected object is released, as long as the activity remains suspended\footnote{Releasing the lock upon waiting allows other activities to change the state of the object and thus establish the condition}. The activity is resumed if and only if the lock can be taken. The system is responsible for evaluating the conditions and for restarting suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
-This implies that changing the state of an object outside a protected block won't have the conditions re-evaluated.
+The built-in procedure {\em AWAIT} is used to synchronize an activity with a state of the system. AWAIT can take any boolean condition. The activity is allowed to continue execution only when the condition is true. While the condition is not established, the activity remains suspended. The lock on the protected object is released, as long as the activity remains suspended\footnote{Releasing the lock upon waiting allows other activities to change the state of the object and thus establish the condition}. The activity is resumed if and only if the lock can be taken. The system is responsible for evaluating the conditions and for restarting suspended activities. The conditions inside an object instance are re-evaluated whenever some activity leaves a protected block inside the same object instance.
+This implies that changing the state of an object outside a protected block does not imply a re-evaluation of its conditions.
 When several activities compete for the same object lock, the activities whose conditions are true are scheduled before those that only want to enter a protected region.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption=Example of object synchronization]
@@ -611,11 +609,11 @@ END Example.
 \end{lstlisting}
 
 \section{Application Programming Interfaces}
-This section gives a brief overview of often used application programming interfaces.
+This section comprises a brief overview of often used application programming interfaces.
 
 \subsection{Streams}
 Streams provide an abstraction for easily accessing various resources that can be accessed byte-wise. Streams can be opened on files, network connections, serial port connections, strings, memory and many other resources.
-Streams are unidirectional, i.e.\ either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers an output buffer that has to be flushed explicitly by the programmer.
+Streams are unidirectional, i.e.\ it is possible to either read from a resource (\emph{Readers}) or write to a resource (\emph{Writers}). Readers maintain an input buffer and writers maintain an output buffer that has to be flushed explicitly by the programmer.
 Streams maintain an internal position that is updated automatically whenever a read or write operation is performed. Streams may support random access, depending on the underlying resource.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Simplified Reader and Writer Interface}]
@@ -627,7 +625,7 @@ Reader* = OBJECT
 
   (** result of last input operation *)
   res*: LONGINT;
-  
+
   (** Current position. *)
   PROCEDURE Pos*( ): LONGINT;
 
@@ -749,7 +747,7 @@ TYPE
 END Command;
 \end{lstlisting}
 
-Command line arguments can be accessed using the \emph{arg} stream. \emph{in} is the command input stream. For output, the streams \emph{out} and \emph{error} are used.
+Command line arguments can be accessed using the \emph{arg} stream. The stream \emph{in} is the command input stream. For output, the streams \emph{out} and \emph{error} are used.
 The caller field optionally contains a reference to an object that is responsible for the command invocation. Note that both output stream buffers (out and error) are flushed automatically by the command interpreter.
 
 \begin{lstlisting}[language=Oberon,frame=none,caption={Command Example}]
@@ -964,8 +962,8 @@ Function & Argument Types & Result Type & Description \\
 \hline\hline
 \endhead
 BIT(adr,n) & adr: ADDRESS; n: LONGINT & BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
-LSH(x,n) & x: IntValue; n: LONGINT & IntValue & Returns value x logically shifted left n bits (shifts right for n < 0) \\
-ROT(x,n) & x: IntValue; n: LONGINT &  IntValue & Returns value x rotated left by  n bits (rotates right for n < 0) \\
+LSH(x,n) & x: Integer; n: LONGINT & Integer & Returns value x logically shifted left n bits (shifts right for n < 0) \\
+ROT(x,n) & x: Integer; n: LONGINT &  Integer & Returns value x rotated left by  n bits (rotates right for n < 0) \\
 \hline
 \end{longtable}
 
