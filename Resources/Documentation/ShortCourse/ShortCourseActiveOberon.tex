@@ -6,6 +6,7 @@
 \usepackage{xspace}
 % longtable: http://mirror.switch.ch/ftp/mirror/tex/help/Catalogue/entries/longtable.html
 \usepackage{longtable}
+\usepackage{array}
 % --------------------------------- page layout --------------------------------------
 \pagestyle{headings}
 % other font styles:
@@ -21,11 +22,11 @@
 \parskip 5pt
 \parindent 0cm
 
+% --------------------------------- colors --------------------------------------
 \definecolor{lightgrey}{rgb}{0.5,0.5,0.5}
 \definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
 
-% --------------------------------- listings --------------------------------------
-
+% --------------------------------- own commands --------------------------------------
 \newcommand{\changefont}[3]{\fontfamily{#1}\fontseries{#2}\fontshape{#3}\selectfont}
 
 \newcommand{\progfont}{\changefont{pcr}{m}{n}}
@@ -37,7 +38,10 @@
 \newcommand{\kw}[1]{\makebox{\kwfont #1}}
 \newcommand{\AZ}{\ensuremath{\mathcal{A}_{2}}\xspace}
 
+% --------------------------------- tables --------------------------------------
+\newcolumntype{v}[1]{>{\raggedright\hspace{0pt}}p{#1}} % line breaking but align text left (not block)
 
+% --------------------------------- listings --------------------------------------
 \lstdefinelanguage{ebnf}[]{}
 {morekeywords={},
 sensitive=true,
@@ -956,14 +960,14 @@ The (pseudo-)module SYSTEM contains definitions that are necessary to directly r
 The subsequent definitions are applicable to the \AZ operating system.
 
 \subsubsection{BIT Manipulation}
-\begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\begin{longtable}{|p{3cm}|v{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
 \hline\hline
 \endhead
-BIT(adr,n) & adr: ADDRESS; n: LONGINT & BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
-LSH(x,n) & x: Integer; n: LONGINT & Integer & Returns value x logically shifted left n bits (shifts right for n < 0) \\
-ROT(x,n) & x: Integer; n: LONGINT &  Integer & Returns value x rotated left by  n bits (rotates right for n < 0) \\
+BIT(adr,n) & adr:~ADDRESS; n:~LONGINT & BOOLEAN & Returns TRUE if bit n at adr is set, FALSE otherwise \\
+LSH(x,n) & x:~Integer; n:~LONGINT & Integer & Returns value x logically shifted left n bits (shifts right for n $<$ 0) \\
+ROT(x,n) & x:~Integer; n:~LONGINT &  Integer & Returns value x rotated left by  n bits (rotates right for n $<$ 0) \\
 \hline
 \end{longtable}
 
@@ -995,19 +999,19 @@ VAL(T,x) & T: Type; x: ANY & T & Unsafe type cast. Returns x interpreted as type
 \end{longtable}
 
 \subsubsection{Direct Memory Access Functions}
-\begin{longtable}{|p{3cm}|p{3cm}|p{2cm}|p{6cm}|}
+\begin{longtable}{|p{3cm}|v{3cm}|p{2cm}|p{6cm}|}
 \hline
 Function & Argument Types & Result Type & Description \\
 \hline\hline
 \endhead
-PUT(adr,x) & adr: ADDRESS; x: Type & & Mem[adr] := x where the size of type x is 8, 16, 32 or 64 bits \\
+PUT(adr,x) & adr:~ADDRESS; x:~Type & & Mem[adr] := x where the size of type x is 8, 16, 32 or 64 bits \\
 \hline
-PUT8(adr,x) & adr: ADDRESS; x: SHORTINT & & Mem[adr] := x \\
-PUT16(adr,x) & adr: ADRESS; x: INTEGER && \\
-PUT32(adr,x) & adr: ADDRESS; x: LONGINT && \\
-PUT64(adr,x) & adr: ADDRESS; x: HUGEINT && \\
+PUT8(adr,x) & adr:~ADDRESS; x:~SHORTINT & & Mem[adr] := x \\
+PUT16(adr,x) & adr:~ADRESS; x:~INTEGER && \\
+PUT32(adr,x) & adr:~ADDRESS; x:~LONGINT && \\
+PUT64(adr,x) & adr:~ADDRESS; x:~HUGEINT && \\
 \hline
-GET(adr,x) & adr: ADDRESS; VAR x: Type & & x := Mem[adr] where the size of type x is 8, 16, 32 or 64 bits \\
+GET(adr,x) & adr:~ADDRESS; VAR x:~Type & & x := Mem[adr] where the size of type x is 8, 16, 32 or 64 bits \\
 \hline
 GET8(adr) & adr: ADDRESS & SHORTINT & RETURN Mem[adr] \\
 GET16(adr) & adr: ADDRESS & INTEGER &\\
@@ -1018,19 +1022,19 @@ MOVE(src, dst,n) & dst: ADDRESS; n: SIZE & & Copy "n" bytes from address "src" t
 \hline \end{longtable}
 
 \subsubsection{IA-32 Specific Functions}
-\begin{longtable}{|p{3cm}|p{3cm}|p{8cm}|}
+\begin{longtable}{|p{3cm}|v{3cm}|p{8cm}|}
 \hline
 Function & Argument Types & Description \\
 \hline\hline
 \endhead
-PORTIN(adr,x) & adr: LONGINT; VAR x: Type & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
-PORTOUT(adr,x) & adr: LONGINT; x: Type & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+PORTIN(adr,x) & adr:~LONGINT; VAR x:~Type & Perform a port input instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
+PORTOUT(adr,x) & adr:~LONGINT; x:~Type & Perform a port output instruction at the specified I/O address. The size of type x must be 8, 16 or 32 bits \\
 \hline
 CLI() && Disable interrupts on the current processor \\
 STI() && Enable interrupts on the current processor \\
 \hline
-GETREG(reg,x) & reg: LONGINT; VAR x: Type & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
-PUTREG(reg,x) & reg: LONGINT; x: Type & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
+GETREG(reg,x) & reg:~LONGINT; VAR x:~Type & x := REGISTER(reg) where the size of type x is 8, 16, 32 or 64 bits depending on the register \\
+PUTREG(reg,x) & reg:~LONGINT; x:~Type & REGISTER(reg) := x; where SIZEOF(x) is 8, 16, 32 or 64 bits \\
 \hline
 EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI && 32 bit registers \\
 AX, CX, DX, BX, SP, BP, SI, DI && 16 bit registers \\
