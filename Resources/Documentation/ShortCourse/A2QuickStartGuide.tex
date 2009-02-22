@@ -385,7 +385,7 @@ PROCEDURE Example;
 BEGIN
     NEW(b,100); (* allocate array *)
     (* ... *)
-    Print(b);
+    Print(b^);
 END Example;
 
 END Arrays.
@@ -494,7 +494,7 @@ TYPE
    END ActiveObject;
 
 VAR
-   o : ActiveObject
+   o : ActiveObject;
 
 BEGIN
    (* instantiate active object o *)
@@ -871,26 +871,27 @@ IMPORT Commands, Files;
 PROCEDURE CreateFile*(context : Commands.Context);
 VAR
   filename : Files.FileName;
-  file : Files.File;  writer : Files.Writer;
+  file : Files.File; writer : Files.Writer;
   ch : CHAR;
 BEGIN
    context.arg.GetString(filename);
    file := Files.New(filename);
    IF (file # NIL) THEN
-      Files.Register(file);
       Files.OpenWriter(writer, file, 0);
-      context.arg.Char(ch);
-      WHILE (context.arg.res = Streams.Ok) DO
-         writer.Char(ch);
+      context.arg.Char(ch); (* skip argument delimiter character *)
+      REPEAT
          context.arg.Char(ch);
-      END;
+         writer.Char(ch);
+      UNTIL (ch = 0X);
+      writer.Update;
+      Files.Register(file);
    END;
 END CreateFile;
 
-END Example;
+END Example.
 \end{lstlisting}
 
-In this example, executing \verb+Example.CreateFile HelloWorld.txt Hello World ~+ creates a new file (or overwrites an existing one) with the content ``Hello World''.
+In this example, executing the command \verb+Example.CreateFile HelloWorld.txt Hello World ~+ would create (or overwrite) the file ''HelloWorld.txt'' and write the 0X-terminated string ``Hello World '' into it.
 
 \subsection{Strings}
 The module Strings provides procedures for ASCII string manipulation.
