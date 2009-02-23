@@ -558,6 +558,11 @@ TYPE
     Synchronizer = OBJECT
     VAR awake : BOOLEAN;
 
+        PROCEDURE &Init;
+        BEGIN
+            awake := FALSE;
+        END Init;
+
         PROCEDURE Wait;
         BEGIN {EXCLUSIVE}
            AWAIT(awake); (* suspend caller until awake = TRUE *)
