@@ -1,0 +1,5 @@
+Image  License  Source
+
+refresh.svg  [1] clipart\computer\bb_reload_.svg
+
+[1] Public Domain, www.openclipart.org, library version 0.18
