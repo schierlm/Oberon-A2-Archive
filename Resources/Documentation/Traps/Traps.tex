@@ -1,0 +1,139 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{color}
+\usepackage{hyperref}
+% listings: http://mirror.switch.ch/ftp/mirror/tex/help/Catalogue/entries/listings.html
+\usepackage{listings}
+\usepackage{xspace}
+% longtable: http://mirror.switch.ch/ftp/mirror/tex/help/Catalogue/entries/longtable.html
+\usepackage{longtable}
+\usepackage{array}
+% --------------------------------- page layout --------------------------------------
+\pagestyle{headings}
+% other font styles:
+%\usepackage[math]{iwona} % iwona, kurier
+%\usepackage{cmbright}
+
+\oddsidemargin -0 cm
+\evensidemargin 0 cm
+%\topmargin -1.5cm
+\textwidth 16   cm
+%\textheight 25 cm
+
+\parskip 5pt
+\parindent 0cm
+
+% --------------------------------- colors --------------------------------------
+\definecolor{lightgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{darkgrey}{rgb}{0.4,0.4,0.4}
+
+% --------------------------------- own commands --------------------------------------
+\newcommand{\changefont}[3]{\fontfamily{#1}\fontseries{#2}\fontshape{#3}\selectfont}
+
+\newcommand{\progfont}{\changefont{pcr}{m}{n}}
+\newcommand{\kwfont}{\changefont{pcr}{b}{n}}
+\renewcommand{\lstlistingname}{Fig.}
+\newcommand{\todo}[1]{\setlength{\fboxrule}{2pt}\fcolorbox{red}{yellow}{\begin{minipage}{\textwidth} \color{blue}$todo:$ #1 \end{minipage}}}
+
+\newcommand{\pc}[1]{\makebox{\progfont #1}}
+\newcommand{\kw}[1]{\makebox{\kwfont #1}}
+\newcommand{\AZ}{\ensuremath{\mathcal{A}_{2}}\xspace}
+
+% --------------------------------- tables --------------------------------------
+\newcolumntype{v}[1]{>{\raggedright\hspace{0pt}}p{#1}} % line breaking but align text left (not block)
+
+% --------------------------------- listings --------------------------------------
+\lstdefinelanguage{ebnf}[]{}
+{morekeywords={},
+sensitive=true,
+comment=[l]{//},
+comment=[s]{(*}{*)},
+morestring=[b]',
+morestring=[b]",
+basicstyle=\scriptsize\changefont{pcr}{m}{n},
+stringstyle=\changefont{pcr}{b}{n},
+columns = fixed
+}
+\lstdefinelanguage{Oberon}[]{Oberon-2}%
+  {morekeywords={OBJECT,SELF,%
+   HUGEINT,% Basic Types
+   AWAIT},% Built in functions
+   %sensitive=f,%
+   %alsoother={},% list here in lower case if keyword some where else wrongly highlighted
+    morecomment=[s][\color{red}]{(*!}{!*)}
+  }[keywords]%
+\lstset{language=Oberon,
+basicstyle=\small\progfont,keywordstyle=\kwfont ,identifierstyle=\progfont,
+commentstyle=\color{darkgrey}, stringstyle=, showstringspaces=false, %keepspaces=true,
+numbers=none, numberstyle=\tiny, stepnumber=1, numbersep=5pt, captionpos=b,
+columns=flexible, % flexible, fixed, fullflexible
+framerule=1mm,frame=shadowbox, rulesepcolor=\color{blue}, % frame = shadowbox
+xleftmargin=2mm,xrightmargin=2mm,
+breaklines=true,				% break long lines
+breakatwhitespace=true,			% break lines only at white space
+}
+\renewcommand{\lstlistingname}{Fig.}
+
+
+\begin{document}
+\title{\AZ Traps}
+\author{Sven Stauber}
+\maketitle
+Blah Blah
+
+\tableofcontents
+
+\section{Traps}\label{Traps}
+When a run-time error is detected, the system generates a numbered trap. The information included with the trap can be used to diagnose the problem. Especially useful is the module and procedure name and PC location where the trap occured. This allows a programmer to find the exact location in the source code.
+
+\subsection{Example}\label{section:ModulesAndCommands}
+
+\begin{lstlisting}[language=Oberon,frame=none,numbers=left]
+  MODULE TrapDemo;
+
+  PROCEDURE Proc2();
+  VAR string : POINTER TO ARRAY OF CHAR;
+  BEGIN
+    string := NIL;
+    ASSERT(string # NIL);
+  END Proc2;
+
+  PROCEDURE Proc1;
+  VAR a, b : LONGINT;
+  BEGIN
+    a := 99; b := 11;
+    Proc2();
+  END Proc1;
+
+  PROCEDURE Demo*;
+  VAR string : ARRAY 8 OF CHAR;
+  BEGIN
+    string := "Demo!";
+    Proc1();
+  END Demo;
+
+  END TrapDemo.
+\end{lstlisting}
+
+\begin{lstlisting}[language=Oberon,frame=none,numbers=left]
+  [1] TRAP 8 PL 3 8  ASSERT failed WinAos Revision 2081 (19.02.2009)
+  CS:=00000023 DS:=0000002B ES:=0000002B SS:=0000002B PC=0ECA7F92
+  ESI=0CCB679A EDI=05FBFF46 ESP=05FBFF20 PID=000017A8
+  EAX=00000000 EBX=00000000 ECX=75443D09 EDX=00000000 
+  EBP=05FBFF28 FS:=00000053 GS:=0000002B TMR=00A97689
+  FLAGS: cPaZstIdo iopl0 {1..2, 6, 9}
+  Process: 6056 run 0 20ECE9BF0:Commands.Runner NIL {0, 28}
+  TrapDemo.Proc2 pc=34 [00000022H]
+    string=00000000H (NIL)
+  State TrapDemo:
+    @Self=0ECE9950H (Modules.Module)
+  TrapDemo.Proc1 pc=65 [00000041H]
+    a=99 (00000063H)
+    b=11 (0000000BH)
+  TrapDemo.Demo pc=95 [0000005FH]
+    string="Demo!"
+  Commands.Runner.@Body pc=1042 [00000412H]
+    @Self=0ECE9BF0H (Commands.Runner)
+\end{lstlisting}
+
+\end{document}
+
