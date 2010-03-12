@@ -68,8 +68,8 @@ numbers=none, numberstyle=\tiny, stepnumber=1, numbersep=5pt, captionpos=b,
 columns=flexible, % flexible, fixed, fullflexible
 framerule=1mm,frame=shadowbox, rulesepcolor=\color{blue}, % frame = shadowbox
 xleftmargin=2mm,xrightmargin=2mm,
-breaklines=true,				% break long lines
-breakatwhitespace=true,			% break lines only at white space
+breaklines=true,                % break long lines
+breakatwhitespace=true,         % break lines only at white space
 }
 \renewcommand{\lstlistingname}{Fig.}
 
@@ -396,12 +396,12 @@ Records are containers of data. Records are value types and are declared as RECO
 \begin{lstlisting}[language=Oberon,frame=none,caption=Using records]
 MODULE Records;
 VAR
-	a: RECORD x,y: LONGINT END;
-	p: POINTER TO RECORD a,b: REAL END;
+    a: RECORD x,y: LONGINT END;
+    p: POINTER TO RECORD a,b: REAL END;
 
 BEGIN
-	NEW(p);
-	p.b := a.x;
+    NEW(p);
+    p.b := a.x;
 END Records.
 \end{lstlisting}
 
@@ -948,7 +948,7 @@ ABS(x) & x: Number & Number & return absolute value of x\\
 ASH(x,y) & x,y: Integer & Integer & return arithmetic shift of x by y bits\\
 CAP(x) & x: CHAR & CHAR & return capital letter of x\\
 CHR(x) & x: Integer & CHAR & return character with ascii-number x\\
-ENTIER(x) & x: REAL or LONGREAL & LONGINT & return largest integer not smaller than x\\
+ENTIER(x) & x: REAL or LONGREAL & LONGINT & return largest integer not greater than x\\
 LEN(x) & x: ARRAY OF CHAR & LONGINT & return length of x\\
 MAX(t) & t: Number or SET & Number & return maximal number of basic type t\\
 MIN(t) & t: Number or SET & Number & return minimal number of basic type t\\
