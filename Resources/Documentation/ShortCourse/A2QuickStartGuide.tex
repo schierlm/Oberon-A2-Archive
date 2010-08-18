@@ -681,11 +681,13 @@ Reader* = OBJECT
       Will not read past the end of a line. *)
   PROCEDURE String*( VAR string: ARRAY OF CHAR );
 
-  (** First skip whitespace, then read string *)
-  PROCEDURE GetString*(VAR string : ARRAY OF CHAR);
+  (** First skip whitespace, then read string. Returns TRUE on success. *)
+  PROCEDURE GetString*(VAR string : ARRAY OF CHAR) : BOOLEAN;
 
-  (** First skip whitespace, then read integer *)
-  PROCEDURE GetInteger*(VAR integer : LONGINT; hex : BOOLEAN);
+  (** First skip whitespace, then read integer.
+      If hex = TRUE, recognize the "H" postfix for hexadecimal numbers.
+      Returns TRUE on success. *)
+  PROCEDURE GetInteger*(VAR integer : LONGINT; hex : BOOLEAN) : BOOLEAN;
 
 END Reader;
 
@@ -766,11 +768,17 @@ IMPORT Commands;
   PROCEDURE Add*(context : Commands.Context);
   VAR a, b : LONGINT;
   BEGIN
-    context.arg.GetInteger(a, FALSE);
-    context.arg.GetInteger(b, FALSE);
-    context.out.Int(a, 0); context.out.String(" + "); context.out.Int(b, 0);
-    context.out.String(" = "); context.out.Int(a + b, 0);
-    context.out.Ln;
+    IF context.arg.GetInteger(a, FALSE) &
+       context.arg.GetInteger(b, FALSE)
+    THEN
+      context.out.Int(a, 0); context.out.String(" + ");
+      context.out.Int(b, 0);
+      context.out.String(" = "); context.out.Int(a + b, 0);
+      context.out.Ln;
+    ELSE
+      context.error.String("Expected two integer arguments");
+      context.error.Ln;
+    END;
   END Add;
 END Example.
 \end{lstlisting}
@@ -879,18 +887,23 @@ VAR
   file : Files.File; writer : Files.Writer;
   ch : CHAR;
 BEGIN
-   context.arg.GetString(filename);
-   file := Files.New(filename);
-   IF (file # NIL) THEN
-      Files.OpenWriter(writer, file, 0);
-      context.arg.Char(ch); (* skip argument delimiter character *)
-      REPEAT
+   IF context.arg.GetString(filename) THEN
+     file := Files.New(filename);
+     IF (file # NIL) THEN
+       Files.OpenWriter(writer, file, 0);
+       context.arg.Char(ch); (* skip argument delimiter character *)
+       REPEAT
          context.arg.Char(ch);
          writer.Char(ch);
-      UNTIL (ch = 0X);
-      writer.Update;
-      Files.Register(file);
-   END;
+       UNTIL (ch = 0X);
+       writer.Update;
+       Files.Register(file);
+     ELSE
+       context.error.String("Could not create file"); context.error.Ln;
+     END;
+  ELSE
+    context.error.String("Expected filename argument"); context.error.Ln;
+  END;
 END CreateFile;
 
 END Example.
